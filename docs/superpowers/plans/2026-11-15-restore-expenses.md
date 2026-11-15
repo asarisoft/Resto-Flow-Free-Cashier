@@ -102,11 +102,11 @@
   - `expenseListProvider = StreamProvider<List<Expense>>`
 - Tests use in-memory `AppDatabase.forTest()`.
 
-- [ ] **Step 1: Write failing repository test** (add → stream contains row; sum range).
-- [ ] **Step 2: Run, verify fail.**
-- [ ] **Step 3: Implement repository + providers.**
-- [ ] **Step 4: Run, verify pass.**
-- [ ] **Step 5: Commit**
+- [x] **Step 1: Write failing repository test** (add → stream contains row; sum range).
+- [x] **Step 2: Run, verify fail.**
+- [x] **Step 3: Implement repository + providers.**
+- [x] **Step 4: Run, verify pass.**
+- [x] **Step 5: Commit**
 
 ---
 
