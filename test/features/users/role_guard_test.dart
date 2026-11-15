@@ -21,4 +21,30 @@ void main() {
     await container.read(currentUserProvider.future);
     expect(container.read(canManageUsersProvider), true);
   });
+
+  final guards = {
+    'users': canManageUsersProvider,
+    'reports': canSeeReportsProvider,
+    'settings': canSeeSettingsProvider,
+    'backup': canSeeBackupProvider,
+    'expenses': canSeeExpensesProvider,
+  };
+
+  test('kasir session cannot see any owner-only area', () async {
+    final container = ProviderContainer(overrides: [
+      currentUserProvider.overrideWith((ref) async =>
+          AppUser(id: 'k1', username: 'kasir1', role: 'kasir', active: true)),
+    ]);
+    await container.read(currentUserProvider.future);
+    guards.forEach((name, p) => expect(container.read(p), false, reason: name));
+  });
+
+  test('owner session sees every owner-only area', () async {
+    final container = ProviderContainer(overrides: [
+      currentUserProvider.overrideWith((ref) async =>
+          AppUser(id: 'o1', username: 'admin', role: 'owner', active: true)),
+    ]);
+    await container.read(currentUserProvider.future);
+    guards.forEach((name, p) => expect(container.read(p), true, reason: name));
+  });
 }

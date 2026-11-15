@@ -84,11 +84,11 @@
 
 **Files:** `lib/core/router/app_router.dart`, `test/features/users/role_guard_test.dart`
 
-- [ ] Cek route di `app_router.dart`. Kalau hanya `/login` & `/home` → JANGAN ubah router.
-- [ ] Kalau ada route owner-only → tambah redirect kasir ke `/home`.
-- [ ] Pastikan tes role guard mencakup: kasir TIDAK melihat tab Laporan, Setting, User, Backup, Pengeluaran; owner melihat semua.
-- [ ] Jalankan tes → LULUS.
-- [ ] Commit: `test: cover kasir tab visibility` (atau `fix: ...` kalau router diubah).
+- [x] Cek route di `app_router.dart`. Kalau hanya `/login` & `/home` → JANGAN ubah router.
+- [x] Kalau ada route owner-only → tambah redirect kasir ke `/home`.
+- [x] Pastikan tes role guard mencakup: kasir TIDAK melihat tab Laporan, Setting, User, Backup, Pengeluaran; owner melihat semua.
+- [x] Jalankan tes → LULUS.
+- [x] Commit: `test: cover kasir tab visibility` (atau `fix: ...` kalau router diubah).
 
 ## Task E: Warna ikut DESIGN.md
 
