@@ -49,21 +49,21 @@
 
 **Files:** `lib/core/services/daos/users_dao.dart`, `lib/features/users/user_form_dialog.dart`, `lib/features/users/user_list_page.dart`, `test/daos/users_dao_test.dart`
 
-- [ ] Tulis tes DAO (harus gagal dulu):
+- [x] Tulis tes DAO (harus gagal dulu):
   - username kosong/spasi → ditolak
   - password < 8 karakter → ditolak
   - role selain `owner`/`kasir` → ditolak
   - username dobel → ditolak
   - nonaktifkan owner aktif terakhir → ditolak
   - nonaktifkan owner kalau ada owner aktif lain → berhasil
-- [ ] Jalankan tes → GAGAL.
-- [ ] Implementasi:
+- [x] Jalankan tes → GAGAL.
+- [x] Implementasi:
   - `UsersDao.add`: trim username; lempar `ArgumentError` untuk input tidak valid; `StateError('username sudah dipakai')` untuk dobel.
   - `UsersDao.setActive(id, false)`: kalau satu-satunya owner aktif → `StateError('minimal 1 owner aktif')`.
   - `UserFormDialog`: tangkap error → tampilkan pesan (errorText/SnackBar), dialog tetap terbuka, tombol Simpan disable saat proses.
   - Pemanggil `setActive`: tangkap `StateError` → SnackBar.
-- [ ] Jalankan tes → LULUS.
-- [ ] Commit: `fix: validate user input and keep at least one active owner`.
+- [x] Jalankan tes → LULUS.
+- [x] Commit: `fix: validate user input and keep at least one active owner`.
 
 ## Task C: Tes uang & transaksi
 

@@ -31,7 +31,13 @@ class UserListPage extends ConsumerWidget {
                 value: u.active,
                 onChanged: (v) async {
                   final dao = ref.read(usersDaoProvider);
-                  await dao.setActive(u.id, v);
+                  try {
+                    await dao.setActive(u.id, v);
+                  } on StateError catch (e) {
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+                    }
+                  }
                   ref.invalidate(userListProvider);
                 },
               ),
