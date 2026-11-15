@@ -105,6 +105,9 @@ Seed default: `admin` / `P@ssw0rd123` / `owner` / `active=true`.
 | `date`      | DATETIME | NOT NULL   | Tanggal pengeluaran            |
 | `createdAt` | DATETIME | NOT NULL   |                                |
 
+Catatan: Drift data class tabel ini bernama **`ExpenseRow`** (`@DataClassName`),
+karena nama `Expense` dipakai model domain di `lib/models/expense.dart`.
+
 ---
 
 ## Relasi

@@ -2917,7 +2917,8 @@ class CountersCompanion extends UpdateCompanion<Counter> {
   }
 }
 
-class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
+class $ExpensesTable extends Expenses
+    with TableInfo<$ExpensesTable, ExpenseRow> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
@@ -2996,7 +2997,7 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   static const String $name = 'expenses';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Expense> instance, {
+    Insertable<ExpenseRow> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -3048,9 +3049,9 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Expense map(Map<String, dynamic> data, {String? tablePrefix}) {
+  ExpenseRow map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Expense(
+    return ExpenseRow(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
@@ -3084,14 +3085,14 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   }
 }
 
-class Expense extends DataClass implements Insertable<Expense> {
+class ExpenseRow extends DataClass implements Insertable<ExpenseRow> {
   final String id;
   final String? category;
   final String? note;
   final int amount;
   final DateTime date;
   final DateTime createdAt;
-  const Expense({
+  const ExpenseRow({
     required this.id,
     this.category,
     this.note,
@@ -3128,12 +3129,12 @@ class Expense extends DataClass implements Insertable<Expense> {
     );
   }
 
-  factory Expense.fromJson(
+  factory ExpenseRow.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Expense(
+    return ExpenseRow(
       id: serializer.fromJson<String>(json['id']),
       category: serializer.fromJson<String?>(json['category']),
       note: serializer.fromJson<String?>(json['note']),
@@ -3155,14 +3156,14 @@ class Expense extends DataClass implements Insertable<Expense> {
     };
   }
 
-  Expense copyWith({
+  ExpenseRow copyWith({
     String? id,
     Value<String?> category = const Value.absent(),
     Value<String?> note = const Value.absent(),
     int? amount,
     DateTime? date,
     DateTime? createdAt,
-  }) => Expense(
+  }) => ExpenseRow(
     id: id ?? this.id,
     category: category.present ? category.value : this.category,
     note: note.present ? note.value : this.note,
@@ -3170,8 +3171,8 @@ class Expense extends DataClass implements Insertable<Expense> {
     date: date ?? this.date,
     createdAt: createdAt ?? this.createdAt,
   );
-  Expense copyWithCompanion(ExpensesCompanion data) {
-    return Expense(
+  ExpenseRow copyWithCompanion(ExpensesCompanion data) {
+    return ExpenseRow(
       id: data.id.present ? data.id.value : this.id,
       category: data.category.present ? data.category.value : this.category,
       note: data.note.present ? data.note.value : this.note,
@@ -3183,7 +3184,7 @@ class Expense extends DataClass implements Insertable<Expense> {
 
   @override
   String toString() {
-    return (StringBuffer('Expense(')
+    return (StringBuffer('ExpenseRow(')
           ..write('id: $id, ')
           ..write('category: $category, ')
           ..write('note: $note, ')
@@ -3199,7 +3200,7 @@ class Expense extends DataClass implements Insertable<Expense> {
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Expense &&
+      (other is ExpenseRow &&
           other.id == this.id &&
           other.category == this.category &&
           other.note == this.note &&
@@ -3208,7 +3209,7 @@ class Expense extends DataClass implements Insertable<Expense> {
           other.createdAt == this.createdAt);
 }
 
-class ExpensesCompanion extends UpdateCompanion<Expense> {
+class ExpensesCompanion extends UpdateCompanion<ExpenseRow> {
   final Value<String> id;
   final Value<String?> category;
   final Value<String?> note;
@@ -3237,7 +3238,7 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
        amount = Value(amount),
        date = Value(date),
        createdAt = Value(createdAt);
-  static Insertable<Expense> custom({
+  static Insertable<ExpenseRow> custom({
     Expression<String>? id,
     Expression<String>? category,
     Expression<String>? note,
@@ -5201,14 +5202,17 @@ class $$ExpensesTableTableManager
         RootTableManager<
           _$AppDatabase,
           $ExpensesTable,
-          Expense,
+          ExpenseRow,
           $$ExpensesTableFilterComposer,
           $$ExpensesTableOrderingComposer,
           $$ExpensesTableAnnotationComposer,
           $$ExpensesTableCreateCompanionBuilder,
           $$ExpensesTableUpdateCompanionBuilder,
-          (Expense, BaseReferences<_$AppDatabase, $ExpensesTable, Expense>),
-          Expense,
+          (
+            ExpenseRow,
+            BaseReferences<_$AppDatabase, $ExpensesTable, ExpenseRow>,
+          ),
+          ExpenseRow,
           PrefetchHooks Function()
         > {
   $$ExpensesTableTableManager(_$AppDatabase db, $ExpensesTable table)
@@ -5270,14 +5274,14 @@ typedef $$ExpensesTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
       $ExpensesTable,
-      Expense,
+      ExpenseRow,
       $$ExpensesTableFilterComposer,
       $$ExpensesTableOrderingComposer,
       $$ExpensesTableAnnotationComposer,
       $$ExpensesTableCreateCompanionBuilder,
       $$ExpensesTableUpdateCompanionBuilder,
-      (Expense, BaseReferences<_$AppDatabase, $ExpensesTable, Expense>),
-      Expense,
+      (ExpenseRow, BaseReferences<_$AppDatabase, $ExpensesTable, ExpenseRow>),
+      ExpenseRow,
       PrefetchHooks Function()
     >;
 

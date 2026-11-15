@@ -73,16 +73,16 @@
   - `sum(DateTime start, DateTime end) -> Future<int>`
 - DAO maps Drift row → `Expense`; model stays plain.
 
-- [ ] **Step 1: Write failing model test** (amount int, copyWith).
-- [ ] **Step 2: Write failing DAO tests**:
+- [x] **Step 1: Write failing model test** (amount int, copyWith).
+- [x] **Step 2: Write failing DAO tests**:
   - add then getAll returns row
   - delete removes row
   - sum only counts range
-- [ ] **Step 3: Run, verify fail.**
-- [ ] **Step 4: Implement model + DAO.**
-- [ ] **Step 5: Run, verify pass.**
+- [x] **Step 3: Run, verify fail.**
+- [x] **Step 4: Implement model + DAO.**
+- [x] **Step 5: Run, verify pass.**
   - `fvm flutter test test/models/expense_test.dart test/daos/expenses_dao_test.dart`
-- [ ] **Step 6: Commit**
+- [x] **Step 6: Commit**
 
 ---
 

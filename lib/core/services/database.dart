@@ -88,6 +88,7 @@ class Counters extends Table {
   Set<Column> get primaryKey => {key};
 }
 
+@DataClassName('ExpenseRow')
 class Expenses extends Table {
   TextColumn get id => text()();
   TextColumn get category => text().nullable()();
