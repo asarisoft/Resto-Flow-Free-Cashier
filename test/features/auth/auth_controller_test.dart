@@ -93,12 +93,12 @@ void main() {
       () async {
     final id = await dao.add(
       username: 'kasir1',
-      password: 'pass123',
+      password: 'pass12345',
       role: 'kasir',
     );
     await dao.setActive(id, false);
 
-    final ok = await container.read(loginProvider).login('kasir1', 'pass123');
+    final ok = await container.read(loginProvider).login('kasir1', 'pass12345');
 
     expect(ok, false);
     expect(await sessionId(), isNull);
@@ -108,7 +108,7 @@ void main() {
   test('currentUserProvider is null when a saved user is deactivated', () async {
     final id = await dao.add(
       username: 'kasir1',
-      password: 'pass123',
+      password: 'pass12345',
       role: 'kasir',
     );
     await SessionService().save(id);
