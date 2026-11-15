@@ -88,6 +88,18 @@ class Counters extends Table {
   Set<Column> get primaryKey => {key};
 }
 
+class Expenses extends Table {
+  TextColumn get id => text()();
+  TextColumn get category => text().nullable()();
+  TextColumn get note => text().nullable()();
+  IntColumn get amount => integer()();
+  DateTimeColumn get date => dateTime()();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -98,7 +110,7 @@ LazyDatabase _openConnection() {
 
 @DriftDatabase(
     tables: [Products, Transactions, TransactionItems, Users,
-             RestoProfiles, Counters])
+             RestoProfiles, Counters, Expenses])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -109,7 +121,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forFile(File file) : super(NativeDatabase.createInBackground(file));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -117,6 +129,9 @@ class AppDatabase extends _$AppDatabase {
           if (from < 2) {
             await m.deleteTable('expenses');
             await m.createTable(users);
+          }
+          if (from < 3) {
+            await m.createTable(expenses);
           }
         },
         beforeOpen: (details) async {

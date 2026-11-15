@@ -1,7 +1,7 @@
 # Database — Resto Flow Free
 
 Engine: **Drift (SQLite)** lokal, file `kasir_resto.sqlite`.
-Schema version: **2**.
+Schema version: **3**.
 
 ## Aturan Global
 
@@ -94,6 +94,17 @@ Seed default: `admin` / `P@ssw0rd123` / `owner` / `active=true`.
 | `key`   | TEXT       | **PK**     | Nama counter (misal `'receipt'`) |
 | `value` | INTEGER    | NOT NULL   | Nilai saat ini                   |
 
+### `Expenses`
+
+| Kolom       | Tipe     | Constraint | Catatan                        |
+|-------------|----------|------------|--------------------------------|
+| `id`        | TEXT     | **PK**     | UUID                           |
+| `category`  | TEXT     | nullable   | Kategori pengeluaran           |
+| `note`      | TEXT     | nullable   | Catatan                        |
+| `amount`    | INTEGER  | NOT NULL   | Nominal rupiah                 |
+| `date`      | DATETIME | NOT NULL   | Tanggal pengeluaran            |
+| `createdAt` | DATETIME | NOT NULL   |                                |
+
 ---
 
 ## Relasi
@@ -112,3 +123,6 @@ Counters ──(receipt number)──► Transactions.number
 
 - **v1 → v2**: Drop tabel `Expenses` (kalau ada), create tabel `Users`.
 - Guard: `if (from < 2) { dropIfExists('expenses'); createTable(users); }`
+- **v2 → v3**: Create tabel `Expenses` (fitur pengeluaran kembali, tetap offline).
+- Guard: `if (from < 3) { createTable(expenses); }`
+- Migrasi forward-only: jangan pernah turunkan `schemaVersion` atau drop data user.
