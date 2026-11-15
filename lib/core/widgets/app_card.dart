@@ -11,15 +11,20 @@ class AppCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: height,
-      padding: padding ?? const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.border),
+    // Surface color lives on the Material so tiles inside (ListTile, InkWell)
+    // keep their background and ink splashes visible.
+    return Material(
+      color: AppColors.surface,
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        height: height,
+        padding: padding ?? const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: AppColors.border),
+        ),
+        child: child,
       ),
-      child: child,
     );
   }
 }
@@ -34,14 +39,14 @@ class AppCardButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return Material(
       color: AppColors.surface,
-      borderRadius: BorderRadius.circular(16),
+      borderRadius: BorderRadius.circular(12),
       child: InkWell(
         onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
+        borderRadius: BorderRadius.circular(12),
         child: Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(12),
             color: AppColors.surface,
             border: Border.all(color: AppColors.border),
           ),

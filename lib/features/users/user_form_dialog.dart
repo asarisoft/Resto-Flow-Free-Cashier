@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/daos/users_dao.dart';
 import '../../core/services/database_provider.dart';
 import '../../core/widgets/primary_button.dart';
+import '../users/users_providers.dart';
 
 class UserFormDialog extends ConsumerStatefulWidget {
   const UserFormDialog({super.key});

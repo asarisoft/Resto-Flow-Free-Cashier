@@ -1,25 +1,28 @@
 import 'dart:async';
 import 'dart:typed_data';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:bluetooth_serial_next/bluetooth_serial_next.dart';
 
 class PrinterService {
-  BluetoothDevice? _device;
-  BluetoothConnection? _connection;
+  BluetoothSerialDevice? _device;
+  BluetoothSerialPort? _connection;
 
-  BluetoothDevice? get device => _device;
-  bool get isConnected =>
-      _connection != null && _connection!.isConnected;
+  BluetoothSerialDevice? get device => _device;
+  bool get isConnected => _connection?.isOpen ?? false;
 
-  Future<List<BluetoothDevice>> scan() async {
-    final results = await FlutterBluetoothSerial.instance
-        .startDiscovery()
-        .toList();
-    return results.map((r) => r.device).toList();
+  Future<List<BluetoothSerialDevice>> scan() async {
+    final bt = BluetoothSerial.instance;
+    if (!await bt.requestPermissions(scan: true)) {
+      throw Exception('Izin Bluetooth ditolak');
+    }
+    if (!await bt.requestEnable()) {
+      throw Exception('Bluetooth tidak aktif');
+    }
+    return bt.discover().toList();
   }
 
-  Future<void> connect(BluetoothDevice device) async {
-    final conn = await BluetoothConnection.toAddress(device.address);
-    _connection = conn;
+  Future<void> connect(BluetoothSerialDevice device) async {
+    final port = await BluetoothSerial.instance.open(device.address);
+    _connection = port;
     _device = device;
   }
 
@@ -30,11 +33,11 @@ class PrinterService {
   }
 
   Future<void> printBytes(List<int> bytes) async {
-    if (_connection == null || !_connection!.isConnected) {
+    final port = _connection;
+    if (port == null || !port.isOpen) {
       throw Exception('Printer tidak terhubung');
     }
-    _connection!.output.add(Uint8List.fromList(bytes));
-    await _connection!.output.allSent;
+    await port.write(Uint8List.fromList(bytes));
   }
 
   Future<void> dispose() async {

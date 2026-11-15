@@ -7,6 +7,7 @@ import '../../core/theme/app_typography.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../models/product.dart';
 import '../products/product_providers.dart';
+import 'product_image.dart';
 import 'product_image_service.dart';
 
 class ProductFormPage extends ConsumerStatefulWidget {
@@ -74,9 +75,10 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
                 child: _pickedFile != null
                     ? Image.file(File(_pickedFile!.path), fit: BoxFit.cover)
                     : (_imagePath != null
-                        ? Image.file(File(_imagePath!), fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
-                                const Icon(Icons.broken_image, size: 48))
+                        ? ProductImage(
+                            path: _imagePath,
+                            placeholder: const Center(
+                                child: Icon(Icons.broken_image, size: 48)))
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [

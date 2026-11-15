@@ -10,13 +10,6 @@ class TransactionRepository {
   Future<models.Transaction?> get(String id) => _dao.get(id);
   Future<void> markPrinted(String id) => _dao.markPrinted(id);
 
-  Stream<List<models.Transaction>> stream({DateTime? start, DateTime? end}) {
-    return _dao.watchRecent().map((list) {
-      return list.where((t) {
-        if (start != null && t.createdAt.isBefore(start)) return false;
-        if (end != null && t.createdAt.isAfter(end)) return false;
-        return true;
-      }).toList();
-    });
-  }
+  Stream<List<models.Transaction>> stream({DateTime? start, DateTime? end}) =>
+      _dao.watchRecent(start: start, end: end);
 }

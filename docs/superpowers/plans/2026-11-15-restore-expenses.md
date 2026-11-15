@@ -123,11 +123,19 @@
 - `ExpenseFormDialog`: fields category, note, amount (int), date; save via repository.
 - Home shell: add Expenses tab after Products, **Owner-only** using `canSeeExpensesProvider`.
 - Bottom navigation and side rail must use the same filtered tab list. Do not repeat the old index-mismatch bug.
+- UI must follow `docs/DESIGN.md`:
+  - `AppColors` (no hardcoded hex), `AppTypography`
+  - `AppCard` radius 12, padding 16, border `#EFEFEF`, no extra shadow
+  - `PrimaryButton` for "Tambah"/"Simpan", `AmountText` for nominal
+  - `EmptyState` when list empty
+  - Icon: `Icons.receipt_long`
+  - `compact`: 1 column; `wide`: max-width 520 dp
+- Detail UI spec: `docs/SPEC.md` §7.6a.
 
-- [ ] **Step 1: Write failing test** for amount parsing (reject non-int/negative).
-- [ ] **Step 2: Implement list page + dialog** using existing `AppCard`/`PrimaryButton`.
-- [ ] **Step 3: Add tab + provider guard.**
-- [ ] **Step 4: Run `fvm flutter analyze` + relevant tests.**
+- [x] **Step 1: Write failing test** for amount parsing (reject non-int/negative).
+- [x] **Step 2: Implement list page + dialog** using existing `AppCard`/`PrimaryButton`.
+- [x] **Step 3: Add tab + provider guard.**
+- [x] **Step 4: Run `fvm flutter analyze` + relevant tests.**
 - [ ] **Step 5: Commit**
 
 ---
@@ -148,21 +156,21 @@
 - `reportSummaryProvider` reads `ReportsDao.sumExpenses`.
 - `report_page.dart` restores "Pengeluaran" card and net profit.
 
-- [ ] **Step 1: Write failing DAO test** for `sumExpenses`.
-- [ ] **Step 2: Write failing `ReportSummary` test** (totalExpense exists).
-- [ ] **Step 3: Implement.**
-- [ ] **Step 4: Run `fvm flutter test test/daos/reports_dao_test.dart test/features/reports/`.**
+- [x] **Step 1: Write failing DAO test** for `sumExpenses`.
+- [x] **Step 2: Write failing `ReportSummary` test** (totalExpense exists).
+- [x] **Step 3: Implement.**
+- [x] **Step 4: Run `fvm flutter test test/daos/reports_dao_test.dart test/features/reports/`.**
 - [ ] **Step 5: Commit**
 
 ---
 
 ## Task 6: Verification
 
-- [ ] `fvm flutter analyze` — no errors.
-- [ ] `fvm flutter test` — all green.
+- [x] `fvm flutter analyze` — no errors.
+- [x] `fvm flutter test` — all green.
 - [ ] Manual: Owner can add expense, see total, see report expense card; Kasir cannot see Expenses.
-- [ ] Confirm no Firebase imports.
-- [ ] Update `docs/SPEC.md`:
+- [x] Confirm no Firebase imports.
+- [x] Update `docs/SPEC.md`:
   - remove "Fitur pengeluaran / catatan belanja" from Non-Goals
   - add Expenses to goals/features and role table (Owner only)
 - [ ] Commit docs.

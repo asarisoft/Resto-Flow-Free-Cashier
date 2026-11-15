@@ -15,11 +15,13 @@ final reportSummaryProvider =
 
   final revenue = await reports.sumRevenue(range.start, range.end);
   final profit = await reports.sumProfit(range.start, range.end);
+  final expense = await reports.sumExpenses(range.start, range.end);
   final count = await reports.countTransactions(range.start, range.end);
 
   return ReportSummary(
     totalRevenue: revenue,
     totalProfit: profit,
+    totalExpense: expense,
     transactionCount: count,
     averagePerTransaction: count > 0 ? revenue ~/ count : 0,
   );

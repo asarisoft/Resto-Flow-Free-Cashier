@@ -1,6 +1,6 @@
 # Resto Flow Free
 
-POS kasir restoran/kafe **100% offline** di satu device. Data lokal (SQLite), cetak struk via Bluetooth thermal printer.
+POS kasir restoran/kafe **100% offline** di satu device Android. Data lokal (SQLite), cetak struk via Bluetooth thermal printer.
 
 ## Fitur
 - **Kasir (POS)** — keranjang realtime, diskon per-item & total, metode bayar, kembalian

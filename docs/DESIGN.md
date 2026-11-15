@@ -75,7 +75,9 @@ Material Symbols (bundled Flutter):
 | Login     | `Icons.login`          |
 | Kasir/POS | `Icons.point_of_sale`  |
 | Produk    | `Icons.inventory_2`    |
+| Pengeluaran | `Icons.receipt_long` |
 | Laporan   | `Icons.bar_chart`      |
+| Pengeluaran | `Icons.receipt_long` |
 | Setting   | `Icons.settings`       |
 | Printer   | `Icons.print`          |
 | User      | `Icons.people`         |

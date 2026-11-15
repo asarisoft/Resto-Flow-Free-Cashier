@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../auth/auth_controller.dart';
 import '../onboarding/onboarding_page.dart';
 import '../settings/settings_providers.dart';
 import '../pos/pos_page.dart';
@@ -11,6 +10,26 @@ import '../reports/report_page.dart';
 import '../settings/settings_page.dart';
 import '../users/user_list_page.dart';
 import '../users/users_providers.dart';
+import '../expenses/expense_list_page.dart';
+enum HomeTab { pos, products, expenses, reports, settings, users }
+
+/// Tabs visible for the current role. Pages, sidebar and bottom nav all use
+/// this list so their order and indexes stay in sync.
+List<HomeTab> visibleHomeTabs({
+  required bool canReports,
+  required bool canSettings,
+  required bool canUsers,
+  required bool canExpenses,
+}) =>
+    [
+      HomeTab.pos,
+      HomeTab.products,
+      if (canExpenses) HomeTab.expenses,
+      if (canReports) HomeTab.reports,
+      if (canSettings) HomeTab.settings,
+      if (canUsers) HomeTab.users,
+    ];
+
 class HomeShell extends ConsumerWidget {
   const HomeShell({super.key});
 
@@ -73,18 +92,46 @@ class _MainShellState extends ConsumerState<_MainShell> {
     );
   }
 
+  Widget _pageFor(HomeTab tab) => switch (tab) {
+        HomeTab.pos => const PosPage(),
+        HomeTab.products => const ProductListPage(),
+        HomeTab.expenses => const ExpenseListPage(),
+        HomeTab.reports => const ReportPage(),
+        HomeTab.settings => const SettingsPage(),
+        HomeTab.users => const UserListPage(),
+      };
+
+  NavigationDestination _navDestination(HomeTab tab) {
+    final (icon, selectedIcon, label) = switch (tab) {
+      HomeTab.pos => (Icons.point_of_sale_outlined, Icons.point_of_sale, 'Kasir'),
+      HomeTab.products => (Icons.inventory_2_outlined, Icons.inventory_2, 'Produk'),
+      HomeTab.expenses => (Icons.receipt_long_outlined, Icons.receipt_long, 'Pengeluaran'),
+      HomeTab.reports => (Icons.bar_chart_outlined, Icons.bar_chart, 'Laporan'),
+      HomeTab.settings => (Icons.settings_outlined, Icons.settings, 'Setting'),
+      HomeTab.users => (Icons.people_outline, Icons.people, 'Pengguna'),
+    };
+    return NavigationDestination(
+      icon: Icon(icon),
+      selectedIcon: Icon(selectedIcon, color: AppColors.primary),
+      label: label,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final canReports = ref.watch(canSeeReportsProvider);
     final canSettings = ref.watch(canSeeSettingsProvider);
     final canUsers = ref.watch(canManageUsersProvider);
-    final pages = <Widget>[
-      const PosPage(),
-      const ProductListPage(),
-      if (canReports) const ReportPage(),
-      if (canSettings) const SettingsPage(),
-      if (canUsers) const UserListPage(),
-    ];
+    final canExpenses = ref.watch(canSeeExpensesProvider);
+    final tabs = visibleHomeTabs(
+      canReports: canReports,
+      canSettings: canSettings,
+      canUsers: canUsers,
+      canExpenses: canExpenses,
+    );
+    final pages = [for (final tab in tabs) _pageFor(tab)];
+    // Role can change while the shell is alive; ignore stale tab indexes.
+    final current = _tab < tabs.length ? _tab : 0;
 
     return LayoutBuilder(
       builder: (context, constraints) {
@@ -116,26 +163,27 @@ class _MainShellState extends ConsumerState<_MainShell> {
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                         child: Text('MAIN MENU', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
-                      _buildSidebarItem(0, Icons.point_of_sale, 'Order'),
-                      if (canReports) _buildSidebarItem(2, Icons.bar_chart, 'Statistics'),
+                      _buildSidebarItem(tabs.indexOf(HomeTab.pos), Icons.point_of_sale, 'Order'),
+                      if (canReports) _buildSidebarItem(tabs.indexOf(HomeTab.reports), Icons.bar_chart, 'Statistics'),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8).copyWith(top: 16),
                         child: Text('MANAGEMENT', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
-                      _buildSidebarItem(1, Icons.inventory_2, 'Products'),
-                      if (canUsers) _buildSidebarItem(4, Icons.people, 'Users'),
+                      _buildSidebarItem(tabs.indexOf(HomeTab.products), Icons.inventory_2, 'Products'),
+                      if (canExpenses) _buildSidebarItem(tabs.indexOf(HomeTab.expenses), Icons.receipt_long, 'Expenses'),
+                      if (canUsers) _buildSidebarItem(tabs.indexOf(HomeTab.users), Icons.people, 'Users'),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8).copyWith(top: 16),
                         child: Text('SUPPORT', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
-                      if (canSettings) _buildSidebarItem(3, Icons.settings, 'Settings'),
+                      if (canSettings) _buildSidebarItem(tabs.indexOf(HomeTab.settings), Icons.settings, 'Settings'),
                     ],
                   ),
                 ),
                 // Main Content
                 Expanded(
                   child: IndexedStack(
-                    index: _tab,
+                    index: current,
                     children: pages,
                   ),
                 ),
@@ -146,36 +194,15 @@ class _MainShellState extends ConsumerState<_MainShell> {
 
         return Scaffold(
           body: IndexedStack(
-            index: _tab,
+            index: current,
             children: pages,
           ),
           bottomNavigationBar: NavigationBar(
-            selectedIndex: _tab,
+            selectedIndex: current,
             onDestinationSelected: (i) => setState(() => _tab = i),
             backgroundColor: AppColors.surface,
             indicatorColor: AppColors.primary.withValues(alpha: 0.2),
-            destinations: const [
-              NavigationDestination(
-                icon: Icon(Icons.point_of_sale_outlined),
-                selectedIcon: Icon(Icons.point_of_sale, color: AppColors.primary),
-                label: 'Kasir',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.inventory_2_outlined),
-                selectedIcon: Icon(Icons.inventory_2, color: AppColors.primary),
-                label: 'Produk',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.bar_chart_outlined),
-                selectedIcon: Icon(Icons.bar_chart, color: AppColors.primary),
-                label: 'Laporan',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.settings_outlined),
-                selectedIcon: Icon(Icons.settings, color: AppColors.primary),
-                label: 'Setting',
-              ),
-            ],
+            destinations: [for (final tab in tabs) _navDestination(tab)],
           ),
         );
       },

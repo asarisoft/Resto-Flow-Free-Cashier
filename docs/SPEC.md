@@ -6,6 +6,7 @@
 
 - **Proyek:** Resto Flow Free — POS kasir resto/kafe, offline total (data lokal SQLite).
 - **Stack:** Flutter (Dart), Riverpod, Drift, go_router, cetak struk ESC/POS Bluetooth.
+- **Target platform:** Android only (tanpa iOS/macOS/desktop/web).
 - **Peta Folder:**
   - `lib/core/` — theme, services (database/auth), widgets, router
   - `lib/features/` — modul per fitur (pos, products, reports, settings, auth, home)
@@ -29,6 +30,7 @@
 
 ### 1.1 Goals
 - Catat penjualan (POS): keranjang, diskon per-item & total, bayar, kembalian, metode bayar
+- Catat pengeluaran operasional (kategori, catatan, nominal, tanggal)
 - Produk/menu: nama, kategori, harga, HPP, foto lokal, status ready
 - Laporan: omzet, laba kotor/bersih per hari & bulan
 - Cetak struk via Bluetooth thermal printer (58mm / 80mm, ESC/POS)
@@ -37,7 +39,6 @@
 
 ### 1.2 Non-Goals
 - Sync online / multi-device / cloud
-- Fitur pengeluaran / catatan belanja
 - Firebase / Firestore / Google Sign-In
 - Manajemen meja / table
 - Promo & diskon kompleks (cuma diskon manual per item/total)
@@ -70,6 +71,7 @@
 | Lihat produk/menu | ✅ | ✅ |
 | Kelola produk (CRUD) | ✅ | ❌ |
 | Laporan | ✅ | ❌ |
+| Pengeluaran (tambah/lihat/hapus) | ✅ | ❌ |
 | Kelola user | ✅ | ❌ |
 | Setting | ✅ | ❌ |
 | Backup/Restore | ✅ | ❌ |
@@ -94,7 +96,7 @@ Akses dikontrol di level provider/guard — bukan hanya disembunyikan dari sideb
 | Auth | Lokal (tabel `Users` + hash password) | 100% offline, tanpa internet |
 | DB | Drift (SQLite) | Lokal, cepat, type-safe |
 | Storage | File lokal (`path_provider`) | Foto produk & logo |
-| Print | ESC/POS via Bluetooth (`bluetooth_print`) | Thermal printer standar |
+| Print | ESC/POS via Bluetooth (`bluetooth_serial_next`) | Thermal printer standar |
 | State | `flutter_riverpod` | Scalable & testable |
 | Routing | `go_router` | Deklaratif, redirect berbasis auth state |
 | Backup | `archive` + `share_plus` + `file_picker` | Export/import ZIP |
@@ -260,9 +262,18 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 
 ### 7.6 Laporan Page
 - Segmented control: Hari ini / Bulan ini
-- Cards: Omzet, Laba Bersih, Jumlah Transaksi, Rata-rata per Struk
+- Cards: Omzet, Pengeluaran, Laba Bersih (laba transaksi − pengeluaran), Jumlah Transaksi
 - List transaksi terbaru (tap → reprint struk)
 - `compact`: card 1 kolom + list; `wide`: cards grid 2×2 + list
+
+### 7.6a Pengeluaran Page (Owner only)
+- Header total pengeluaran bulan ini (`AmountText`)
+- List pengeluaran: kategori, catatan, tanggal, nominal
+- Tombol "Tambah" → dialog form
+- Form: kategori (text), catatan (text, opsional), nominal (integer rupiah), tanggal
+- Validasi: nominal wajib > 0, tidak boleh desimal/negatif
+- `compact`: list 1 kolom; `wide`: max-width 520 dp
+- Warna & komponen mengikuti `docs/DESIGN.md` (`AppCard`, `PrimaryButton`, `AmountText`, `EmptyState`)
 
 ### 7.7 Kelola User Page (Owner only)
 - List user (username, role, status aktif)
@@ -287,7 +298,7 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 
 ## 8. Print Struk (ESC/POS)
 
-- Service: `PrinterService` via package `bluetooth_print`
+- Service: `PrinterService` via package `bluetooth_serial_next`
 - Layout menyesuaikan `paperWidth`:
   - 58mm → 32 char/line
   - 80mm → 48 char/line

@@ -5,7 +5,7 @@ class AppColors {
 
   static const background = Color(0xFFF8F9FA); // Off-white/light gray
   static const surface = Color(0xFFFFFFFF);
-  static const border = Color(0xFFE5E7EB);
+  static const border = Color(0xFFEFEFEF);
   static const primary = Color(0xFFFF6D00); // Bright orange
   static const onPrimary = Color(0xFFFFFFFF); // White text on orange
   static const success = Color(0xFF16A34A);

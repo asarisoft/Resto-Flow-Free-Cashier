@@ -40,12 +40,20 @@ class SalesDao {
 
   Future<int> getNextNumber() => db.getNextReceiptNumber();
 
-  Stream<List<Transaction>> watchRecent({int limit = 50}) {
-    return (db.select(db.transactions)
-          ..orderBy([(t) => OrderingTerm.desc(t.createdAt)])
-          ..limit(limit))
-        .watch()
-        .asyncMap((rows) async {
+  /// Watches transactions, newest first. When [start]/[end] are given the
+  /// date filter runs in SQL and [limit] is ignored (a range must not be
+  /// truncated to the newest 50 rows).
+  Stream<List<Transaction>> watchRecent({
+    int limit = 50,
+    DateTime? start,
+    DateTime? end,
+  }) {
+    final query = db.select(db.transactions);
+    if (start != null) query.where((t) => t.createdAt.isBiggerOrEqualValue(start));
+    if (end != null) query.where((t) => t.createdAt.isSmallerOrEqualValue(end));
+    query.orderBy([(t) => OrderingTerm.desc(t.createdAt)]);
+    if (start == null && end == null) query.limit(limit);
+    return query.watch().asyncMap((rows) async {
       final result = <Transaction>[];
       for (final r in rows) {
         final items = await (db.select(db.transactionItems)

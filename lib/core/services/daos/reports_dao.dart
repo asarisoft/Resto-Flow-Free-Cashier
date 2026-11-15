@@ -28,4 +28,12 @@ class ReportsDao {
     ).get();
     return rows.first.read<int>('v');
   }
+
+  Future<int> sumExpenses(DateTime start, DateTime end) async {
+    final rows = await db.customSelect(
+      'SELECT COALESCE(SUM(amount),0) AS v FROM expenses WHERE date >= ? AND date <= ?',
+      variables: [Variable.withDateTime(start), Variable.withDateTime(end)],
+    ).get();
+    return rows.first.read<int>('v');
+  }
 }

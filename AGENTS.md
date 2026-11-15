@@ -11,17 +11,25 @@
   `owasp-mobile-security-checker`.
 - Komponen reusable: jaga konsistensi UI. Kalau sebuah komponen dipakai
   di >1 tempat, wajib jadikan widget/komponen tersendiri (jangan duplikat).
+- selalu pake `ponytail`
 
 ### Saat kerja UI / tampilan
 - Bikin halaman/komponen baru: pakai `frontend-design`.
 - Poles tampilan yang sudah ada: pakai `impeccable`.
 - Sebelum bilang selesai: cek dengan `web-design-guidelines`.
 - Warna & gaya mengikuti `docs/DESIGN.md`.
+- selalu pake `ponytail`
 
 ### Sebelum commit
 - Review perubahan dengan `ponytail-review`.
 - Jalankan `/security-review` untuk perubahan yang menyentuh login,
   pembayaran, atau data pelanggan.
+- Setelah menyelesaikan task di `docs/superpowers/plans/`, **wajib centang
+  checkbox task/step yang sudah sesuai plan** (`- [ ]` → `- [x]`). Jangan
+  biarkan plan tertinggal dari kondisi kode.
+- Setiap selesai task, **wajib update dokumen terkait**:
+  `docs/SPEC.md`, `docs/DATABASE.md`, `docs/DESIGN.md`, dan graphify
+  (`graphify-out/`) bila arsitektur/skema berubah.
 
 ### Khusus project ini
 - Aplikasi: kasir restoran (resto-flow-cashier).

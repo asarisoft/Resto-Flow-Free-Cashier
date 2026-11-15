@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/daos/users_dao.dart';
-import '../auth/auth_controller.dart';
+import '../auth/auth_controller.dart' hide usersDaoProvider;
 import 'users_providers.dart';
 import 'user_form_dialog.dart';
 

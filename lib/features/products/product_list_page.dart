@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/empty_state.dart';
@@ -9,6 +8,7 @@ import '../../core/widgets/amount_text.dart';
 import '../../models/product.dart';
 import '../products/product_providers.dart';
 import 'product_form_page.dart';
+import 'product_image.dart';
 
 class ProductListPage extends ConsumerWidget {
   const ProductListPage({super.key});
@@ -139,15 +139,9 @@ class _ProductCard extends StatelessWidget {
             Expanded(
               flex: 3,
               child: product.imagePath != null
-                  ? CachedNetworkImage(
-                      imageUrl: product.imagePath!,
-                      width: double.infinity,
-                      fit: BoxFit.cover,
-                      placeholder: (_, __) => Container(
-                          color: AppColors.background,
-                          child: const Center(
-                              child: CircularProgressIndicator(strokeWidth: 2))),
-                      errorWidget: (_, __, ___) => Container(
+                  ? ProductImage(
+                      path: product.imagePath,
+                      placeholder: Container(
                           color: AppColors.background,
                           child: const Icon(Icons.restaurant, size: 32,
                               color: AppColors.textSecondary)),

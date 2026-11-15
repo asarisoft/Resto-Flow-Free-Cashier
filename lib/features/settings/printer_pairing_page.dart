@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bluetooth_serial/flutter_bluetooth_serial.dart';
+import 'package:bluetooth_serial_next/bluetooth_serial_next.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../printer/printer_service.dart';
@@ -13,7 +13,7 @@ class PrinterPairingPage extends StatefulWidget {
 
 class _PrinterPairingPageState extends State<PrinterPairingPage> {
   final PrinterService _printer = PrinterService();
-  List<BluetoothDevice> _devices = [];
+  List<BluetoothSerialDevice> _devices = [];
   bool _scanning = false;
   bool _connecting = false;
 
@@ -89,7 +89,7 @@ class _PrinterPairingPageState extends State<PrinterPairingPage> {
     );
   }
 
-  Widget _deviceCard(BluetoothDevice device) {
+  Widget _deviceCard(BluetoothSerialDevice device) {
     final textTheme = AppTypography.textTheme;
     final connected = _printer.device?.address != null &&
         _printer.device!.address == device.address;
@@ -150,7 +150,7 @@ class _PrinterPairingPageState extends State<PrinterPairingPage> {
     );
   }
 
-  Future<void> _connect(BluetoothDevice device) async {
+  Future<void> _connect(BluetoothSerialDevice device) async {
     setState(() => _connecting = true);
     try {
       await _printer.connect(device);

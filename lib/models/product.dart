@@ -24,6 +24,7 @@ class Product {
   });
 
   Product copyWith({
+    String? id,
     String? name,
     String? category,
     int? price,
@@ -31,9 +32,11 @@ class Product {
     bool? ready,
     bool? archived,
     String? imagePath,
+    DateTime? createdAt,
+    DateTime? updatedAt,
   }) =>
       Product(
-        id: id,
+        id: id ?? this.id,
         name: name ?? this.name,
         category: category ?? this.category,
         price: price ?? this.price,
@@ -41,8 +44,8 @@ class Product {
         ready: ready ?? this.ready,
         archived: archived ?? this.archived,
         imagePath: imagePath ?? this.imagePath,
-        createdAt: createdAt,
-        updatedAt: DateTime.now(),
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? DateTime.now(),
       );
 
   Product toggleReady() => copyWith(ready: !ready);

@@ -71,7 +71,7 @@ local `Users` table row, persisted across restarts via `shared_preferences`.
   by this task's own migration test below, and reused by Task 11's
   backup/restore round-trip test.
 
-- [ ] **Step 1: Write failing test for `PasswordHasher`**
+- [x] **Step 1: Write failing test for `PasswordHasher`**
 
 ```dart
 test('hash is deterministic for same password+salt', () {
@@ -87,23 +87,23 @@ test('different passwords produce different hashes', () {
 });
 ```
 
-- [ ] **Step 2: Run test, verify it fails** (class not defined)
+- [x] **Step 2: Run test, verify it fails** (class not defined)
 
 Run: `flutter test test/password_hasher_test.dart`
 Expected: FAIL — `PasswordHasher` undefined.
 
-- [ ] **Step 3: Implement `PasswordHasher`**
+- [x] **Step 3: Implement `PasswordHasher`**
 
 Use `crypto`'s `sha256` over `utf8.encode(password + salt)`, hex-encode
 the digest. `generateSalt()` returns a random 16-byte hex string (use
 `dart:math` `Random.secure()`).
 
-- [ ] **Step 4: Run test, verify it passes**
+- [x] **Step 4: Run test, verify it passes**
 
 Run: `flutter test test/password_hasher_test.dart`
 Expected: PASS (2/2).
 
-- [ ] **Step 5: Write failing test for `Users` table + migration**
+- [x] **Step 5: Write failing test for `Users` table + migration**
 
 ```dart
 test('Users table exists and seeds no rows by default (forTest)', () async {
@@ -124,12 +124,12 @@ test('can insert and query a user by username', () async {
 });
 ```
 
-- [ ] **Step 6: Run test, verify it fails**
+- [x] **Step 6: Run test, verify it fails**
 
 Run: `flutter test test/database_test.dart`
 Expected: FAIL — `db.users` / `UsersCompanion` undefined.
 
-- [ ] **Step 7: Add `Users` table, remove `Expenses` table, bump schema**
+- [x] **Step 7: Add `Users` table, remove `Expenses` table, bump schema**
 
 In `database.dart`: delete the `Expenses` class; add `Users` per the
 Interfaces block above; add `Users` to `@DriftDatabase(tables: [...])`
@@ -140,13 +140,13 @@ drop so it is a no-op if the table is already gone). Run `dart run
 build_runner build --delete-conflicting-outputs` to regenerate
 `database.g.dart`.
 
-- [ ] **Step 8: Run tests, verify they pass**
+- [x] **Step 8: Run tests, verify they pass**
 
 Run: `flutter test test/database_test.dart test/password_hasher_test.dart`
 Expected: PASS, all tests green (existing Products/Transactions tests
 still pass unchanged).
 
-- [ ] **Step 9: Write a failing test for the actual v1→v2 upgrade path
+- [x] **Step 9: Write a failing test for the actual v1→v2 upgrade path
   (Review Focus: migrating a device with existing Expenses data must
   not crash)**
 
@@ -180,17 +180,17 @@ test('upgrading from v1 (with an existing expense row) drops Expenses and adds U
 });
 ```
 
-- [ ] **Step 10: Run, verify it fails** (`AppDatabase.forFile` undefined,
+- [x] **Step 10: Run, verify it fails** (`AppDatabase.forFile` undefined,
   or the upgrade crashes before the fix).
-- [ ] **Step 11: Add `AppDatabase.forFile(File file)`** (same body shape
+- [x] **Step 11: Add `AppDatabase.forFile(File file)`** (same body shape
   as the default constructor's `_openConnection`, but
   `NativeDatabase.createInBackground(file)` against the given `file`
   instead of resolving `getApplicationDocumentsDirectory()`); confirm
   the `onUpgrade` guard from Step 7 tolerates a pre-existing `expenses`
   table with rows in it (drop-if-exists, not a bare `DROP TABLE`).
-- [ ] **Step 12: Run, verify it passes.**
+- [x] **Step 12: Run, verify it passes.**
 
-- [ ] **Step 13: Commit**
+- [x] **Step 13: Commit**
 
 ```bash
 git add lib/core/services/database.dart lib/core/services/database.g.dart \
@@ -253,7 +253,7 @@ git commit -m "feat: add Users table, drop Expenses, add password hasher"
   then adjust in Task 3 if the signature changes (Task 3's Interfaces
   block is authoritative for the final shape).
 
-- [ ] **Step 1: Write failing tests for `ProductsDao`**
+- [x] **Step 1: Write failing tests for `ProductsDao`**
 
 ```dart
 test('add then getAll returns the product', () async {
@@ -273,11 +273,11 @@ test('archive excludes product from getAll', () async {
 });
 ```
 
-- [ ] **Step 2: Run, verify fail** — `ProductsDao` undefined.
-- [ ] **Step 3: Implement `ProductsDao`** per Interfaces block.
-- [ ] **Step 4: Run, verify pass.**
+- [x] **Step 2: Run, verify fail** — `ProductsDao` undefined.
+- [x] **Step 3: Implement `ProductsDao`** per Interfaces block.
+- [x] **Step 4: Run, verify pass.**
 
-- [ ] **Step 5: Write failing tests for `SalesDao`**
+- [x] **Step 5: Write failing tests for `SalesDao`**
 
 ```dart
 test('save inserts transaction and items, getNextNumber increments', () async {
@@ -293,13 +293,13 @@ test('save inserts transaction and items, getNextNumber increments', () async {
 });
 ```
 
-- [ ] **Step 6: Run, verify fail.**
-- [ ] **Step 7: Implement `SalesDao`** — `save` wraps insert of the
+- [x] **Step 6: Run, verify fail.**
+- [x] **Step 7: Implement `SalesDao`** — `save` wraps insert of the
   `Transactions` row and each `TransactionItems` row in one
   `db.transaction(() async { ... })` block.
-- [ ] **Step 8: Run, verify pass.**
+- [x] **Step 8: Run, verify pass.**
 
-- [ ] **Step 9: Write failing tests for `ReportsDao`**
+- [x] **Step 9: Write failing tests for `ReportsDao`**
 
 ```dart
 test('sumRevenue and sumProfit sum only transactions in range', () async {
@@ -310,12 +310,12 @@ test('sumRevenue and sumProfit sum only transactions in range', () async {
 });
 ```
 
-- [ ] **Step 10: Run, verify fail.**
-- [ ] **Step 11: Implement `ReportsDao`** with SQL `SUM`/`COUNT` queries
+- [x] **Step 10: Run, verify fail.**
+- [x] **Step 11: Implement `ReportsDao`** with SQL `SUM`/`COUNT` queries
   filtered by `createdAt` range on `Transactions`.
-- [ ] **Step 12: Run, verify pass.**
+- [x] **Step 12: Run, verify pass.**
 
-- [ ] **Step 13: Write failing tests for `UsersDao`**
+- [x] **Step 13: Write failing tests for `UsersDao`**
 
 ```dart
 test('seedDefaultOwnerIfEmpty creates admin/owner once', () async {
@@ -342,14 +342,14 @@ test('verify rejects a deactivated user even with correct password', () async {
 });
 ```
 
-- [ ] **Step 14: Run, verify fail.**
-- [ ] **Step 15: Implement `UsersDao`** — `add`/`seedDefaultOwnerIfEmpty`
+- [x] **Step 14: Run, verify fail.**
+- [x] **Step 15: Implement `UsersDao`** — `add`/`seedDefaultOwnerIfEmpty`
   use `PasswordHasher.generateSalt()` + `PasswordHasher.hash()` from
   Task 1; `verify` re-hashes the supplied password with the stored salt
   and compares, then checks `active`.
-- [ ] **Step 16: Run, verify pass.**
+- [x] **Step 16: Run, verify pass.**
 
-- [ ] **Step 17: Write failing tests for `ProfileDao`**
+- [x] **Step 17: Write failing tests for `ProfileDao`**
 
 ```dart
 test('get returns null before any save', () async {
@@ -363,17 +363,17 @@ test('save then get round-trips the profile', () async {
 });
 ```
 
-- [ ] **Step 18: Run, verify fail.**
-- [ ] **Step 19: Implement `ProfileDao`** — upsert on `RestoProfiles`
+- [x] **Step 18: Run, verify fail.**
+- [x] **Step 19: Implement `ProfileDao`** — upsert on `RestoProfiles`
   row id=1 (`InsertOrReplace`).
-- [ ] **Step 20: Run, verify pass.**
+- [x] **Step 20: Run, verify pass.**
 
-- [ ] **Step 21: Run the full DAO test suite**
+- [x] **Step 21: Run the full DAO test suite**
 
 Run: `flutter test test/daos/`
 Expected: PASS, all tests green.
 
-- [ ] **Step 22: Commit**
+- [x] **Step 22: Commit**
 
 ```bash
 git add lib/core/services/daos/ test/daos/
@@ -407,7 +407,7 @@ git commit -m "feat: add DAO layer (products, sales, reports, users, profile)"
   used the old `imageUrl`/`logoUrl`/`fromJson` shape and update it to
   match.
 
-- [ ] **Step 1: Write failing test for `Role`/`AppUser`**
+- [x] **Step 1: Write failing test for `Role`/`AppUser`**
 
 ```dart
 test('Role.fromDb round-trips', () {
@@ -420,11 +420,11 @@ test('AppUser.roleEnum reflects stored role string', () {
 });
 ```
 
-- [ ] **Step 2: Run, verify fail.**
-- [ ] **Step 3: Implement `app_user.dart`** per Interfaces block.
-- [ ] **Step 4: Run, verify pass.**
+- [x] **Step 2: Run, verify fail.**
+- [x] **Step 3: Implement `app_user.dart`** per Interfaces block.
+- [x] **Step 4: Run, verify pass.**
 
-- [ ] **Step 5: Write failing test pinning the `imagePath` rename**
+- [x] **Step 5: Write failing test pinning the `imagePath` rename**
 
 ```dart
 test('Product.copyWith preserves imagePath field name', () {
@@ -434,24 +434,24 @@ test('Product.copyWith preserves imagePath field name', () {
 });
 ```
 
-- [ ] **Step 6: Run, verify fail** (field is still `imageUrl`).
-- [ ] **Step 7: Rename `imageUrl` → `imagePath` in `product.dart`**;
+- [x] **Step 6: Run, verify fail** (field is still `imageUrl`).
+- [x] **Step 7: Rename `imageUrl` → `imagePath` in `product.dart`**;
   remove `toJson`/`fromJson` (no longer needed — DAOs build `Product`
   directly from query results and pass fields to Drift `Companion`s).
   Do the same rename `logoUrl` → `logoPath` in `resto_profile.dart`, and
   drop its `toJson`/`fromJson`/`.toDate()` calls. In `transaction.dart`,
   drop `toJson`/`fromJson` (`.toDate()` calls included) — `SalesDao`
   builds `Transaction`/`TransactionItem` directly from Drift rows.
-- [ ] **Step 8: Update Task 2 DAO implementations and tests** for the
+- [x] **Step 8: Update Task 2 DAO implementations and tests** for the
   final field names (`imagePath`, `logoPath`, no `fromJson`) wherever
   Task 2 used the old names.
-- [ ] **Step 9: Delete `lib/models/expense.dart`.**
-- [ ] **Step 10: Run the full model + DAO suite**
+- [x] **Step 9: Delete `lib/models/expense.dart`.**
+- [x] **Step 10: Run the full model + DAO suite**
 
 Run: `flutter test test/models/ test/daos/ test/database_test.dart test/password_hasher_test.dart`
 Expected: PASS, all green.
 
-- [ ] **Step 11: Commit**
+- [x] **Step 11: Commit**
 
 ```bash
 git add lib/models/ test/models/ lib/core/services/daos/
@@ -470,6 +470,7 @@ git commit -m "refactor: drop Firestore-shaped models, add AppUser/Role"
 - Modify: `lib/core/router/app_router.dart`
 - Test: `test/session_service_test.dart`
 - Test: `test/features/auth/auth_controller_test.dart`
+- Test: `test/features/auth/login_page_test.dart`
 
 **Interfaces:**
 - Consumes: `UsersDao` (Task 2), `AppUser`/`Role` (Task 3).
@@ -489,7 +490,7 @@ git commit -m "refactor: drop Firestore-shaped models, add AppUser/Role"
   - `logout()` — calls `SessionService.clear()` and invalidates
     `currentUserProvider`.
 
-- [ ] **Step 1: Write failing test for `SessionService`**
+- [x] **Step 1: Write failing test for `SessionService`**
 
 ```dart
 test('save then read returns the saved id; clear removes it', () async {
@@ -502,11 +503,11 @@ test('save then read returns the saved id; clear removes it', () async {
 });
 ```
 
-- [ ] **Step 2: Run, verify fail.**
-- [ ] **Step 3: Implement `SessionService`.**
-- [ ] **Step 4: Run, verify pass.**
+- [x] **Step 2: Run, verify fail.**
+- [x] **Step 3: Implement `SessionService`.**
+- [x] **Step 4: Run, verify pass.**
 
-- [ ] **Step 5: Write failing tests for the auth controller**
+- [x] **Step 5: Write failing tests for the auth controller**
 
 ```dart
 test('currentUserProvider is null with no session', () async {
@@ -521,12 +522,12 @@ test('login with correct password sets currentUserProvider', () async {
 test('login with deactivated user fails', () async { /* per Review Focus */ });
 ```
 
-- [ ] **Step 6: Run, verify fail.**
-- [ ] **Step 7: Delete `auth_service.dart`. Rewrite `auth_controller.dart`**
+- [x] **Step 6: Run, verify fail.**
+- [x] **Step 7: Delete `auth_service.dart`. Rewrite `auth_controller.dart`**
   per the Interfaces block — no `firebase_auth`/`google_sign_in` imports.
-- [ ] **Step 8: Run, verify pass.**
+- [x] **Step 8: Run, verify pass.**
 
-- [ ] **Step 9: Rewrite `login_page.dart`** — on load (or before listing users), ensure `UsersDao.seedDefaultOwnerIfEmpty()` has run so a fresh install always has `admin` / `P@ssw0rd123`. Replace the single "Masuk
+- [x] **Step 9: Rewrite `login_page.dart`** — on load (or before listing users), ensure `UsersDao.seedDefaultOwnerIfEmpty()` has run so a fresh install always has `admin` / `P@ssw0rd123`. Replace the single "Masuk
   dengan Google" button with: a dropdown/list populated from
   `UsersDao.getAll()` (active users only) to pick a username, a password
   `TextField` (obscured), and a submit button calling
@@ -534,17 +535,17 @@ test('login with deactivated user fails', () async { /* per Review Focus */ });
   SnackBar "Username atau password salah" (Review Focus: wrong password
   must show an error, not crash or silently fail).
 
-- [ ] **Step 10: Update `app_router.dart`** — redirect reads
+- [x] **Step 10: Update `app_router.dart`** — redirect reads
   `currentUserProvider` instead of `authStateProvider`; unauthenticated →
   `/login`, authenticated at `/login` → `/home`. Logic otherwise
   unchanged.
 
-- [ ] **Step 11: Run the full auth suite**
+- [x] **Step 11: Run the full auth suite**
 
 Run: `flutter test test/session_service_test.dart test/features/auth/`
 Expected: PASS, all green.
 
-- [ ] **Step 12: Commit**
+- [x] **Step 12: Commit**
 
 ```bash
 git add lib/core/services/session_service.dart lib/features/auth/ \
@@ -563,7 +564,8 @@ git commit -m "feat: local password login replacing Firebase auth"
 - Modify: `lib/features/products/product_providers.dart`
 - Modify: `lib/features/products/product_form_page.dart`
 - Modify: `lib/features/products/product_image_service.dart`
-- Test: `test/features/products/product_image_service_test.dart`
+- Test: `test/features/products/product_image_service_test.dart`,
+  `test/features/products/product_repository_test.dart`
 
 **Interfaces:**
 - Consumes: `ProductsDao` (Task 2).
@@ -576,7 +578,7 @@ git commit -m "feat: local password login replacing Firebase auth"
   `<appDocuments>/images/products/<productId>.jpg` via `path_provider`);
   `ProductImageService.deleteLocal(String productId) -> Future<void>`.
 
-- [ ] **Step 1: Write failing test for `ProductImageService.saveLocal`**
+- [x] **Step 1: Write failing test for `ProductImageService.saveLocal`**
 
 ```dart
 test('saveLocal copies the file into the products dir and returns its path', () async {
@@ -588,34 +590,34 @@ test('saveLocal copies the file into the products dir and returns its path', () 
 });
 ```
 
-- [ ] **Step 2: Run, verify fail.**
-- [ ] **Step 3: Rewrite `product_image_service.dart`** — drop
+- [x] **Step 2: Run, verify fail.**
+- [x] **Step 3: Rewrite `product_image_service.dart`** — drop
   `firebase_storage` entirely; `saveLocal`/`deleteLocal` use
   `path_provider`'s `getApplicationDocumentsDirectory()` +
   `dart:io.File.copy`.
-- [ ] **Step 4: Run, verify pass.**
+- [x] **Step 4: Run, verify pass.**
 
-- [ ] **Step 5: Rewrite `product_repository.dart`** to wrap
+- [x] **Step 5: Rewrite `product_repository.dart`** to wrap
   `ProductsDao` (constructor takes `ProductsDao` instead of
   `(FirebaseFirestore, uid)`).
-- [ ] **Step 6: Rewrite `product_providers.dart`** —
+- [x] **Step 6: Rewrite `product_providers.dart`** —
   `productRepositoryProvider` builds `ProductRepository(ref.watch(productsDaoProvider))`
   (add a `productsDaoProvider = Provider((ref) =>
   ProductsDao(ref.watch(databaseProvider)))` here or in a shared DAO
   provider file — your call, keep it next to the other DAO providers);
   `productListProvider` becomes a `StreamProvider` over
   `repo.watchAll()` instead of mapping Firestore snapshots.
-- [ ] **Step 7: Update `product_form_page.dart`** — remove the direct
+- [x] **Step 7: Update `product_form_page.dart`** — remove the direct
   `FirebaseFirestore.instance.doc(...).update(...)` call; after
   `ProductImageService.saveLocal`, set `imagePath` on the `Product`
   passed to `repo.save`/`repo.add` instead.
 
-- [ ] **Step 8: Run the products suite**
+- [x] **Step 8: Run the products suite**
 
 Run: `flutter test test/features/products/`
 Expected: PASS, all green.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add lib/features/products/ test/features/products/
@@ -645,7 +647,7 @@ git commit -m "feat: rewire products feature to Drift + local photo storage"
   SalesDao(ref.watch(databaseProvider)))`) — Task 7 imports it from
   this new file.
 
-- [ ] **Step 1: Write failing test for `TransactionRepository`**
+- [x] **Step 1: Write failing test for `TransactionRepository`**
 
 ```dart
 test('getNextNumber then save round-trips through SalesDao', () async {
@@ -656,24 +658,24 @@ test('getNextNumber then save round-trips through SalesDao', () async {
 });
 ```
 
-- [ ] **Step 2: Run, verify fail.**
-- [ ] **Step 3: Rewrite `transaction_repository.dart`** per the
+- [x] **Step 2: Run, verify fail.**
+- [x] **Step 3: Rewrite `transaction_repository.dart`** per the
   Interfaces block (constructor takes `SalesDao`).
-- [ ] **Step 4: Run, verify pass.**
+- [x] **Step 4: Run, verify pass.**
 
-- [ ] **Step 5: Create `pos_providers.dart`** with `salesDaoProvider` and
+- [x] **Step 5: Create `pos_providers.dart`** with `salesDaoProvider` and
   `transactionRepositoryProvider` per the Interfaces block above.
   Update `pos_page.dart`'s `_save()` to import
   `transactionRepositoryProvider` from this new file instead of
   `report_providers.dart` — no other behavior change (it already calls
   `txnRepo.getNextNumber()` then `txnRepo.save(txn)`).
 
-- [ ] **Step 6: Run the POS suite**
+- [x] **Step 6: Run the POS suite**
 
 Run: `flutter test test/features/pos/`
 Expected: PASS, all green.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add lib/features/pos/
@@ -699,7 +701,7 @@ git commit -m "feat: rewire POS feature to Drift SalesDao"
   `transactionRepositoryProvider` from `pos_providers.dart` instead of
   defining it locally.
 
-- [ ] **Step 1: Write failing test for `ReportSummary` shape**
+- [x] **Step 1: Write failing test for `ReportSummary` shape**
 
 ```dart
 test('ReportSummary has no totalExpense field', () {
@@ -710,28 +712,28 @@ test('ReportSummary has no totalExpense field', () {
 });
 ```
 
-- [ ] **Step 2: Run, verify fail** (constructor still requires
+- [x] **Step 2: Run, verify fail** (constructor still requires
   `totalExpense`).
-- [ ] **Step 3: Remove `totalExpense` from `report_repository.dart`'s
+- [x] **Step 3: Remove `totalExpense` from `report_repository.dart`'s
   `ReportSummary`.**
-- [ ] **Step 4: Run, verify pass.**
+- [x] **Step 4: Run, verify pass.**
 
-- [ ] **Step 5: Rewrite `reportSummaryProvider` in
+- [x] **Step 5: Rewrite `reportSummaryProvider` in
   `report_providers.dart`** — remove the `expense_providers.dart`
   import and the `expenseRepo`/`expense` lines; compute `totalRevenue`
   via `ReportsDao.sumRevenue`, `totalProfit` via `ReportsDao.sumProfit`,
   `transactionCount` via `ReportsDao.countTransactions`.
   `recentTransactionsProvider` reads `SalesDao.watchRecent()`.
 
-- [ ] **Step 6: Update `report_page.dart`** — remove the "Pengeluaran"
+- [x] **Step 6: Update `report_page.dart`** — remove the "Pengeluaran"
   summary card (the one rendering `summary.totalExpense`).
 
-- [ ] **Step 7: Run the reports suite**
+- [x] **Step 7: Run the reports suite**
 
 Run: `flutter test test/features/reports/`
 Expected: PASS, all green (no reference to `totalExpense` remains).
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add lib/features/reports/
@@ -756,7 +758,7 @@ git commit -m "feat: rewire reports to ReportsDao, drop expense totals"
   `ProfileDao.get()` directly — update its one other caller
   (`home_shell.dart`) to import it from its new location.
 
-- [ ] **Step 1: Write failing test for `SettingsRepository`**
+- [x] **Step 1: Write failing test for `SettingsRepository`**
 
 ```dart
 test('updateProfile persists via ProfileDao', () async {
@@ -767,28 +769,28 @@ test('updateProfile persists via ProfileDao', () async {
 });
 ```
 
-- [ ] **Step 2: Run, verify fail.**
-- [ ] **Step 3: Rewrite `settings_repository.dart`** (constructor takes
+- [x] **Step 2: Run, verify fail.**
+- [x] **Step 3: Rewrite `settings_repository.dart`** (constructor takes
   `ProfileDao`).
-- [ ] **Step 4: Run, verify pass.**
+- [x] **Step 4: Run, verify pass.**
 
-- [ ] **Step 5: Move `profileProvider` out of `auth_controller.dart`**
+- [x] **Step 5: Move `profileProvider` out of `auth_controller.dart`**
   into `settings_providers.dart` as described in Interfaces; delete the
   old `_fetchProfile` Firestore helper. Update the import in
   `home_shell.dart` (and anywhere else importing `profileProvider` from
   `auth_controller.dart`) to the new location.
 
-- [ ] **Step 6: Rewrite `onboarding_page.dart`'s `_save()`** — remove
+- [x] **Step 6: Rewrite `onboarding_page.dart`'s `_save()`** — remove
   the direct `FirebaseFirestore.instance.doc(...).set(...)` call; build
   a `RestoProfile` and call `ref.read(settingsRepositoryProvider).updateProfile(...)`,
   then `ref.invalidate(profileProvider)`.
 
-- [ ] **Step 7: Run the settings + onboarding suites**
+- [x] **Step 7: Run the settings + onboarding suites**
 
 Run: `flutter test test/features/settings/ test/features/onboarding/`
 Expected: PASS, all green.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add lib/features/settings/ lib/features/onboarding/
@@ -809,30 +811,30 @@ git commit -m "feat: rewire settings/onboarding to ProfileDao"
   ProductListPage, 2: ReportPage, 3: SettingsPage` (Expenses removed;
   Task 10 appends a Users tab at index 4, Owner-only).
 
-- [ ] **Step 1: Delete the expenses directory**
+- [x] **Step 1: Delete the expenses directory**
 
 ```bash
 git rm -r lib/features/expenses
 ```
 
-- [ ] **Step 2: Remove the Expenses tab from `home_shell.dart`** —
+- [x] **Step 2: Remove the Expenses tab from `home_shell.dart`** —
   delete the `ExpenseListPage` import, the `_buildSidebarItem(3, ...,
   'Expenses')` call, its `NavigationDestination`, and renumber the
   remaining sidebar/tab indices to the sequence in the Interfaces block.
 
-- [ ] **Step 3: Verify no remaining reference to expenses**
+- [x] **Step 3: Verify no remaining reference to expenses**
 
 Run: `grep -ril "expense" lib/`
 Expected: no output (empty — Task 7 already removed the reports-side
 references).
 
-- [ ] **Step 4: Run `flutter analyze`**
+- [x] **Step 4: Run `flutter analyze`**
 
 Run: `flutter analyze`
 Expected: no errors referencing `expense_providers`, `expense_repository`,
 or `ExpenseListPage`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add lib/features/home/home_shell.dart
@@ -862,7 +864,7 @@ git commit -m "feat: remove expenses feature, reindex home shell tabs"
   `userListProvider` — `FutureProvider<List<AppUser>>` via
   `UsersDao.getAll()`.
 
-- [ ] **Step 1: Write failing test for the role guard (Review Focus item)**
+- [x] **Step 1: Write failing test for the role guard (Review Focus item)**
 
 ```dart
 test('canManageUsersProvider is false for a kasir session', () async {
@@ -882,33 +884,33 @@ test('canManageUsersProvider is true for an owner session', () async {
 });
 ```
 
-- [ ] **Step 2: Run, verify fail.**
-- [ ] **Step 3: Implement `users_providers.dart`** per the Interfaces
+- [x] **Step 2: Run, verify fail.**
+- [x] **Step 3: Implement `users_providers.dart`** per the Interfaces
   block.
-- [ ] **Step 4: Run, verify pass.**
+- [x] **Step 4: Run, verify pass.**
 
-- [ ] **Step 5: Implement `user_form_dialog.dart`** — fields: username,
+- [x] **Step 5: Implement `user_form_dialog.dart`** — fields: username,
   password, role (dropdown: Owner/Kasir); on submit calls
   `UsersDao.add(...)`. Reuse `PrimaryButton`/`AppCard` widgets
   (AGENTS.md: reusable components over duplicates).
 
-- [ ] **Step 6: Implement `user_list_page.dart`** — lists
+- [x] **Step 6: Implement `user_list_page.dart`** — lists
   `userListProvider`, shows active toggle (calls `UsersDao.setActive`),
   "Tambah User" button opens `user_form_dialog.dart`.
 
-- [ ] **Step 7: Add the Users tab to `home_shell.dart`**, index 4,
+- [x] **Step 7: Add the Users tab to `home_shell.dart`**, index 4,
   visible only when `canManageUsersProvider` is true (the sidebar item
   AND the `NavigationDestination` are conditionally built — not just
   styled as disabled); also gate the existing Reports and Settings tabs
   the same way for a `kasir` session, per Global Constraints' access
   table.
 
-- [ ] **Step 8: Run the users + role-guard suite**
+- [x] **Step 8: Run the users + role-guard suite**
 
 Run: `flutter test test/features/users/`
 Expected: PASS, all green.
 
-- [ ] **Step 9: Commit**
+- [x] **Step 9: Commit**
 
 ```bash
 git add lib/features/users/ lib/features/home/home_shell.dart test/features/users/
@@ -937,7 +939,7 @@ git commit -m "feat: add user management (owner-only) and role guard"
   the live DB on failure); on success closes the current `AppDatabase`,
   replaces the sqlite file and `images/` directory atomically, and invalidates/re-opens `AppDatabase` + redirects to login.
 
-- [ ] **Step 1: Write failing test for export/restore round-trip**
+- [x] **Step 1: Write failing test for export/restore round-trip**
 
 ```dart
 test('exportZip then restoreFromZip preserves data', () async {
@@ -955,13 +957,13 @@ test('restoreFromZip rejects a corrupt zip without touching the live db', () asy
 });
 ```
 
-- [ ] **Step 2: Run, verify fail.**
-- [ ] **Step 3: Implement `BackupService`** per the Interfaces block,
+- [x] **Step 2: Run, verify fail.**
+- [x] **Step 3: Implement `BackupService`** per the Interfaces block,
   using `archive`'s `ZipEncoder`/`ZipDecoder` and `path_provider` for
   the DB/photos directory.
-- [ ] **Step 4: Run, verify pass.**
+- [x] **Step 4: Run, verify pass.**
 
-- [ ] **Step 5: Wire into `settings_page.dart`** (Owner-only, gated by
+- [x] **Step 5: Wire into `settings_page.dart`** (Owner-only, gated by
   `canSeeBackupProvider` from Task 10) — a "Backup" button calling
   `exportZip()` then `Share.shareXFiles([...])` from `share_plus`; a
   "Restore" button calling `file_picker`'s `FilePicker.platform.pickFiles`
@@ -969,12 +971,12 @@ test('restoreFromZip rejects a corrupt zip without touching the live db', () asy
   first (restore is destructive) and a SnackBar on
   `BackupFormatException`.
 
-- [ ] **Step 6: Run the backup suite**
+- [x] **Step 6: Run the backup suite**
 
 Run: `flutter test test/features/backup/`
 Expected: PASS, all green.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add lib/features/backup/ lib/features/settings/settings_page.dart test/features/backup/
@@ -997,42 +999,42 @@ git commit -m "feat: add local backup/restore (zip)"
   already moved off Firestore in Tasks 5-8, and `auth_service.dart` was
   deleted in Task 4).
 
-- [ ] **Step 1: Delete `firestore_provider.dart`**
+- [x] **Step 1: Delete `firestore_provider.dart`**
 
 ```bash
 git rm lib/core/services/firestore_provider.dart
 ```
 
-- [ ] **Step 2: Remove `Firebase.initializeApp()` from `main.dart`** —
+- [x] **Step 2: Remove `Firebase.initializeApp()` from `main.dart`** —
   drop the `firebase_core` import and the `await Firebase.initializeApp();`
   line.
 
-- [ ] **Step 3: Remove Firebase packages from `pubspec.yaml`** — delete
+- [x] **Step 3: Remove Firebase packages from `pubspec.yaml`** — delete
   the `firebase_core`, `firebase_auth`, `google_sign_in`,
   `cloud_firestore`, `firebase_storage` lines from `dependencies:`.
 
-- [ ] **Step 4: Remove the google-services Gradle plugin** — delete the
+- [x] **Step 4: Remove the google-services Gradle plugin** — delete the
   `id("com.google.gms.google-services") version "4.4.2" apply false`
   line from `android/build.gradle.kts` and the
   `id("com.google.gms.google-services")` line from
   `android/app/build.gradle.kts`.
 
-- [ ] **Step 5: Run `flutter pub get`**
+- [x] **Step 5: Run `flutter pub get`**
 
 Run: `flutter pub get`
 Expected: resolves with no Firebase packages listed.
 
-- [ ] **Step 6: Verify no Firebase imports remain**
+- [x] **Step 6: Verify no Firebase imports remain**
 
 Run: `grep -rln "cloud_firestore\|firebase_auth\|firebase_core\|firebase_storage\|google_sign_in" lib/`
 Expected: no output (empty).
 
-- [ ] **Step 7: Run the full test suite and analyzer**
+- [x] **Step 7: Run the full test suite and analyzer**
 
 Run: `flutter analyze && flutter test`
 Expected: `flutter analyze` reports no issues; `flutter test` all green.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add -A
