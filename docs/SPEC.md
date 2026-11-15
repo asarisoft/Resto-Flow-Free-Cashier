@@ -304,6 +304,11 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 - Layout menyesuaikan `paperWidth`:
   - 58mm → 32 char/line
   - 80mm → 48 char/line
+- Teks struk dibangun oleh `ReceiptBuilder.buildText` (satu sumber untuk printer & preview).
+- Alamat, nama item, dan footer boleh multi-baris: dipecah per baris (`\n`), dibungkus per kata
+  agar tiap baris ≤ lebar kertas, footer/alamat di-center per baris.
+- Form profil (Pengaturan Awal & Edit Profil) menampilkan **Preview Nota** langsung (`ReceiptPreview`),
+  ikut berubah saat teks/ukuran kertas diubah.
 
 Contoh struk:
 ```

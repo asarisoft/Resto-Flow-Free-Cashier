@@ -69,6 +69,12 @@ Warna tambahan:
 | `ReadyChip`     | Chip hijau "Ready" / merah "Habis"                  |
 | `EmptyState`    | Ikon + judul + subtitle untuk list kosong            |
 | `AppImage`      | Wrapper `Image.file` + placeholder ikon              |
+| `ProductCard`   | Kartu produk SATU bentuk untuk POS & halaman Produk: foto penuh lebar (cover), nama 1 baris, harga + chip. Grid: `productGridDelegate` (maks 220 dp, rasio 0.8) |
+| `AppFormDialog` | Dialog form standar (lebar 560 dp, field berjarak 16, [Batal][Simpan] sebaris di bawah). SEMUA form tambah/ubah (produk, pengeluaran, pengguna, profil) memakai ini — tidak ada form halaman penuh |
+| `QtyStepper`    | Tombol − qty +, target sentuh ≥ 48 dp               |
+| `TapArea`       | Ripple + Semantics tombol (pengganti `GestureDetector`) |
+| `ChoiceSegment` | Pilihan 1-dari-N (58/80 mm, Hari Ini/Bulan Ini)      |
+| `ReceiptPreview`| Preview nota monospace (teks sama dengan yang dicetak) di form profil |
 
 ## Ikon
 

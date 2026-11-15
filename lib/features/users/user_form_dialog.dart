@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/services/daos/users_dao.dart';
-import '../../core/theme/app_colors.dart';
-import '../../core/services/database_provider.dart';
-import '../../core/widgets/primary_button.dart';
 import '../users/users_providers.dart';
+import '../../core/widgets/app_form_dialog.dart';
 
 class UserFormDialog extends ConsumerStatefulWidget {
   const UserFormDialog({super.key});
@@ -22,34 +19,29 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Tambah User'),
-      content: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          TextField(controller: _username, decoration: const InputDecoration(labelText: 'Username')),
-          TextField(controller: _password, decoration: const InputDecoration(labelText: 'Password (min. 8 karakter)'), obscureText: true),
-          if (_error != null)
-            Padding(
-              padding: const EdgeInsets.only(top: 8),
-              child: Text(_error!, style: const TextStyle(color: AppColors.error)),
-            ),
-          DropdownButtonFormField<String>(
-            initialValue: _role,
-            decoration: const InputDecoration(labelText: 'Role'),
-            items: const [
-              DropdownMenuItem(value: 'owner', child: Text('Owner')),
-              DropdownMenuItem(value: 'kasir', child: Text('Kasir')),
-            ],
-            onChanged: (v) => setState(() => _role = v ?? 'kasir'),
-          ),
-        ],
-      ),
-      actions: [
-        TextButton(onPressed: () => Navigator.pop(context), child: const Text('Batal')),
-        PrimaryButton(
-          label: 'Simpan',
-          onPressed: _saving ? null : _save,
+    return AppFormDialog(
+      title: 'Tambah Pengguna',
+      saving: _saving,
+      error: _error,
+      onSubmit: _save,
+      fields: [
+        TextField(
+          controller: _username,
+          decoration: const InputDecoration(labelText: 'Username'),
+        ),
+        TextField(
+          controller: _password,
+          decoration: const InputDecoration(labelText: 'Password (min. 8 karakter)'),
+          obscureText: true,
+        ),
+        DropdownButtonFormField<String>(
+          initialValue: _role,
+          decoration: const InputDecoration(labelText: 'Role'),
+          items: const [
+            DropdownMenuItem(value: 'owner', child: Text('Owner')),
+            DropdownMenuItem(value: 'kasir', child: Text('Kasir')),
+          ],
+          onChanged: (v) => setState(() => _role = v ?? 'kasir'),
         ),
       ],
     );

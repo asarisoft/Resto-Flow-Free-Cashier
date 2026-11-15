@@ -11,15 +11,16 @@ import 'product_image.dart';
 import 'product_image_service.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/tap_area.dart';
+import '../../core/widgets/app_form_dialog.dart';
 
-class ProductFormPage extends ConsumerStatefulWidget {
+class ProductFormDialog extends ConsumerStatefulWidget {
   final Product? product;
-  const ProductFormPage({super.key, this.product});
+  const ProductFormDialog({super.key, this.product});
   @override
-  ConsumerState<ProductFormPage> createState() => _ProductFormPageState();
+  ConsumerState<ProductFormDialog> createState() => _ProductFormDialogState();
 }
 
-class _ProductFormPageState extends ConsumerState<ProductFormPage> {
+class _ProductFormDialogState extends ConsumerState<ProductFormDialog> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _categoryCtrl = TextEditingController();
@@ -57,19 +58,23 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
   @override
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
-    return Scaffold(
-      appBar: AppBar(title: Text(_editing ? 'Edit Produk' : 'Tambah Produk')),
-      body: Form(
-        key: _formKey,
-        child: ListView(
-          padding: const EdgeInsets.all(24),
-          children: [
-            TapArea(
+    return AppFormDialog(
+      title: _editing ? 'Edit Produk' : 'Tambah Produk',
+      formKey: _formKey,
+      saving: _saving,
+      submitLabel: _editing ? 'Simpan Perubahan' : 'Tambah',
+      onSubmit: _save,
+      fields: [
+            Center(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 320),
+                child: AspectRatio(
+                  aspectRatio: 4 / 3,
+                  child: TapArea(
               label: 'Pilih foto produk',
               borderRadius: BorderRadius.circular(12),
               onTap: _saving ? null : _pickImage,
               child: Container(
-                height: 160,
                 decoration: BoxDecoration(
                   color: AppColors.background,
                   borderRadius: BorderRadius.circular(12),
@@ -77,7 +82,7 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
                 ),
                 clipBehavior: Clip.antiAlias,
                 child: _pickedFile != null
-                    ? Image.file(File(_pickedFile!.path), fit: BoxFit.cover)
+                    ? Image.file(File(_pickedFile!.path), fit: BoxFit.cover, width: double.infinity, height: double.infinity)
                     : (_imagePath != null
                         ? ProductImage(
                             path: _imagePath,
@@ -96,34 +101,44 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
                           )),
               ),
             ),
-            const SizedBox(height: 20),
-            TextFormField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Nama Produk *'),
-              validator: (v) => v == null || v.trim().isEmpty ? 'Wajib diisi' : null,
-              textCapitalization: TextCapitalization.words),
-            const SizedBox(height: 16),
-            TextFormField(controller: _categoryCtrl, decoration: const InputDecoration(labelText: 'Kategori', hintText: 'Makanan, Minuman, dll'),
-              textCapitalization: TextCapitalization.words),
-            const SizedBox(height: 16),
-            TextFormField(controller: _priceCtrl, decoration: const InputDecoration(labelText: 'Harga Jual (Rp) *', prefixText: 'Rp '),
-              keyboardType: TextInputType.number,
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Wajib diisi';
-                if (int.tryParse(v.trim()) == null) return 'Angka tidak valid';
-                return null;
-              }),
-            const SizedBox(height: 16),
-            TextFormField(controller: _hppCtrl, decoration: const InputDecoration(labelText: 'HPP (Rp)', hintText: '0', prefixText: 'Rp '),
-              keyboardType: TextInputType.number),
-            const SizedBox(height: 24),
-            SwitchListTile(title: Text('Status Ready', style: textTheme.bodyLarge),
-              subtitle: Text(_ready ? 'Produk siap dijual' : 'Produk tidak tersedia',
-                  style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
-              value: _ready, onChanged: (v) => setState(() => _ready = v)),
-            const SizedBox(height: 32),
-            PrimaryButton(label: _editing ? 'Simpan Perubahan' : 'Tambah Produk', loading: _saving, onPressed: _save),
-          ],
+                ),
+              ),
+            ),
+        TextFormField(
+          controller: _nameCtrl,
+          decoration: const InputDecoration(labelText: 'Nama Produk *'),
+          validator: (v) => v == null || v.trim().isEmpty ? 'Wajib diisi' : null,
+          textCapitalization: TextCapitalization.words,
         ),
-      ),
+        TextFormField(
+          controller: _categoryCtrl,
+          decoration: const InputDecoration(labelText: 'Kategori', hintText: 'Makanan, Minuman, dll'),
+          textCapitalization: TextCapitalization.words,
+        ),
+        TextFormField(
+          controller: _priceCtrl,
+          decoration: const InputDecoration(labelText: 'Harga Jual (Rp) *', prefixText: 'Rp '),
+          keyboardType: TextInputType.number,
+          validator: (v) {
+            if (v == null || v.trim().isEmpty) return 'Wajib diisi';
+            if (int.tryParse(v.trim()) == null) return 'Angka tidak valid';
+            return null;
+          },
+        ),
+        TextFormField(
+          controller: _hppCtrl,
+          decoration: const InputDecoration(labelText: 'HPP (Rp)', hintText: '0', prefixText: 'Rp '),
+          keyboardType: TextInputType.number,
+        ),
+        SwitchListTile(
+          contentPadding: EdgeInsets.zero,
+          title: Text('Status Ready', style: textTheme.bodyLarge),
+          subtitle: Text(_ready ? 'Produk siap dijual' : 'Produk tidak tersedia',
+              style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+          value: _ready,
+          onChanged: (v) => setState(() => _ready = v),
+        ),
+      ],
     );
   }
 

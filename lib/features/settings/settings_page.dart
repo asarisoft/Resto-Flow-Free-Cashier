@@ -16,7 +16,8 @@ import 'settings_providers.dart';
 
 import 'printer_pairing_page.dart';
 import '../../core/theme/app_icons.dart';
-import '../../core/widgets/choice_segment.dart';
+import '../../core/widgets/app_form_dialog.dart';
+import 'profile_fields.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -297,6 +298,7 @@ class _EditProfileDialogState
   late final TextEditingController _addrCtrl;
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _footerCtrl;
+  final _formKey = GlobalKey<FormState>();
   int _paperWidth = 58;
   bool _saving = false;
 
@@ -325,75 +327,26 @@ class _EditProfileDialogState
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Edit Profil'),
-      content: SingleChildScrollView(
-        child: SizedBox(
-          width: 400,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-            TextField(
-              controller: _nameCtrl,
-              decoration: const InputDecoration(labelText: 'Nama Resto'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _addrCtrl,
-              decoration: const InputDecoration(labelText: 'Alamat'),
-              maxLines: 2,
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _phoneCtrl,
-              decoration:
-                  const InputDecoration(labelText: 'No. Telepon'),
-            ),
-            const SizedBox(height: 12),
-            TextField(
-              controller: _footerCtrl,
-              decoration: const InputDecoration(labelText: 'Footer'),
-            ),
-            const SizedBox(height: 16),
-            Row(
-              children: [
-                Text('Ukuran Kertas:',
-                    style: AppTypography.textTheme.bodyLarge),
-                const SizedBox(width: 12),
-                  Expanded(
-                    child: ChoiceSegment<int>(
-                      value: _paperWidth,
-                      options: const [(58, '58 mm'), (80, '80 mm')],
-                      onChanged: (v) => setState(() => _paperWidth = v),
-                    ),
-                  ),
-              ],
-            ),
-          ],
-        ),
-      ),
-    ),
-    actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Batal'),
-        ),
-        FilledButton(
-          onPressed: _saving ? null : _save,
-          child: _saving
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Simpan'),
+    return AppFormDialog(
+      title: 'Edit Profil',
+      formKey: _formKey,
+      saving: _saving,
+      onSubmit: _save,
+      fields: [
+        ProfileFields(
+          name: _nameCtrl,
+          address: _addrCtrl,
+          phone: _phoneCtrl,
+          footer: _footerCtrl,
+          paperWidth: _paperWidth,
+          onPaperWidth: (v) => setState(() => _paperWidth = v),
         ),
       ],
     );
   }
 
   Future<void> _save() async {
-    if (_nameCtrl.text.trim().isEmpty) return;
+    if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
     try {
       final repo = ref.read(settingsRepositoryProvider);

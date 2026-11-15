@@ -6,7 +6,7 @@ import '../../core/widgets/primary_button.dart';
 import '../../models/resto_profile.dart';
 import '../settings/settings_providers.dart';
 import '../../core/theme/app_icons.dart';
-import '../../core/widgets/choice_segment.dart';
+import '../settings/profile_fields.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -101,40 +101,13 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     style: textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
                   ),
                   const SizedBox(height: 32),
-                  TextFormField(
-                    controller: _nameCtrl,
-                    decoration: const InputDecoration(labelText: 'Nama Resto *'),
-                    validator: (v) =>
-                        v == null || v.trim().isEmpty ? 'Wajib diisi' : null,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _addressCtrl,
-                    decoration: const InputDecoration(labelText: 'Alamat'),
-                    maxLines: 2,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _phoneCtrl,
-                    decoration: const InputDecoration(labelText: 'No. Telepon'),
-                    keyboardType: TextInputType.phone,
-                  ),
-                  const SizedBox(height: 16),
-                  TextFormField(
-                    controller: _footerCtrl,
-                    decoration: const InputDecoration(
-                      labelText: 'Pesan Footer Struk',
-                      hintText: 'Misal: Terima kasih telah berkunjung',
-                    ),
-                  ),
-                  const SizedBox(height: 32),
-                  Text('Ukuran Kertas Printer (Thermal)',
-                      style: textTheme.titleMedium),
-                  const SizedBox(height: 16),
-                  ChoiceSegment<int>(
-                    value: _paperWidth,
-                    options: const [(58, '58 mm'), (80, '80 mm')],
-                    onChanged: (v) => setState(() => _paperWidth = v),
+                  ProfileFields(
+                    name: _nameCtrl,
+                    address: _addressCtrl,
+                    phone: _phoneCtrl,
+                    footer: _footerCtrl,
+                    paperWidth: _paperWidth,
+                    onPaperWidth: (v) => setState(() => _paperWidth = v),
                   ),
                   const SizedBox(height: 48),
                   PrimaryButton(

@@ -1,6 +1,7 @@
 import 'package:intl/intl.dart';
 import '../models/transaction.dart' as models;
 import '../models/resto_profile.dart';
+import '../models/transaction_item.dart';
 
 class ReceiptBuilder {
   static final _fmt = NumberFormat.currency(
@@ -9,14 +10,68 @@ class ReceiptBuilder {
     decimalDigits: 0,
   );
 
+  /// Bytes untuk printer (isi sama persis dengan [buildText]).
   static List<int> fromTransaction(
-      models.Transaction txn, RestoProfile profile) {
+          models.Transaction txn, RestoProfile profile) =>
+      buildText(txn, profile).codeUnits;
+
+  /// Contoh transaksi untuk preview nota.
+  static models.Transaction sampleTransaction() => models.Transaction(
+        number: 1,
+        items: const [
+          TransactionItem(productId: 'a', name: 'Nasi Goreng Spesial', price: 25000, hpp: 9000, qty: 2),
+          TransactionItem(productId: 'b', name: 'Es Teh Manis', price: 5000, hpp: 1500, qty: 1),
+        ],
+        subtotal: 55000,
+        total: 55000,
+        paid: 100000,
+        change: 45000,
+        profit: 40500,
+        createdAt: DateTime(2026, 1, 1, 12, 0),
+      );
+
+  /// Pecah [text] per baris (\n) lalu bungkus per kata agar tiap baris <= [w].
+  static List<String> wrap(String text, int w) {
+    final out = <String>[];
+    for (final para in text.split('\n')) {
+      final words = para.trim().split(RegExp(r'\s+')).where((x) => x.isNotEmpty);
+      if (words.isEmpty) {
+        out.add('');
+        continue;
+      }
+      var cur = '';
+      for (var word in words) {
+        while (word.length > w) {
+          if (cur.isNotEmpty) {
+            out.add(cur);
+            cur = '';
+          }
+          out.add(word.substring(0, w));
+          word = word.substring(w);
+        }
+        if (cur.isEmpty) {
+          cur = word;
+        } else if (cur.length + 1 + word.length <= w) {
+          cur = '$cur $word';
+        } else {
+          out.add(cur);
+          cur = word;
+        }
+      }
+      if (cur.isNotEmpty) out.add(cur);
+    }
+    return out;
+  }
+
+  static String buildText(models.Transaction txn, RestoProfile profile) {
     final buf = StringBuffer();
     final w = profile.paperWidth == 80 ? 48 : 32;
 
-    void center(String s) {
-      final pad = ((w - s.length) ~/ 2).clamp(0, w);
-      buf.writeln(' ' * pad + s);
+    void center(String text) {
+      for (final s in wrap(text, w)) {
+        final pad = ((w - s.length) ~/ 2).clamp(0, w);
+        buf.writeln(s.isEmpty ? '' : ' ' * pad + s);
+      }
     }
 
     void divider() => buf.writeln('─' * w);
@@ -42,7 +97,9 @@ class ReceiptBuilder {
     divider();
 
     for (final item in txn.items) {
-      buf.writeln(item.name);
+      for (final l in wrap(item.name, w)) {
+        buf.writeln(l);
+      }
       final discStr =
           item.discount > 0 ? '(disc ${_fmt.format(item.discount)}) ' : '';
       buf.writeln(
@@ -68,6 +125,6 @@ class ReceiptBuilder {
     buf.writeln();
     buf.writeln();
 
-    return buf.toString().codeUnits;
+    return buf.toString();
   }
 }

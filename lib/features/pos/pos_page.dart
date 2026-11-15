@@ -10,7 +10,6 @@ import '../../models/resto_profile.dart';
 import '../../printer/printer_service.dart';
 import '../../printer/receipt_builder.dart';
 import '../../features/products/product_providers.dart';
-import '../../features/products/product_image.dart';
 import '../pos/cart_provider.dart';
 import 'checkout_calc.dart';
 import '../auth/auth_controller.dart';
@@ -18,8 +17,8 @@ import '../settings/settings_providers.dart';
 import 'pos_providers.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/qty_stepper.dart';
-import '../../core/widgets/ready_chip.dart';
 import '../../core/widgets/tap_area.dart';
+import '../products/product_card.dart';
 
 class PosPage extends ConsumerStatefulWidget {
   const PosPage({super.key});
@@ -225,7 +224,7 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
-class _ProductGrid extends StatelessWidget {
+class _ProductGrid extends ConsumerWidget {
   final List<Product> products;
   final List<TransactionItem> cart;
   final bool isWide;
@@ -233,7 +232,7 @@ class _ProductGrid extends StatelessWidget {
   const _ProductGrid({required this.products, required this.cart, required this.isWide});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return GridView.builder(
       padding: EdgeInsets.only(
         top: isWide ? 76 : 16,
@@ -241,149 +240,19 @@ class _ProductGrid extends StatelessWidget {
         right: isWide ? 24 : 16,
         bottom: 24,
       ),
-      gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-        maxCrossAxisExtent: 220,
-        mainAxisSpacing: 16,
-        crossAxisSpacing: 16,
-        childAspectRatio: 0.72,
-      ),
+      gridDelegate: productGridDelegate,
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];
         final cartItem = cart.where((item) => item.productId == product.id).firstOrNull;
-        return _PosProductCard(
+        return ProductCard(
           product: product,
           cartQty: cartItem?.qty ?? 0,
+          onTap: product.ready
+              ? () => ref.read(cartProvider.notifier).addItem(product)
+              : null,
         );
       },
-    );
-  }
-}
-
-class _PosProductCard extends ConsumerWidget {
-  final Product product;
-  final int cartQty;
-
-  const _PosProductCard({required this.product, required this.cartQty});
-
-  @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final textTheme = AppTypography.textTheme;
-    final notif = ref.read(cartProvider.notifier);
-    final isSelected = cartQty > 0;
-    
-    return TapArea(
-      label: product.ready ? product.name : '${product.name}, habis',
-      borderRadius: BorderRadius.circular(16),
-      onTap: product.ready ? () => notif.addItem(product) : null,
-      child: Opacity(
-        opacity: product.ready ? 1 : 0.55,
-        child: Container(
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: isSelected ? AppColors.primary : Colors.transparent,
-            width: 2,
-          ),
-          boxShadow: [
-            if (!isSelected)
-              BoxShadow(
-                color: AppColors.textPrimary.withValues(alpha: 0.03),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              )
-          ],
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            // Image with Checkmark
-            Expanded(
-              flex: 5,
-              child: Stack(
-                fit: StackFit.expand,
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
-                    child: product.imagePath != null
-                        ? ProductImage(
-                            path: product.imagePath,
-                            placeholder: Container(
-                              color: AppColors.divider,
-                              child: const Center(
-                                  child: Icon(AppIcons.food,
-                                      size: AppIcons.hero, color: AppColors.textSecondary)),
-                            ))
-                        : Container(
-                            color: AppColors.divider,
-                            child: const Center(
-                                child: Icon(AppIcons.food,
-                                    size: AppIcons.hero, color: AppColors.textSecondary)),
-                          ),
-                  ),
-                  if (!product.ready)
-                    const Positioned(top: 8, left: 8, child: ReadyChip(ready: false)),
-                  if (isSelected)
-                    Positioned(
-                      top: 8,
-                      right: 8,
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: const BoxDecoration(
-                          color: AppColors.primary,
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(AppIcons.check, size: AppIcons.sm, color: AppColors.onPrimary),
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            // Content
-            Expanded(
-              flex: 3,
-              child: Padding(
-                padding: const EdgeInsets.all(12),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            product.name,
-                            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        AmountText(
-                          amount: product.price,
-                          style: textTheme.titleSmall?.copyWith(
-                            color: AppColors.price,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                    if (product.category != null)
-                      Text(
-                        product.category!,
-                        style: textTheme.labelSmall?.copyWith(color: AppColors.textSecondary),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                  ],
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      ),
     );
   }
 }
