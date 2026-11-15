@@ -12,6 +12,7 @@ import '../users/user_list_page.dart';
 import '../users/users_providers.dart';
 import '../expenses/expense_list_page.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/widgets/tap_area.dart';
 enum HomeTab { pos, products, expenses, reports, settings, users }
 
 /// Tabs visible for the current role. Pages, sidebar and bottom nav all use
@@ -64,7 +65,9 @@ class _MainShellState extends ConsumerState<_MainShell> {
 
   Widget _buildSidebarItem(int index, IconData icon, String label) {
     final isSelected = _tab == index;
-    return GestureDetector(
+    return TapArea(
+      label: label,
+      borderRadius: const BorderRadius.horizontal(right: Radius.circular(24)),
       onTap: () => setState(() => _tab = index),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8, right: 16),

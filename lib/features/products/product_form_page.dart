@@ -10,6 +10,7 @@ import '../products/product_providers.dart';
 import 'product_image.dart';
 import 'product_image_service.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/widgets/tap_area.dart';
 
 class ProductFormPage extends ConsumerStatefulWidget {
   final Product? product;
@@ -63,7 +64,9 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
         child: ListView(
           padding: const EdgeInsets.all(24),
           children: [
-            GestureDetector(
+            TapArea(
+              label: 'Pilih foto produk',
+              borderRadius: BorderRadius.circular(12),
               onTap: _saving ? null : _pickImage,
               child: Container(
                 height: 160,

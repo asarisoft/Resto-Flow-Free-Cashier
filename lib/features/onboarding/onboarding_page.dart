@@ -6,6 +6,7 @@ import '../../core/widgets/primary_button.dart';
 import '../../models/resto_profile.dart';
 import '../settings/settings_providers.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/widgets/choice_segment.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -130,16 +131,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                   Text('Ukuran Kertas Printer (Thermal)',
                       style: textTheme.titleMedium),
                   const SizedBox(height: 16),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: _sizeCard(58, '58 mm'),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _sizeCard(80, '80 mm'),
-                      ),
-                    ],
+                  ChoiceSegment<int>(
+                    value: _paperWidth,
+                    options: const [(58, '58 mm'), (80, '80 mm')],
+                    onChanged: (v) => setState(() => _paperWidth = v),
                   ),
                   const SizedBox(height: 48),
                   PrimaryButton(
@@ -169,44 +164,6 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
           ),
         ),
       ],
-    );
-  }
-
-  Widget _sizeCard(int width, String label) {
-    final selected = _paperWidth == width;
-    return GestureDetector(
-      onTap: () => setState(() => _paperWidth = width),
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 200),
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        decoration: BoxDecoration(
-          color: selected
-              ? AppColors.primary.withValues(alpha: 0.08)
-              : AppColors.surface,
-          borderRadius: BorderRadius.circular(10),
-          border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
-            width: selected ? 1.5 : 1,
-          ),
-        ),
-        child: Column(
-          children: [
-            Icon(
-              AppIcons.print,
-              color: selected ? AppColors.primary : AppColors.textSecondary,
-            ),
-            const SizedBox(height: 8),
-            Text(
-              label,
-              style: AppTypography.textTheme.bodyMedium?.copyWith(
-                color:
-                    selected ? AppColors.primary : AppColors.textSecondary,
-                fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 

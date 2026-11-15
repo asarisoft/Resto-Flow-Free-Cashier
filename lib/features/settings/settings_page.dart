@@ -16,6 +16,7 @@ import 'settings_providers.dart';
 
 import 'printer_pairing_page.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/widgets/choice_segment.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -360,53 +361,10 @@ class _EditProfileDialogState
                     style: AppTypography.textTheme.bodyLarge),
                 const SizedBox(width: 12),
                   Expanded(
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: AppColors.surface,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: AppColors.border),
-                      ),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => setState(() => _paperWidth = 58),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: _paperWidth == 58 ? AppColors.primary : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text('58mm', style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: _paperWidth == 58 ? FontWeight.bold : FontWeight.normal,
-                                  color: _paperWidth == 58 ? AppColors.onPrimary : AppColors.textSecondary,
-                                )),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            child: GestureDetector(
-                              onTap: () => setState(() => _paperWidth = 80),
-                              child: AnimatedContainer(
-                                duration: const Duration(milliseconds: 200),
-                                padding: const EdgeInsets.symmetric(vertical: 8),
-                                decoration: BoxDecoration(
-                                  color: _paperWidth == 80 ? AppColors.primary : Colors.transparent,
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text('80mm', style: AppTypography.textTheme.bodyMedium?.copyWith(
-                                  fontWeight: _paperWidth == 80 ? FontWeight.bold : FontWeight.normal,
-                                  color: _paperWidth == 80 ? AppColors.onPrimary : AppColors.textSecondary,
-                                )),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
+                    child: ChoiceSegment<int>(
+                      value: _paperWidth,
+                      options: const [(58, '58 mm'), (80, '80 mm')],
+                      onChanged: (v) => setState(() => _paperWidth = v),
                     ),
                   ),
               ],

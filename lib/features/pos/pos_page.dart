@@ -17,6 +17,9 @@ import '../auth/auth_controller.dart';
 import '../settings/settings_providers.dart';
 import 'pos_providers.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/widgets/qty_stepper.dart';
+import '../../core/widgets/ready_chip.dart';
+import '../../core/widgets/tap_area.dart';
 
 class PosPage extends ConsumerStatefulWidget {
   const PosPage({super.key});
@@ -140,7 +143,9 @@ class _PosPageState extends ConsumerState<PosPage> {
         Expanded(child: _ProductGrid(products: products, cart: cart, isWide: false)),
         // Minimal Cart Summary at bottom
         if (cart.isNotEmpty)
-          GestureDetector(
+          TapArea(
+            label: 'Lihat keranjang',
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
             onTap: () => _showMobileCart(context),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
@@ -193,7 +198,8 @@ class _CategoryCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return TapArea(
+      label: label,
       onTap: onTap,
       child: Container(
         margin: const EdgeInsets.only(right: 24),
@@ -265,9 +271,13 @@ class _PosProductCard extends ConsumerWidget {
     final notif = ref.read(cartProvider.notifier);
     final isSelected = cartQty > 0;
     
-    return GestureDetector(
+    return TapArea(
+      label: product.ready ? product.name : '${product.name}, habis',
+      borderRadius: BorderRadius.circular(16),
       onTap: product.ready ? () => notif.addItem(product) : null,
-      child: Container(
+      child: Opacity(
+        opacity: product.ready ? 1 : 0.55,
+        child: Container(
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(16),
@@ -302,15 +312,17 @@ class _PosProductCard extends ConsumerWidget {
                               color: AppColors.divider,
                               child: const Center(
                                   child: Icon(AppIcons.food,
-                                      size: AppIcons.hero, color: Colors.grey)),
+                                      size: AppIcons.hero, color: AppColors.textSecondary)),
                             ))
                         : Container(
                             color: AppColors.divider,
                             child: const Center(
                                 child: Icon(AppIcons.food,
-                                    size: AppIcons.hero, color: Colors.grey)),
+                                    size: AppIcons.hero, color: AppColors.textSecondary)),
                           ),
                   ),
+                  if (!product.ready)
+                    const Positioned(top: 8, left: 8, child: ReadyChip(ready: false)),
                   if (isSelected)
                     Positioned(
                       top: 8,
@@ -369,6 +381,7 @@ class _PosProductCard extends ConsumerWidget {
             ),
           ],
         ),
+      ),
       ),
     );
   }
@@ -513,35 +526,9 @@ class _CartItemRow extends StatelessWidget {
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 8),
-                Row(
-                  children: [
-                    InkWell(
-                      onTap: () => notifier.updateQty(index, item.qty - 1),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Icon(AppIcons.remove, size: AppIcons.sm, color: AppColors.primary),
-                      ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 12),
-                      child: Text('${item.qty}', style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold)),
-                    ),
-                    InkWell(
-                      onTap: () => notifier.updateQty(index, item.qty + 1),
-                      child: Container(
-                        padding: const EdgeInsets.all(4),
-                        decoration: BoxDecoration(
-                          color: AppColors.primary.withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: const Icon(AppIcons.add, size: AppIcons.sm, color: AppColors.primary),
-                      ),
-                    ),
-                  ],
+                QtyStepper(
+                  value: item.qty,
+                  onChanged: (q) => notifier.updateQty(index, q),
                 ),
               ],
             ),

@@ -122,6 +122,17 @@ class AppTheme {
           return AppColors.divider;
         }),
       ),
+      segmentedButtonTheme: SegmentedButtonThemeData(
+        style: ButtonStyle(
+          minimumSize: const WidgetStatePropertyAll(Size(48, 48)),
+          backgroundColor: WidgetStateProperty.resolveWith((st) =>
+              st.contains(WidgetState.selected) ? AppColors.primary : AppColors.surface),
+          foregroundColor: WidgetStateProperty.resolveWith((st) =>
+              st.contains(WidgetState.selected) ? AppColors.onPrimary : AppColors.textSecondary),
+          side: const WidgetStatePropertyAll(BorderSide(color: AppColors.inputBorder)),
+          textStyle: WidgetStatePropertyAll(textTheme.labelLarge),
+        ),
+      ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.background,
         side: const BorderSide(color: AppColors.border),

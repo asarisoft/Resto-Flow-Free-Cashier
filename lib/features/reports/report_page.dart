@@ -12,6 +12,7 @@ import '../../features/settings/settings_providers.dart';
 import '../reports/report_providers.dart';
 import '../reports/report_repository.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/widgets/choice_segment.dart';
 
 class ReportPage extends ConsumerStatefulWidget {
   const ReportPage({super.key});
@@ -55,53 +56,10 @@ class _ReportPageState extends ConsumerState<ReportPage> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Container(
-            padding: const EdgeInsets.all(4),
-            decoration: BoxDecoration(
-              color: AppColors.surface,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _tab = 0),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _tab == 0 ? AppColors.primary : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text('Hari Ini', style: textTheme.bodyMedium?.copyWith(
-                        fontWeight: _tab == 0 ? FontWeight.bold : FontWeight.normal,
-                        color: _tab == 0 ? AppColors.onPrimary : AppColors.textSecondary,
-                      )),
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => _tab = 1),
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 200),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      decoration: BoxDecoration(
-                        color: _tab == 1 ? AppColors.primary : Colors.transparent,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      alignment: Alignment.center,
-                      child: Text('Bulan Ini', style: textTheme.bodyMedium?.copyWith(
-                        fontWeight: _tab == 1 ? FontWeight.bold : FontWeight.normal,
-                        color: _tab == 1 ? AppColors.onPrimary : AppColors.textSecondary,
-                      )),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+          ChoiceSegment<int>(
+            value: _tab,
+            options: const [(0, 'Hari Ini'), (1, 'Bulan Ini')],
+            onChanged: (v) => setState(() => _tab = v),
           ),
           const SizedBox(height: 16),
           summaryAsync.when(

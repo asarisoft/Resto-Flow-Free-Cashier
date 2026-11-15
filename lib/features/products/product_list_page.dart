@@ -10,6 +10,7 @@ import '../products/product_providers.dart';
 import 'product_form_page.dart';
 import 'product_image.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/widgets/tap_area.dart';
 
 class ProductListPage extends ConsumerWidget {
   const ProductListPage({super.key});
@@ -125,7 +126,9 @@ class _ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
-    return GestureDetector(
+    return TapArea(
+      label: product.name,
+      borderRadius: BorderRadius.circular(12),
       onTap: onTap,
       child: Container(
         clipBehavior: Clip.antiAlias,
@@ -173,7 +176,9 @@ class _ProductCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
-                        GestureDetector(
+                        TapArea(
+                          label: 'Ubah status ${product.name}',
+                          borderRadius: BorderRadius.circular(8),
                           onTap: onToggleReady,
                           child: ReadyChip(ready: product.ready),
                         ),
