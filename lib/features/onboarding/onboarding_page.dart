@@ -58,13 +58,13 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         color: AppColors.onPrimary.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Icon(AppIcons.star, color: Colors.white, size: AppIcons.hero),
+                      child: const Icon(AppIcons.star, color: AppColors.onPrimary, size: AppIcons.hero),
                     ),
                     const SizedBox(height: 32),
                     Text(
                       'Selamat Datang di\nRESTO FLOW FREE',
                       style: textTheme.displaySmall?.copyWith(
-                        color: Colors.white,
+                        color: AppColors.onPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -154,7 +154,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   Widget _featureRow(IconData icon, String text, TextTheme textTheme) {
     return Row(
       children: [
-        Icon(icon, color: Colors.white, size: AppIcons.lg),
+        Icon(icon, color: AppColors.onPrimary, size: AppIcons.lg),
         const SizedBox(width: 12),
         Text(
           text,
