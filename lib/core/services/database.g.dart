@@ -1754,11 +1754,11 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
   }
 }
 
-class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
+class $UsersTable extends Users with TableInfo<$UsersTable, User> {
   @override
   final GeneratedDatabase attachedDatabase;
   final String? _alias;
-  $ExpensesTable(this.attachedDatabase, [this._alias]);
+  $UsersTable(this.attachedDatabase, [this._alias]);
   static const VerificationMeta _idMeta = const VerificationMeta('id');
   @override
   late final GeneratedColumn<String> id = GeneratedColumn<String>(
@@ -1768,43 +1768,59 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     type: DriftSqlType.string,
     requiredDuringInsert: true,
   );
-  static const VerificationMeta _categoryMeta = const VerificationMeta(
-    'category',
+  static const VerificationMeta _usernameMeta = const VerificationMeta(
+    'username',
   );
   @override
-  late final GeneratedColumn<String> category = GeneratedColumn<String>(
-    'category',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _noteMeta = const VerificationMeta('note');
-  @override
-  late final GeneratedColumn<String> note = GeneratedColumn<String>(
-    'note',
-    aliasedName,
-    true,
-    type: DriftSqlType.string,
-    requiredDuringInsert: false,
-  );
-  static const VerificationMeta _amountMeta = const VerificationMeta('amount');
-  @override
-  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
-    'amount',
+  late final GeneratedColumn<String> username = GeneratedColumn<String>(
+    'username',
     aliasedName,
     false,
-    type: DriftSqlType.int,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
-  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  static const VerificationMeta _passwordHashMeta = const VerificationMeta(
+    'passwordHash',
+  );
   @override
-  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
-    'date',
+  late final GeneratedColumn<String> passwordHash = GeneratedColumn<String>(
+    'password_hash',
     aliasedName,
     false,
-    type: DriftSqlType.dateTime,
+    type: DriftSqlType.string,
     requiredDuringInsert: true,
+  );
+  static const VerificationMeta _saltMeta = const VerificationMeta('salt');
+  @override
+  late final GeneratedColumn<String> salt = GeneratedColumn<String>(
+    'salt',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _roleMeta = const VerificationMeta('role');
+  @override
+  late final GeneratedColumn<String> role = GeneratedColumn<String>(
+    'role',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _activeMeta = const VerificationMeta('active');
+  @override
+  late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
+    'active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
   );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
@@ -1820,20 +1836,21 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   @override
   List<GeneratedColumn> get $columns => [
     id,
-    category,
-    note,
-    amount,
-    date,
+    username,
+    passwordHash,
+    salt,
+    role,
+    active,
     createdAt,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
   String get actualTableName => $name;
-  static const String $name = 'expenses';
+  static const String $name = 'users';
   @override
   VerificationContext validateIntegrity(
-    Insertable<Expense> instance, {
+    Insertable<User> instance, {
     bool isInserting = false,
   }) {
     final context = VerificationContext();
@@ -1843,33 +1860,46 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
     } else if (isInserting) {
       context.missing(_idMeta);
     }
-    if (data.containsKey('category')) {
+    if (data.containsKey('username')) {
       context.handle(
-        _categoryMeta,
-        category.isAcceptableOrUnknown(data['category']!, _categoryMeta),
-      );
-    }
-    if (data.containsKey('note')) {
-      context.handle(
-        _noteMeta,
-        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
-      );
-    }
-    if (data.containsKey('amount')) {
-      context.handle(
-        _amountMeta,
-        amount.isAcceptableOrUnknown(data['amount']!, _amountMeta),
+        _usernameMeta,
+        username.isAcceptableOrUnknown(data['username']!, _usernameMeta),
       );
     } else if (isInserting) {
-      context.missing(_amountMeta);
+      context.missing(_usernameMeta);
     }
-    if (data.containsKey('date')) {
+    if (data.containsKey('password_hash')) {
       context.handle(
-        _dateMeta,
-        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+        _passwordHashMeta,
+        passwordHash.isAcceptableOrUnknown(
+          data['password_hash']!,
+          _passwordHashMeta,
+        ),
       );
     } else if (isInserting) {
-      context.missing(_dateMeta);
+      context.missing(_passwordHashMeta);
+    }
+    if (data.containsKey('salt')) {
+      context.handle(
+        _saltMeta,
+        salt.isAcceptableOrUnknown(data['salt']!, _saltMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_saltMeta);
+    }
+    if (data.containsKey('role')) {
+      context.handle(
+        _roleMeta,
+        role.isAcceptableOrUnknown(data['role']!, _roleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_roleMeta);
+    }
+    if (data.containsKey('active')) {
+      context.handle(
+        _activeMeta,
+        active.isAcceptableOrUnknown(data['active']!, _activeMeta),
+      );
     }
     if (data.containsKey('created_at')) {
       context.handle(
@@ -1885,28 +1915,32 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
   @override
-  Expense map(Map<String, dynamic> data, {String? tablePrefix}) {
+  User map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Expense(
+    return User(
       id: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}id'],
       )!,
-      category: attachedDatabase.typeMapping.read(
+      username: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
-        data['${effectivePrefix}category'],
-      ),
-      note: attachedDatabase.typeMapping.read(
-        DriftSqlType.string,
-        data['${effectivePrefix}note'],
-      ),
-      amount: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}amount'],
+        data['${effectivePrefix}username'],
       )!,
-      date: attachedDatabase.typeMapping.read(
-        DriftSqlType.dateTime,
-        data['${effectivePrefix}date'],
+      passwordHash: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}password_hash'],
+      )!,
+      salt: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}salt'],
+      )!,
+      role: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}role'],
+      )!,
+      active: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}active'],
       )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
@@ -1916,66 +1950,65 @@ class $ExpensesTable extends Expenses with TableInfo<$ExpensesTable, Expense> {
   }
 
   @override
-  $ExpensesTable createAlias(String alias) {
-    return $ExpensesTable(attachedDatabase, alias);
+  $UsersTable createAlias(String alias) {
+    return $UsersTable(attachedDatabase, alias);
   }
 }
 
-class Expense extends DataClass implements Insertable<Expense> {
+class User extends DataClass implements Insertable<User> {
   final String id;
-  final String? category;
-  final String? note;
-  final int amount;
-  final DateTime date;
+  final String username;
+  final String passwordHash;
+  final String salt;
+  final String role;
+  final bool active;
   final DateTime createdAt;
-  const Expense({
+  const User({
     required this.id,
-    this.category,
-    this.note,
-    required this.amount,
-    required this.date,
+    required this.username,
+    required this.passwordHash,
+    required this.salt,
+    required this.role,
+    required this.active,
     required this.createdAt,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    if (!nullToAbsent || category != null) {
-      map['category'] = Variable<String>(category);
-    }
-    if (!nullToAbsent || note != null) {
-      map['note'] = Variable<String>(note);
-    }
-    map['amount'] = Variable<int>(amount);
-    map['date'] = Variable<DateTime>(date);
+    map['username'] = Variable<String>(username);
+    map['password_hash'] = Variable<String>(passwordHash);
+    map['salt'] = Variable<String>(salt);
+    map['role'] = Variable<String>(role);
+    map['active'] = Variable<bool>(active);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
 
-  ExpensesCompanion toCompanion(bool nullToAbsent) {
-    return ExpensesCompanion(
+  UsersCompanion toCompanion(bool nullToAbsent) {
+    return UsersCompanion(
       id: Value(id),
-      category: category == null && nullToAbsent
-          ? const Value.absent()
-          : Value(category),
-      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
-      amount: Value(amount),
-      date: Value(date),
+      username: Value(username),
+      passwordHash: Value(passwordHash),
+      salt: Value(salt),
+      role: Value(role),
+      active: Value(active),
       createdAt: Value(createdAt),
     );
   }
 
-  factory Expense.fromJson(
+  factory User.fromJson(
     Map<String, dynamic> json, {
     ValueSerializer? serializer,
   }) {
     serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Expense(
+    return User(
       id: serializer.fromJson<String>(json['id']),
-      category: serializer.fromJson<String?>(json['category']),
-      note: serializer.fromJson<String?>(json['note']),
-      amount: serializer.fromJson<int>(json['amount']),
-      date: serializer.fromJson<DateTime>(json['date']),
+      username: serializer.fromJson<String>(json['username']),
+      passwordHash: serializer.fromJson<String>(json['passwordHash']),
+      salt: serializer.fromJson<String>(json['salt']),
+      role: serializer.fromJson<String>(json['role']),
+      active: serializer.fromJson<bool>(json['active']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -1984,131 +2017,149 @@ class Expense extends DataClass implements Insertable<Expense> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'category': serializer.toJson<String?>(category),
-      'note': serializer.toJson<String?>(note),
-      'amount': serializer.toJson<int>(amount),
-      'date': serializer.toJson<DateTime>(date),
+      'username': serializer.toJson<String>(username),
+      'passwordHash': serializer.toJson<String>(passwordHash),
+      'salt': serializer.toJson<String>(salt),
+      'role': serializer.toJson<String>(role),
+      'active': serializer.toJson<bool>(active),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
 
-  Expense copyWith({
+  User copyWith({
     String? id,
-    Value<String?> category = const Value.absent(),
-    Value<String?> note = const Value.absent(),
-    int? amount,
-    DateTime? date,
+    String? username,
+    String? passwordHash,
+    String? salt,
+    String? role,
+    bool? active,
     DateTime? createdAt,
-  }) => Expense(
+  }) => User(
     id: id ?? this.id,
-    category: category.present ? category.value : this.category,
-    note: note.present ? note.value : this.note,
-    amount: amount ?? this.amount,
-    date: date ?? this.date,
+    username: username ?? this.username,
+    passwordHash: passwordHash ?? this.passwordHash,
+    salt: salt ?? this.salt,
+    role: role ?? this.role,
+    active: active ?? this.active,
     createdAt: createdAt ?? this.createdAt,
   );
-  Expense copyWithCompanion(ExpensesCompanion data) {
-    return Expense(
+  User copyWithCompanion(UsersCompanion data) {
+    return User(
       id: data.id.present ? data.id.value : this.id,
-      category: data.category.present ? data.category.value : this.category,
-      note: data.note.present ? data.note.value : this.note,
-      amount: data.amount.present ? data.amount.value : this.amount,
-      date: data.date.present ? data.date.value : this.date,
+      username: data.username.present ? data.username.value : this.username,
+      passwordHash: data.passwordHash.present
+          ? data.passwordHash.value
+          : this.passwordHash,
+      salt: data.salt.present ? data.salt.value : this.salt,
+      role: data.role.present ? data.role.value : this.role,
+      active: data.active.present ? data.active.value : this.active,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
 
   @override
   String toString() {
-    return (StringBuffer('Expense(')
+    return (StringBuffer('User(')
           ..write('id: $id, ')
-          ..write('category: $category, ')
-          ..write('note: $note, ')
-          ..write('amount: $amount, ')
-          ..write('date: $date, ')
+          ..write('username: $username, ')
+          ..write('passwordHash: $passwordHash, ')
+          ..write('salt: $salt, ')
+          ..write('role: $role, ')
+          ..write('active: $active, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, category, note, amount, date, createdAt);
+  int get hashCode =>
+      Object.hash(id, username, passwordHash, salt, role, active, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-      (other is Expense &&
+      (other is User &&
           other.id == this.id &&
-          other.category == this.category &&
-          other.note == this.note &&
-          other.amount == this.amount &&
-          other.date == this.date &&
+          other.username == this.username &&
+          other.passwordHash == this.passwordHash &&
+          other.salt == this.salt &&
+          other.role == this.role &&
+          other.active == this.active &&
           other.createdAt == this.createdAt);
 }
 
-class ExpensesCompanion extends UpdateCompanion<Expense> {
+class UsersCompanion extends UpdateCompanion<User> {
   final Value<String> id;
-  final Value<String?> category;
-  final Value<String?> note;
-  final Value<int> amount;
-  final Value<DateTime> date;
+  final Value<String> username;
+  final Value<String> passwordHash;
+  final Value<String> salt;
+  final Value<String> role;
+  final Value<bool> active;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
-  const ExpensesCompanion({
+  const UsersCompanion({
     this.id = const Value.absent(),
-    this.category = const Value.absent(),
-    this.note = const Value.absent(),
-    this.amount = const Value.absent(),
-    this.date = const Value.absent(),
+    this.username = const Value.absent(),
+    this.passwordHash = const Value.absent(),
+    this.salt = const Value.absent(),
+    this.role = const Value.absent(),
+    this.active = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
   });
-  ExpensesCompanion.insert({
+  UsersCompanion.insert({
     required String id,
-    this.category = const Value.absent(),
-    this.note = const Value.absent(),
-    required int amount,
-    required DateTime date,
+    required String username,
+    required String passwordHash,
+    required String salt,
+    required String role,
+    this.active = const Value.absent(),
     required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       amount = Value(amount),
-       date = Value(date),
+       username = Value(username),
+       passwordHash = Value(passwordHash),
+       salt = Value(salt),
+       role = Value(role),
        createdAt = Value(createdAt);
-  static Insertable<Expense> custom({
+  static Insertable<User> custom({
     Expression<String>? id,
-    Expression<String>? category,
-    Expression<String>? note,
-    Expression<int>? amount,
-    Expression<DateTime>? date,
+    Expression<String>? username,
+    Expression<String>? passwordHash,
+    Expression<String>? salt,
+    Expression<String>? role,
+    Expression<bool>? active,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
-      if (category != null) 'category': category,
-      if (note != null) 'note': note,
-      if (amount != null) 'amount': amount,
-      if (date != null) 'date': date,
+      if (username != null) 'username': username,
+      if (passwordHash != null) 'password_hash': passwordHash,
+      if (salt != null) 'salt': salt,
+      if (role != null) 'role': role,
+      if (active != null) 'active': active,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
     });
   }
 
-  ExpensesCompanion copyWith({
+  UsersCompanion copyWith({
     Value<String>? id,
-    Value<String?>? category,
-    Value<String?>? note,
-    Value<int>? amount,
-    Value<DateTime>? date,
+    Value<String>? username,
+    Value<String>? passwordHash,
+    Value<String>? salt,
+    Value<String>? role,
+    Value<bool>? active,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
   }) {
-    return ExpensesCompanion(
+    return UsersCompanion(
       id: id ?? this.id,
-      category: category ?? this.category,
-      note: note ?? this.note,
-      amount: amount ?? this.amount,
-      date: date ?? this.date,
+      username: username ?? this.username,
+      passwordHash: passwordHash ?? this.passwordHash,
+      salt: salt ?? this.salt,
+      role: role ?? this.role,
+      active: active ?? this.active,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
     );
@@ -2120,17 +2171,20 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
     if (id.present) {
       map['id'] = Variable<String>(id.value);
     }
-    if (category.present) {
-      map['category'] = Variable<String>(category.value);
+    if (username.present) {
+      map['username'] = Variable<String>(username.value);
     }
-    if (note.present) {
-      map['note'] = Variable<String>(note.value);
+    if (passwordHash.present) {
+      map['password_hash'] = Variable<String>(passwordHash.value);
     }
-    if (amount.present) {
-      map['amount'] = Variable<int>(amount.value);
+    if (salt.present) {
+      map['salt'] = Variable<String>(salt.value);
     }
-    if (date.present) {
-      map['date'] = Variable<DateTime>(date.value);
+    if (role.present) {
+      map['role'] = Variable<String>(role.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
     }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
@@ -2143,12 +2197,13 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
 
   @override
   String toString() {
-    return (StringBuffer('ExpensesCompanion(')
+    return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
-          ..write('category: $category, ')
-          ..write('note: $note, ')
-          ..write('amount: $amount, ')
-          ..write('date: $date, ')
+          ..write('username: $username, ')
+          ..write('passwordHash: $passwordHash, ')
+          ..write('salt: $salt, ')
+          ..write('role: $role, ')
+          ..write('active: $active, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
           ..write(')'))
@@ -2870,7 +2925,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $TransactionItemsTable transactionItems = $TransactionItemsTable(
     this,
   );
-  late final $ExpensesTable expenses = $ExpensesTable(this);
+  late final $UsersTable users = $UsersTable(this);
   late final $RestoProfilesTable restoProfiles = $RestoProfilesTable(this);
   late final $CountersTable counters = $CountersTable(this);
   @override
@@ -2881,7 +2936,7 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     products,
     transactions,
     transactionItems,
-    expenses,
+    users,
     restoProfiles,
     counters,
   ];
@@ -3987,30 +4042,31 @@ typedef $$TransactionItemsTableProcessedTableManager =
       TransactionItem,
       PrefetchHooks Function({bool transactionId})
     >;
-typedef $$ExpensesTableCreateCompanionBuilder =
-    ExpensesCompanion Function({
+typedef $$UsersTableCreateCompanionBuilder =
+    UsersCompanion Function({
       required String id,
-      Value<String?> category,
-      Value<String?> note,
-      required int amount,
-      required DateTime date,
+      required String username,
+      required String passwordHash,
+      required String salt,
+      required String role,
+      Value<bool> active,
       required DateTime createdAt,
       Value<int> rowid,
     });
-typedef $$ExpensesTableUpdateCompanionBuilder =
-    ExpensesCompanion Function({
+typedef $$UsersTableUpdateCompanionBuilder =
+    UsersCompanion Function({
       Value<String> id,
-      Value<String?> category,
-      Value<String?> note,
-      Value<int> amount,
-      Value<DateTime> date,
+      Value<String> username,
+      Value<String> passwordHash,
+      Value<String> salt,
+      Value<String> role,
+      Value<bool> active,
       Value<DateTime> createdAt,
       Value<int> rowid,
     });
 
-class $$ExpensesTableFilterComposer
-    extends Composer<_$AppDatabase, $ExpensesTable> {
-  $$ExpensesTableFilterComposer({
+class $$UsersTableFilterComposer extends Composer<_$AppDatabase, $UsersTable> {
+  $$UsersTableFilterComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4022,23 +4078,28 @@ class $$ExpensesTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get category => $composableBuilder(
-    column: $table.category,
+  ColumnFilters<String> get username => $composableBuilder(
+    column: $table.username,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<String> get note => $composableBuilder(
-    column: $table.note,
+  ColumnFilters<String> get passwordHash => $composableBuilder(
+    column: $table.passwordHash,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<int> get amount => $composableBuilder(
-    column: $table.amount,
+  ColumnFilters<String> get salt => $composableBuilder(
+    column: $table.salt,
     builder: (column) => ColumnFilters(column),
   );
 
-  ColumnFilters<DateTime> get date => $composableBuilder(
-    column: $table.date,
+  ColumnFilters<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get active => $composableBuilder(
+    column: $table.active,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4048,9 +4109,9 @@ class $$ExpensesTableFilterComposer
   );
 }
 
-class $$ExpensesTableOrderingComposer
-    extends Composer<_$AppDatabase, $ExpensesTable> {
-  $$ExpensesTableOrderingComposer({
+class $$UsersTableOrderingComposer
+    extends Composer<_$AppDatabase, $UsersTable> {
+  $$UsersTableOrderingComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4062,23 +4123,28 @@ class $$ExpensesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get category => $composableBuilder(
-    column: $table.category,
+  ColumnOrderings<String> get username => $composableBuilder(
+    column: $table.username,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<String> get note => $composableBuilder(
-    column: $table.note,
+  ColumnOrderings<String> get passwordHash => $composableBuilder(
+    column: $table.passwordHash,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<int> get amount => $composableBuilder(
-    column: $table.amount,
+  ColumnOrderings<String> get salt => $composableBuilder(
+    column: $table.salt,
     builder: (column) => ColumnOrderings(column),
   );
 
-  ColumnOrderings<DateTime> get date => $composableBuilder(
-    column: $table.date,
+  ColumnOrderings<String> get role => $composableBuilder(
+    column: $table.role,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get active => $composableBuilder(
+    column: $table.active,
     builder: (column) => ColumnOrderings(column),
   );
 
@@ -4088,9 +4154,9 @@ class $$ExpensesTableOrderingComposer
   );
 }
 
-class $$ExpensesTableAnnotationComposer
-    extends Composer<_$AppDatabase, $ExpensesTable> {
-  $$ExpensesTableAnnotationComposer({
+class $$UsersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $UsersTable> {
+  $$UsersTableAnnotationComposer({
     required super.$db,
     required super.$table,
     super.joinBuilder,
@@ -4100,81 +4166,90 @@ class $$ExpensesTableAnnotationComposer
   GeneratedColumn<String> get id =>
       $composableBuilder(column: $table.id, builder: (column) => column);
 
-  GeneratedColumn<String> get category =>
-      $composableBuilder(column: $table.category, builder: (column) => column);
+  GeneratedColumn<String> get username =>
+      $composableBuilder(column: $table.username, builder: (column) => column);
 
-  GeneratedColumn<String> get note =>
-      $composableBuilder(column: $table.note, builder: (column) => column);
+  GeneratedColumn<String> get passwordHash => $composableBuilder(
+    column: $table.passwordHash,
+    builder: (column) => column,
+  );
 
-  GeneratedColumn<int> get amount =>
-      $composableBuilder(column: $table.amount, builder: (column) => column);
+  GeneratedColumn<String> get salt =>
+      $composableBuilder(column: $table.salt, builder: (column) => column);
 
-  GeneratedColumn<DateTime> get date =>
-      $composableBuilder(column: $table.date, builder: (column) => column);
+  GeneratedColumn<String> get role =>
+      $composableBuilder(column: $table.role, builder: (column) => column);
+
+  GeneratedColumn<bool> get active =>
+      $composableBuilder(column: $table.active, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 }
 
-class $$ExpensesTableTableManager
+class $$UsersTableTableManager
     extends
         RootTableManager<
           _$AppDatabase,
-          $ExpensesTable,
-          Expense,
-          $$ExpensesTableFilterComposer,
-          $$ExpensesTableOrderingComposer,
-          $$ExpensesTableAnnotationComposer,
-          $$ExpensesTableCreateCompanionBuilder,
-          $$ExpensesTableUpdateCompanionBuilder,
-          (Expense, BaseReferences<_$AppDatabase, $ExpensesTable, Expense>),
-          Expense,
+          $UsersTable,
+          User,
+          $$UsersTableFilterComposer,
+          $$UsersTableOrderingComposer,
+          $$UsersTableAnnotationComposer,
+          $$UsersTableCreateCompanionBuilder,
+          $$UsersTableUpdateCompanionBuilder,
+          (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
+          User,
           PrefetchHooks Function()
         > {
-  $$ExpensesTableTableManager(_$AppDatabase db, $ExpensesTable table)
+  $$UsersTableTableManager(_$AppDatabase db, $UsersTable table)
     : super(
         TableManagerState(
           db: db,
           table: table,
           createFilteringComposer: () =>
-              $$ExpensesTableFilterComposer($db: db, $table: table),
+              $$UsersTableFilterComposer($db: db, $table: table),
           createOrderingComposer: () =>
-              $$ExpensesTableOrderingComposer($db: db, $table: table),
+              $$UsersTableOrderingComposer($db: db, $table: table),
           createComputedFieldComposer: () =>
-              $$ExpensesTableAnnotationComposer($db: db, $table: table),
+              $$UsersTableAnnotationComposer($db: db, $table: table),
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
-                Value<String?> category = const Value.absent(),
-                Value<String?> note = const Value.absent(),
-                Value<int> amount = const Value.absent(),
-                Value<DateTime> date = const Value.absent(),
+                Value<String> username = const Value.absent(),
+                Value<String> passwordHash = const Value.absent(),
+                Value<String> salt = const Value.absent(),
+                Value<String> role = const Value.absent(),
+                Value<bool> active = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
-              }) => ExpensesCompanion(
+              }) => UsersCompanion(
                 id: id,
-                category: category,
-                note: note,
-                amount: amount,
-                date: date,
+                username: username,
+                passwordHash: passwordHash,
+                salt: salt,
+                role: role,
+                active: active,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
           createCompanionCallback:
               ({
                 required String id,
-                Value<String?> category = const Value.absent(),
-                Value<String?> note = const Value.absent(),
-                required int amount,
-                required DateTime date,
+                required String username,
+                required String passwordHash,
+                required String salt,
+                required String role,
+                Value<bool> active = const Value.absent(),
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
-              }) => ExpensesCompanion.insert(
+              }) => UsersCompanion.insert(
                 id: id,
-                category: category,
-                note: note,
-                amount: amount,
-                date: date,
+                username: username,
+                passwordHash: passwordHash,
+                salt: salt,
+                role: role,
+                active: active,
                 createdAt: createdAt,
                 rowid: rowid,
               ),
@@ -4186,18 +4261,18 @@ class $$ExpensesTableTableManager
       );
 }
 
-typedef $$ExpensesTableProcessedTableManager =
+typedef $$UsersTableProcessedTableManager =
     ProcessedTableManager<
       _$AppDatabase,
-      $ExpensesTable,
-      Expense,
-      $$ExpensesTableFilterComposer,
-      $$ExpensesTableOrderingComposer,
-      $$ExpensesTableAnnotationComposer,
-      $$ExpensesTableCreateCompanionBuilder,
-      $$ExpensesTableUpdateCompanionBuilder,
-      (Expense, BaseReferences<_$AppDatabase, $ExpensesTable, Expense>),
-      Expense,
+      $UsersTable,
+      User,
+      $$UsersTableFilterComposer,
+      $$UsersTableOrderingComposer,
+      $$UsersTableAnnotationComposer,
+      $$UsersTableCreateCompanionBuilder,
+      $$UsersTableUpdateCompanionBuilder,
+      (User, BaseReferences<_$AppDatabase, $UsersTable, User>),
+      User,
       PrefetchHooks Function()
     >;
 typedef $$RestoProfilesTableCreateCompanionBuilder =
@@ -4598,8 +4673,8 @@ class $AppDatabaseManager {
       $$TransactionsTableTableManager(_db, _db.transactions);
   $$TransactionItemsTableTableManager get transactionItems =>
       $$TransactionItemsTableTableManager(_db, _db.transactionItems);
-  $$ExpensesTableTableManager get expenses =>
-      $$ExpensesTableTableManager(_db, _db.expenses);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db, _db.users);
   $$RestoProfilesTableTableManager get restoProfiles =>
       $$RestoProfilesTableTableManager(_db, _db.restoProfiles);
   $$CountersTableTableManager get counters =>

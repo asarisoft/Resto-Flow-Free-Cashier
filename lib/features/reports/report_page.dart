@@ -9,6 +9,7 @@ import '../../models/transaction.dart' as models;
 import '../../printer/printer_service.dart';
 import '../../printer/receipt_builder.dart';
 import '../../features/auth/auth_controller.dart';
+import '../../features/settings/settings_providers.dart';
 import '../reports/report_providers.dart';
 import '../reports/report_repository.dart';
 
@@ -194,13 +195,7 @@ class _SummaryCards extends StatelessWidget {
               AppColors.success,
               isWide, textTheme,
             ),
-            _card(
-              'Pengeluaran',
-              summary.totalExpense,
-              Icons.trending_down,
-              AppColors.error,
-              isWide, textTheme,
-            ),
+
             _card(
               'Laba Bersih',
               summary.totalProfit,

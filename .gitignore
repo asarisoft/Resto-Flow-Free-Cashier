@@ -56,3 +56,6 @@ android/app/google-services.json
 
 # graphify
 graphify-out/
+
+# FVM Version Cache
+.fvm/

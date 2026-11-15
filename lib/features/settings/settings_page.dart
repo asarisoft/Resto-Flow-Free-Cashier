@@ -6,8 +6,8 @@ import '../../core/widgets/app_card.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../models/resto_profile.dart';
 import '../../features/auth/auth_controller.dart';
+import 'settings_providers.dart';
 
-import '../settings/settings_providers.dart';
 import 'printer_pairing_page.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -159,7 +159,7 @@ class SettingsPage extends ConsumerWidget {
           ),
           FilledButton(
             onPressed: () {
-              ref.read(authServiceProvider).signOut();
+              ref.read(loginProvider).logout();
               Navigator.pop(context);
             },
             child: const Text('Logout'),

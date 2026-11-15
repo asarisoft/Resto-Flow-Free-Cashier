@@ -13,7 +13,8 @@ import '../../printer/receipt_builder.dart';
 import '../../features/products/product_providers.dart';
 import '../pos/cart_provider.dart';
 import '../auth/auth_controller.dart';
-import '../reports/report_providers.dart';
+import '../settings/settings_providers.dart';
+import 'pos_providers.dart';
 
 class PosPage extends ConsumerStatefulWidget {
   const PosPage({super.key});

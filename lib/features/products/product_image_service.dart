@@ -1,10 +1,9 @@
 import 'dart:io';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 class ProductImageService {
-  final FirebaseStorage _storage = FirebaseStorage.instance;
-
   Future<XFile?> pickImage() async {
     return ImagePicker().pickImage(
       source: ImageSource.gallery,
@@ -14,15 +13,18 @@ class ProductImageService {
     );
   }
 
-  Future<String> upload(String uid, String productId, XFile file) async {
-    final ref = _storage.ref('users/$uid/products/$productId.jpg');
-    final task = await ref.putFile(File(file.path));
-    return await task.ref.getDownloadURL();
+  Future<String> saveLocal(String productId, XFile file) async {
+    final docs = await getApplicationDocumentsDirectory();
+    final dir = Directory(p.join(docs.path, 'images', 'products'));
+    if (!await dir.exists()) await dir.create(recursive: true);
+    final dest = File(p.join(dir.path, '$productId.jpg'));
+    await File(file.path).copy(dest.path);
+    return dest.path;
   }
 
-  Future<void> delete(String uid, String productId) async {
-    try {
-      await _storage.ref('users/$uid/products/$productId.jpg').delete();
-    } catch (_) {}
+  Future<void> deleteLocal(String productId) async {
+    final docs = await getApplicationDocumentsDirectory();
+    final f = File(p.join(docs.path, 'images', 'products', '$productId.jpg'));
+    if (await f.exists()) await f.delete();
   }
 }

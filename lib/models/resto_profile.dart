@@ -5,7 +5,7 @@ class RestoProfile {
   final String? footerNote;
   final int paperWidth;
   final bool useLogo;
-  final String? logoUrl;
+  final String? logoPath;
   final DateTime createdAt;
 
   const RestoProfile({
@@ -15,31 +15,9 @@ class RestoProfile {
     this.footerNote,
     this.paperWidth = 58,
     this.useLogo = false,
-    this.logoUrl,
+    this.logoPath,
     required this.createdAt,
   });
-
-  Map<String, dynamic> toJson() => {
-        'name': name,
-        'address': address,
-        'phone': phone,
-        'footerNote': footerNote,
-        'paperWidth': paperWidth,
-        'useLogo': useLogo,
-        'logoUrl': logoUrl,
-        'createdAt': createdAt,
-      };
-
-  factory RestoProfile.fromJson(Map<String, dynamic> json) => RestoProfile(
-        name: json['name'] as String,
-        address: json['address'] as String?,
-        phone: json['phone'] as String?,
-        footerNote: json['footerNote'] as String?,
-        paperWidth: json['paperWidth'] as int? ?? 58,
-        useLogo: json['useLogo'] as bool? ?? false,
-        logoUrl: json['logoUrl'] as String?,
-        createdAt: (json['createdAt'] as dynamic).toDate(),
-      );
 
   RestoProfile copyWith({
     String? name,
@@ -48,7 +26,7 @@ class RestoProfile {
     String? footerNote,
     int? paperWidth,
     bool? useLogo,
-    String? logoUrl,
+    String? logoPath,
   }) =>
       RestoProfile(
         name: name ?? this.name,
@@ -57,7 +35,7 @@ class RestoProfile {
         footerNote: footerNote ?? this.footerNote,
         paperWidth: paperWidth ?? this.paperWidth,
         useLogo: useLogo ?? this.useLogo,
-        logoUrl: logoUrl ?? this.logoUrl,
+        logoPath: logoPath ?? this.logoPath,
         createdAt: createdAt,
       );
 }

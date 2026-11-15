@@ -1,22 +1,17 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cached_network_image/cached_network_image.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../models/product.dart';
-import '../../features/auth/auth_controller.dart';
 import '../products/product_providers.dart';
 import 'product_image_service.dart';
 
 class ProductFormPage extends ConsumerStatefulWidget {
   final Product? product;
-
   const ProductFormPage({super.key, this.product});
-
   @override
   ConsumerState<ProductFormPage> createState() => _ProductFormPageState();
 }
@@ -27,10 +22,9 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
   final _categoryCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
   final _hppCtrl = TextEditingController();
-  String? _imageUrl;
+  String? _imagePath;
   bool _ready = true;
   bool _saving = false;
-
   final _imageService = ProductImageService();
   XFile? _pickedFile;
 
@@ -44,7 +38,7 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
     _categoryCtrl.text = p?.category ?? '';
     _priceCtrl.text = p != null ? p.price.toString() : '';
     _hppCtrl.text = p != null ? p.hpp.toString() : '';
-    _imageUrl = p?.imageUrl;
+    _imagePath = p?.imagePath;
     _ready = p?.ready ?? true;
   }
 
@@ -61,9 +55,7 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
     return Scaffold(
-      appBar: AppBar(
-        title: Text(_editing ? 'Edit Produk' : 'Tambah Produk'),
-      ),
+      appBar: AppBar(title: Text(_editing ? 'Edit Produk' : 'Tambah Produk')),
       body: Form(
         key: _formKey,
         child: ListView(
@@ -76,143 +68,53 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
                 decoration: BoxDecoration(
                   color: AppColors.background,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: AppColors.border,
-                    style: _imageUrl == null ? BorderStyle.solid : BorderStyle.none,
-                  ),
+                  border: Border.all(color: AppColors.border),
                 ),
                 clipBehavior: Clip.antiAlias,
-                      child: _pickedFile != null
-                        ? Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              Image.file(
-                                File(_pickedFile!.path),
-                                fit: BoxFit.cover,
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: GestureDetector(
-                                  onTap: () => setState(() => _pickedFile = null),
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black54,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.close,
-                                        size: 18, color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
-                        : _imageUrl != null
-                        ? Stack(
-                            fit: StackFit.expand,
-                            children: [
-                              CachedNetworkImage(
-                                imageUrl: _imageUrl!,
-                                fit: BoxFit.cover,
-                                placeholder: (_, __) => const Center(
-                                    child: CircularProgressIndicator()),
-                                errorWidget: (_, __, ___) => const Icon(
-                                    Icons.broken_image, size: 48),
-                              ),
-                              Positioned(
-                                top: 8,
-                                right: 8,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    setState(() => _imageUrl = null);
-                                    _pickedFile = null;
-                                  },
-                                  child: Container(
-                                    padding: const EdgeInsets.all(4),
-                                    decoration: const BoxDecoration(
-                                      color: Colors.black54,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: const Icon(Icons.close,
-                                        size: 18, color: Colors.white),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          )
+                child: _pickedFile != null
+                    ? Image.file(File(_pickedFile!.path), fit: BoxFit.cover)
+                    : (_imagePath != null
+                        ? Image.file(File(_imagePath!), fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                const Icon(Icons.broken_image, size: 48))
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(Icons.add_photo_alternate_outlined,
-                                  size: 40,
-                                  color: AppColors.textSecondary),
+                                  size: 40, color: AppColors.textSecondary),
                               const SizedBox(height: 8),
                               Text('Tap untuk tambah foto',
                                   style: textTheme.bodyMedium?.copyWith(
                                       color: AppColors.textSecondary)),
                             ],
-                          ),
+                          )),
               ),
             ),
             const SizedBox(height: 20),
-            TextFormField(
-              controller: _nameCtrl,
-              decoration: const InputDecoration(labelText: 'Nama Produk *'),
-              validator: (v) =>
-                  v == null || v.trim().isEmpty ? 'Wajib diisi' : null,
-              textCapitalization: TextCapitalization.words,
-            ),
+            TextFormField(controller: _nameCtrl, decoration: const InputDecoration(labelText: 'Nama Produk *'),
+              validator: (v) => v == null || v.trim().isEmpty ? 'Wajib diisi' : null,
+              textCapitalization: TextCapitalization.words),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _categoryCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Kategori',
-                hintText: 'Makanan, Minuman, dll',
-              ),
-              textCapitalization: TextCapitalization.words,
-            ),
+            TextFormField(controller: _categoryCtrl, decoration: const InputDecoration(labelText: 'Kategori', hintText: 'Makanan, Minuman, dll'),
+              textCapitalization: TextCapitalization.words),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _priceCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Harga Jual (Rp) *',
-                prefixText: 'Rp ',
-              ),
+            TextFormField(controller: _priceCtrl, decoration: const InputDecoration(labelText: 'Harga Jual (Rp) *', prefixText: 'Rp '),
               keyboardType: TextInputType.number,
               validator: (v) {
                 if (v == null || v.trim().isEmpty) return 'Wajib diisi';
                 if (int.tryParse(v.trim()) == null) return 'Angka tidak valid';
                 return null;
-              },
-            ),
+              }),
             const SizedBox(height: 16),
-            TextFormField(
-              controller: _hppCtrl,
-              decoration: const InputDecoration(
-                labelText: 'HPP (Rp)',
-                hintText: '0',
-                prefixText: 'Rp ',
-              ),
-              keyboardType: TextInputType.number,
-            ),
+            TextFormField(controller: _hppCtrl, decoration: const InputDecoration(labelText: 'HPP (Rp)', hintText: '0', prefixText: 'Rp '),
+              keyboardType: TextInputType.number),
             const SizedBox(height: 24),
-            SwitchListTile(
-              title: Text('Status Ready', style: textTheme.bodyLarge),
-              subtitle: Text(
-                _ready ? 'Produk siap dijual' : 'Produk tidak tersedia',
-                style: textTheme.bodyMedium
-                    ?.copyWith(color: AppColors.textSecondary),
-              ),
-              value: _ready,
-              onChanged: (v) => setState(() => _ready = v),
-            ),
+            SwitchListTile(title: Text('Status Ready', style: textTheme.bodyLarge),
+              subtitle: Text(_ready ? 'Produk siap dijual' : 'Produk tidak tersedia',
+                  style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+              value: _ready, onChanged: (v) => setState(() => _ready = v)),
             const SizedBox(height: 32),
-            PrimaryButton(
-              label: _editing ? 'Simpan Perubahan' : 'Tambah Produk',
-              loading: _saving,
-              onPressed: _save,
-            ),
+            PrimaryButton(label: _editing ? 'Simpan Perubahan' : 'Tambah Produk', loading: _saving, onPressed: _save),
           ],
         ),
       ),
@@ -224,7 +126,7 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
     if (file == null) return;
     setState(() {
       _pickedFile = file;
-      _imageUrl = null;
+      _imagePath = null;
     });
   }
 
@@ -233,51 +135,42 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
     setState(() => _saving = true);
     try {
       final repo = ref.read(productRepositoryProvider);
-      final uid = ref.read(userIdProvider)!;
       final now = DateTime.now();
-
+      String? imagePath = _imagePath;
       final product = Product(
         id: widget.product?.id,
         name: _nameCtrl.text.trim(),
-        category: _categoryCtrl.text.trim().isEmpty
-            ? null
-            : _categoryCtrl.text.trim(),
+        category: _categoryCtrl.text.trim().isEmpty ? null : _categoryCtrl.text.trim(),
         price: int.parse(_priceCtrl.text.trim()),
-        hpp: _hppCtrl.text.trim().isEmpty
-            ? 0
-            : int.parse(_hppCtrl.text.trim()),
+        hpp: _hppCtrl.text.trim().isEmpty ? 0 : int.parse(_hppCtrl.text.trim()),
         ready: _ready,
         archived: widget.product?.archived ?? false,
-        imageUrl: widget.product?.imageUrl,
+        imagePath: imagePath,
         createdAt: widget.product?.createdAt ?? now,
         updatedAt: now,
       );
 
       String? savedId = product.id;
       if (savedId == null) {
-        final docRef = await repo.add(product);
-        savedId = docRef.id;
+        savedId = await repo.add(product);
       } else {
         await repo.save(product);
       }
 
       if (_pickedFile != null) {
-        if (widget.product?.imageUrl != null) {
-          await _imageService.delete(uid, savedId);
+        if (widget.product?.imagePath != null) {
+          await _imageService.deleteLocal(savedId);
         }
-        final url = await _imageService.upload(uid, savedId, _pickedFile!);
-        await FirebaseFirestore.instance
-            .doc('users/$uid/products/$savedId')
-            .update({'imageUrl': url, 'updatedAt': now});
+        final path = await _imageService.saveLocal(savedId, _pickedFile!);
+        final updated = product.copyWith(id: savedId, imagePath: path, updatedAt: now);
+        await repo.save(updated);
       }
 
       ref.invalidate(productListProvider);
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal simpan: $e')),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal simpan: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);

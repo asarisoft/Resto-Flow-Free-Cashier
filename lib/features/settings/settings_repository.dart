@@ -1,16 +1,12 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
+import '../../core/services/daos/profile_dao.dart';
 import '../../models/resto_profile.dart';
 
 class SettingsRepository {
-  final FirebaseFirestore _firestore;
-  final String _uid;
+  final ProfileDao _dao;
 
-  SettingsRepository(this._firestore, this._uid);
-
-  DocumentReference get _profileDoc =>
-      _firestore.doc('users/$_uid/profile/resto');
+  SettingsRepository(this._dao);
 
   Future<void> updateProfile(RestoProfile profile) async {
-    await _profileDoc.update(profile.toJson());
+    await _dao.save(profile);
   }
 }

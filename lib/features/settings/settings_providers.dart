@@ -1,25 +1,17 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../../core/services/firestore_provider.dart';
-import '../../features/auth/auth_controller.dart';
+import '../../core/services/database_provider.dart';
+import '../../core/services/daos/profile_dao.dart';
 import '../../models/resto_profile.dart';
 import 'settings_repository.dart';
 
+final profileDaoProvider = Provider<ProfileDao>((ref) {
+  return ProfileDao(ref.watch(databaseProvider));
+});
+
 final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
-  final uid = ref.watch(userIdProvider)!;
-  final firestore = ref.watch(firestoreProvider);
-  return SettingsRepository(firestore, uid);
+  return SettingsRepository(ref.watch(profileDaoProvider));
 });
 
-final profileNotifierProvider =
-    StateNotifierProvider<ProfileNotifier, AsyncValue<RestoProfile?>>(
-        (ref) {
-  final profile = ref.watch(profileProvider);
-  return ProfileNotifier(profile.valueOrNull);
+final profileProvider = FutureProvider<RestoProfile?>((ref) async {
+  return ref.watch(profileDaoProvider).get();
 });
-
-class ProfileNotifier extends StateNotifier<AsyncValue<RestoProfile?>> {
-  ProfileNotifier(RestoProfile? profile)
-      : super(AsyncValue.data(profile));
-
-  void update(RestoProfile p) => state = AsyncValue.data(p);
-}

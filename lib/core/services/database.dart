@@ -53,12 +53,13 @@ class TransactionItems extends Table {
   IntColumn get discount => integer().withDefault(const Constant(0))();
 }
 
-class Expenses extends Table {
+class Users extends Table {
   TextColumn get id => text()();
-  TextColumn get category => text().nullable()();
-  TextColumn get note => text().nullable()();
-  IntColumn get amount => integer()();
-  DateTimeColumn get date => dateTime()();
+  TextColumn get username => text().unique()();
+  TextColumn get passwordHash => text()();
+  TextColumn get salt => text()();
+  TextColumn get role => text()();
+  BoolColumn get active => boolean().withDefault(const Constant(true))();
   DateTimeColumn get createdAt => dateTime()();
 
   @override
@@ -96,7 +97,7 @@ LazyDatabase _openConnection() {
 }
 
 @DriftDatabase(
-    tables: [Products, Transactions, TransactionItems, Expenses,
+    tables: [Products, Transactions, TransactionItems, Users,
              RestoProfiles, Counters])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -104,11 +105,20 @@ class AppDatabase extends _$AppDatabase {
   /// In-memory database for unit tests.
   AppDatabase.forTest() : super(NativeDatabase.memory());
 
+  /// Database backed by a specific file (used by backup/restore & migration tests).
+  AppDatabase.forFile(File file) : super(NativeDatabase.createInBackground(file));
+
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
+        onUpgrade: (m, from, to) async {
+          if (from < 2) {
+            await m.deleteTable('expenses');
+            await m.createTable(users);
+          }
+        },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
         },

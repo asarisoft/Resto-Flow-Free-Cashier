@@ -32,38 +32,4 @@ class Transaction {
   bool get hasDiscount => discount > 0 || items.any((i) => i.discount > 0);
 
   bool get isPrinted => printedAt != null;
-
-  Map<String, dynamic> toJson() => {
-        'number': number,
-        'items': items.map((e) => e.toJson()).toList(),
-        'subtotal': subtotal,
-        'discount': discount,
-        'total': total,
-        'paid': paid,
-        'change': change,
-        'paymentMethod': paymentMethod,
-        'profit': profit,
-        'printedAt': printedAt,
-        'createdAt': createdAt,
-      };
-
-  factory Transaction.fromJson(Map<String, dynamic> json, String id) =>
-      Transaction(
-        id: id,
-        number: json['number'] as int,
-        items: (json['items'] as List)
-            .map((e) => TransactionItem.fromJson(e as Map<String, dynamic>))
-            .toList(),
-        subtotal: json['subtotal'] as int,
-        discount: json['discount'] as int? ?? 0,
-        total: json['total'] as int,
-        paid: json['paid'] as int,
-        change: json['change'] as int? ?? 0,
-        paymentMethod: json['paymentMethod'] as String? ?? 'cash',
-        profit: json['profit'] as int,
-        printedAt: json['printedAt'] != null
-            ? (json['printedAt'] as dynamic).toDate()
-            : null,
-        createdAt: (json['createdAt'] as dynamic).toDate(),
-      );
 }

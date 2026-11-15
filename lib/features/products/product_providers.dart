@@ -1,24 +1,22 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../models/product.dart';
-import '../../core/services/firestore_provider.dart';
-import '../../features/auth/auth_controller.dart';
+import '../../core/services/database_provider.dart';
+import '../../core/services/daos/products_dao.dart';
 import '../products/product_repository.dart';
 
+final productsDaoProvider = Provider<ProductsDao>((ref) =>
+    ProductsDao(ref.watch(databaseProvider)));
+
 final productRepositoryProvider = Provider<ProductRepository>((ref) {
-  final uid = ref.watch(userIdProvider)!;
-  final firestore = ref.watch(firestoreProvider);
-  return ProductRepository(firestore, uid);
+  return ProductRepository(ref.watch(productsDaoProvider));
 });
 
 final productListProvider = StreamProvider<List<Product>>((ref) {
   final repo = ref.watch(productRepositoryProvider);
-  return repo.stream().map((snap) => snap.docs
-      .map((d) => Product.fromJson(d.data() as Map<String, dynamic>, d.id))
-      .toList());
+  return repo.stream();
 });
 
 final productProvider = FutureProvider.family<Product?, String>((ref, id) async {
-  // For simplicity, filter from list provider
   final products = await ref.watch(productListProvider.future);
   try {
     return products.firstWhere((p) => p.id == id);

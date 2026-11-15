@@ -6,8 +6,8 @@ import '../../features/auth/login_page.dart';
 import '../../features/home/home_shell.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
-  final authAsync = ref.watch(authStateProvider);
-  final user = authAsync.valueOrNull;
+  final userAsync = ref.watch(currentUserProvider);
+  final user = userAsync.valueOrNull;
 
   return GoRouter(
     initialLocation: '/home',

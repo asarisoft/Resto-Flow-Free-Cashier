@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/primary_button.dart';
-import '../auth/auth_controller.dart';
+import '../../models/resto_profile.dart';
+import '../settings/settings_providers.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -213,26 +213,21 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
     try {
-      final uid = ref.read(userIdProvider);
-      if (uid == null) throw Exception('Not logged in');
-      await FirebaseFirestore.instance
-          .doc('users/$uid/profile/resto')
-          .set({
-        'name': _nameCtrl.text.trim(),
-        'address': _addressCtrl.text.trim().isEmpty
+      final repo = ref.read(settingsRepositoryProvider);
+      await repo.updateProfile(RestoProfile(
+        name: _nameCtrl.text.trim(),
+        address: _addressCtrl.text.trim().isEmpty
             ? null
             : _addressCtrl.text.trim(),
-        'phone': _phoneCtrl.text.trim().isEmpty
+        phone: _phoneCtrl.text.trim().isEmpty
             ? null
             : _phoneCtrl.text.trim(),
-        'footerNote': _footerCtrl.text.trim().isEmpty
+        footerNote: _footerCtrl.text.trim().isEmpty
             ? null
             : _footerCtrl.text.trim(),
-        'paperWidth': _paperWidth,
-        'useLogo': false,
-        'logoUrl': null,
-        'createdAt': FieldValue.serverTimestamp(),
-      });
+        paperWidth: _paperWidth,
+        createdAt: DateTime.now(),
+      ));
       ref.invalidate(profileProvider);
     } catch (e) {
       // TODO: show error snackbar

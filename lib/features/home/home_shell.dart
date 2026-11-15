@@ -4,11 +4,13 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../auth/auth_controller.dart';
 import '../onboarding/onboarding_page.dart';
+import '../settings/settings_providers.dart';
 import '../pos/pos_page.dart';
 import '../products/product_list_page.dart';
 import '../reports/report_page.dart';
-import '../expenses/expense_list_page.dart';
 import '../settings/settings_page.dart';
+import '../users/user_list_page.dart';
+import '../users/users_providers.dart';
 class HomeShell extends ConsumerWidget {
   const HomeShell({super.key});
 
@@ -73,12 +75,15 @@ class _MainShellState extends ConsumerState<_MainShell> {
 
   @override
   Widget build(BuildContext context) {
-    final pages = const [
-      PosPage(),
-      ProductListPage(),
-      ReportPage(),
-      ExpenseListPage(),
-      SettingsPage(),
+    final canReports = ref.watch(canSeeReportsProvider);
+    final canSettings = ref.watch(canSeeSettingsProvider);
+    final canUsers = ref.watch(canManageUsersProvider);
+    final pages = <Widget>[
+      const PosPage(),
+      const ProductListPage(),
+      if (canReports) const ReportPage(),
+      if (canSettings) const SettingsPage(),
+      if (canUsers) const UserListPage(),
     ];
 
     return LayoutBuilder(
@@ -112,18 +117,18 @@ class _MainShellState extends ConsumerState<_MainShell> {
                         child: Text('MAIN MENU', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
                       _buildSidebarItem(0, Icons.point_of_sale, 'Order'),
-                      _buildSidebarItem(2, Icons.bar_chart, 'Statistics'),
+                      if (canReports) _buildSidebarItem(2, Icons.bar_chart, 'Statistics'),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8).copyWith(top: 16),
                         child: Text('MANAGEMENT', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
                       _buildSidebarItem(1, Icons.inventory_2, 'Products'),
-                      _buildSidebarItem(3, Icons.receipt_long, 'Expenses'),
+                      if (canUsers) _buildSidebarItem(4, Icons.people, 'Users'),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8).copyWith(top: 16),
                         child: Text('SUPPORT', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
-                      _buildSidebarItem(4, Icons.settings, 'Settings'),
+                      if (canSettings) _buildSidebarItem(3, Icons.settings, 'Settings'),
                     ],
                   ),
                 ),
@@ -164,11 +169,6 @@ class _MainShellState extends ConsumerState<_MainShell> {
                 icon: Icon(Icons.bar_chart_outlined),
                 selectedIcon: Icon(Icons.bar_chart, color: AppColors.primary),
                 label: 'Laporan',
-              ),
-              NavigationDestination(
-                icon: Icon(Icons.receipt_long_outlined),
-                selectedIcon: Icon(Icons.receipt_long, color: AppColors.primary),
-                label: 'Biaya',
               ),
               NavigationDestination(
                 icon: Icon(Icons.settings_outlined),

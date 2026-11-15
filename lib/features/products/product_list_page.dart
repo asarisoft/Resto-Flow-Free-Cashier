@@ -138,9 +138,9 @@ class _ProductCard extends StatelessWidget {
           children: [
             Expanded(
               flex: 3,
-              child: product.imageUrl != null
+              child: product.imagePath != null
                   ? CachedNetworkImage(
-                      imageUrl: product.imageUrl!,
+                      imageUrl: product.imagePath!,
                       width: double.infinity,
                       fit: BoxFit.cover,
                       placeholder: (_, __) => Container(
