@@ -11,14 +11,17 @@ class UsersDao {
     if (count.isNotEmpty) return;
     final salt = PasswordHasher.generateSalt();
     final hash = PasswordHasher.hash('P@ssw0rd123', salt);
-    await db.into(db.users).insert(UsersCompanion.insert(
-          id: 'admin',
-          username: 'admin',
-          passwordHash: hash,
-          salt: salt,
-          role: 'owner',
-          createdAt: DateTime.now(),
-        ));
+    await db.into(db.users).insert(
+          UsersCompanion.insert(
+            id: 'admin',
+            username: 'admin',
+            passwordHash: hash,
+            salt: salt,
+            role: 'owner',
+            createdAt: DateTime.now(),
+          ),
+          mode: InsertMode.insertOrIgnore,
+        );
   }
 
   Future<User?> verify(String username, String password) async {

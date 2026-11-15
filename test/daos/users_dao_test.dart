@@ -16,6 +16,14 @@ void main() {
     final all = await dao.getAll();
     expect(all.where((u) => u.username == 'admin').length, 1);
   });
+  test('concurrent seed calls do not throw and keep one admin', () async {
+    await Future.wait([
+      dao.seedDefaultOwnerIfEmpty(),
+      dao.seedDefaultOwnerIfEmpty(),
+    ]);
+    final all = await dao.getAll();
+    expect(all.where((u) => u.username == 'admin').length, 1);
+  });
   test('verify accepts correct password, rejects wrong one', () async {
     await dao.seedDefaultOwnerIfEmpty();
     expect(await dao.verify('admin', 'P@ssw0rd123'), isNotNull);
