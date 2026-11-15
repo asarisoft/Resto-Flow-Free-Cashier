@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir_resto/core/services/database.dart' hide Product, Transaction, TransactionItem, RestoProfile, Users, User;
 import 'package:kasir_resto/core/services/daos/users_dao.dart';
@@ -33,5 +36,21 @@ void main() {
     final id = await dao.add(username: 'kasir1', password: 'pass123', role: 'kasir');
     await dao.setActive(id, false);
     expect(await dao.verify('kasir1', 'pass123'), isNull);
+  });
+  test('legacy hash user can login and is upgraded to pbkdf2', () async {
+    const salt = 'abcd';
+    final legacy = sha256.convert(utf8.encode('P@ssw0rd123$salt')).toString();
+    await db.into(db.users).insert(UsersCompanion.insert(
+          id: 'old',
+          username: 'old',
+          passwordHash: legacy,
+          salt: salt,
+          role: 'kasir',
+          createdAt: DateTime.now(),
+        ));
+    expect(await dao.verify('old', 'P@ssw0rd123'), isNotNull);
+    final row = await dao.getById('old');
+    expect(row!.passwordHash.startsWith('pbkdf2\$100000\$'), isTrue);
+    expect(await dao.verify('old', 'P@ssw0rd123'), isNotNull);
   });
 }

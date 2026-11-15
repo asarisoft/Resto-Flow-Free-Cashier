@@ -28,8 +28,12 @@ class UsersDao {
     final row = await (db.select(db.users)..where((u) => u.username.equals(username))).getSingleOrNull();
     if (row == null) return null;
     if (!row.active) return null;
-    final hash = PasswordHasher.hash(password, row.salt);
-    if (hash != row.passwordHash) return null;
+    if (!PasswordHasher.verify(password, row.salt, row.passwordHash)) return null;
+    if (PasswordHasher.isLegacy(row.passwordHash)) {
+      await (db.update(db.users)..where((u) => u.id.equals(row.id))).write(
+            UsersCompanion(passwordHash: Value(PasswordHasher.hash(password, row.salt))),
+          );
+    }
     return row;
   }
 
