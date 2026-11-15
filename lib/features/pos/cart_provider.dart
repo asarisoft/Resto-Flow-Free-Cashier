@@ -37,7 +37,7 @@ class CartNotifier extends Notifier<List<TransactionItem>> {
   void updateDiscount(int index, int discount) {
     state = [
       for (var i = 0; i < state.length; i++)
-        if (i == index) state[i].copyWith(discount: discount) else state[i],
+        if (i == index) state[i].copyWith(discount: discount.clamp(0, state[i].price)) else state[i],
     ];
   }
 

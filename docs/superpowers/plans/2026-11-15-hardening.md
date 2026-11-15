@@ -69,16 +69,16 @@
 
 **Files:** `lib/features/pos/` (cart/pos providers), `lib/core/services/daos/reports_dao.dart`, `test/features/pos/cart_test.dart`, `test/daos/reports_dao_test.dart`
 
-- [ ] Cari logika total/diskon/kembalian di `lib/features/pos/` dan laba di `ReportsDao`.
-- [ ] Tulis tes:
+- [x] Cari logika total/diskon/kembalian di `lib/features/pos/` dan laba di `ReportsDao`.
+- [x] Tulis tes:
   - subtotal = Σ(harga × qty)
   - diskon per item & diskon total; total tidak pernah < 0
   - kembalian = bayar − total; bayar < total → ditolak / tidak valid
   - laba kotor = omzet − HPP; laba bersih = laba kotor − pengeluaran
   - semua nilai `int`
-- [ ] Jalankan tes. Kalau ada yang gagal karena bug → perbaiki minimal. Kalau ada `double` untuk uang → ganti `int`.
-- [ ] Jalankan tes → LULUS.
-- [ ] Commit: `test: cover cart totals, discounts, change and profit`.
+- [x] Jalankan tes. Kalau ada yang gagal karena bug → perbaiki minimal. Kalau ada `double` untuk uang → ganti `int`.
+- [x] Jalankan tes → LULUS.
+- [x] Commit: `test: cover cart totals, discounts, change and profit`.
 
 ## Task D: Guard role
 

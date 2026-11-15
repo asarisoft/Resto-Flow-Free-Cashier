@@ -12,6 +12,7 @@ import '../../printer/receipt_builder.dart';
 import '../../features/products/product_providers.dart';
 import '../../features/products/product_image.dart';
 import '../pos/cart_provider.dart';
+import 'checkout_calc.dart';
 import '../auth/auth_controller.dart';
 import '../settings/settings_providers.dart';
 import 'pos_providers.dart';
@@ -584,12 +585,16 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
     super.dispose();
   }
 
-  int get _subtotal =>
-      ref.read(cartProvider).fold(0, (s, i) => s + i.subtotal);
+  CheckoutCalc get _calc => CheckoutCalc(
+        items: ref.read(cartProvider),
+        discount: int.tryParse(_discCtrl.text) ?? 0,
+        paid: int.tryParse(_paidCtrl.text) ?? 0,
+      );
+  int get _subtotal => _calc.subtotal;
   int get _discount => int.tryParse(_discCtrl.text) ?? 0;
-  int get _total => (_subtotal - _discount).clamp(0, _subtotal);
+  int get _total => _calc.total;
   int get _paid => int.tryParse(_paidCtrl.text) ?? 0;
-  int get _change => (_paid - _total).clamp(0, _paid);
+  int get _change => _calc.change;
 
   @override
   Widget build(BuildContext context) {
@@ -703,7 +708,7 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
       final profileAsync = ref.read(profileProvider);
       
       final number = await txnRepo.getNextNumber();
-      final profit = items.fold(0, (s, i) => s + i.totalProfit) - _discount;
+      final profit = _calc.profit;
 
       final txn = models.Transaction(
         number: number,

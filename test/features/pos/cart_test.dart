@@ -1,0 +1,45 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_test/flutter_test.dart';
+import 'package:kasir_resto/features/pos/cart_provider.dart';
+import 'package:kasir_resto/models/product.dart';
+
+Product product(String id, int price, {int hpp = 0}) => Product(
+    id: id, name: id, price: price, hpp: hpp,
+    createdAt: DateTime(2026), updatedAt: DateTime(2026));
+
+void main() {
+  late ProviderContainer c;
+  setUp(() => c = ProviderContainer());
+  tearDown(() => c.dispose());
+  CartNotifier cart() => c.read(cartProvider.notifier);
+
+  test('adding same product twice increments qty and subtotal', () {
+    cart().addItem(product('a', 10000));
+    cart().addItem(product('a', 10000));
+    expect(c.read(cartProvider).length, 1);
+    expect(cart().subtotal, 20000);
+    expect(cart().itemCount, 2);
+  });
+
+  test('item discount reduces subtotal per unit', () {
+    cart().addItem(product('a', 10000));
+    cart().updateQty(0, 3);
+    cart().updateDiscount(0, 1000);
+    expect(cart().subtotal, 27000);
+  });
+
+  test('item discount is clamped between 0 and price', () {
+    cart().addItem(product('a', 10000));
+    cart().updateDiscount(0, 99999);
+    expect(c.read(cartProvider).first.discount, 10000);
+    cart().updateDiscount(0, -5);
+    expect(c.read(cartProvider).first.discount, 0);
+  });
+
+  test('qty <= 0 removes the item', () {
+    cart().addItem(product('a', 10000));
+    cart().updateQty(0, 0);
+    expect(c.read(cartProvider), isEmpty);
+    expect(cart().subtotal, 0);
+  });
+}
