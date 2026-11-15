@@ -8,21 +8,25 @@ Palet 60-30-10:
 |---------------|---------------|-----------|----------------------------------------|
 | Dasar (60%)   | Putih tulang  | `#F4F1EA` | Background halaman                     |
 | Teks (30%)    | Hitam         | `#0E0E0E` | Teks utama, judul                      |
-| Aksen (10%)   | Oranye        | `#FF5B1F` | Tombol Bayar, harga, total, badge cart |
+| Aksen (10%)   | Oranye bata   | `#C2410C` | Tombol Bayar, harga, total, badge cart (putih di atasnya 5.18:1) |
 
 Warna tambahan:
 
 | Peran            | Hex       | Pemakaian                        |
 |------------------|-----------|----------------------------------|
 | Surface/Card     | `#FFFFFF` | Card, dialog                     |
-| Border           | `#EFEFEF` | Border card, divider             |
-| Teks sekunder    | `#64748B` | Subtitle, label                  |
-| Success / Ready  | `#16A34A` | Chip "Ready", status aktif       |
-| Danger / Habis   | `#DC2626` | Chip "Habis", error, hapus       |
+| Border kartu     | `#DDD7C8` | Border card (dekoratif), divider |
+| Border input     | `#8C8677` | Border field/kontrol (3.21:1 vs bg) |
+| Teks sekunder    | `#556070` | Subtitle, label (5.65:1 vs bg)   |
+| Success / Ready  | `#15803D` | Chip "Ready", status aktif       |
+| Danger / Habis   | `#B91C1C` | Chip "Habis", error, hapus       |
+| Warning          | `#B45309` | Peringatan                       |
 
 ## Font
 
-- **Font family**: Inter (Google Fonts)
+- **Font family**: **Outfit** (judul, angka besar) + **Work Sans** (isi, label, angka uang).
+  Di-bundle di `assets/fonts/` (app offline, tanpa fetch internet). Lisensi OFL.
+  Sebelumnya: Inter via `google_fonts` (diganti).
 - Number/uang: `FontFeature.tabularFigures()` agar angka rata kolom
 
 | Style             | Size/Height | Weight          | Pemakaian              |
@@ -47,19 +51,19 @@ Warna tambahan:
 
 - Padding default halaman: 16 dp.
 - Card radius: 12. Button radius: 10.
-- Divider: `color: #EFEFEF, height: 1`.
+- Divider: `color: #DDD7C8, height: 1`.
 
 ## Shadow
 
-- **Default: tanpa shadow.** Card pakai border 1px `#EFEFEF`.
+- **Default: tanpa shadow.** Card pakai border 1px `#DDD7C8`.
 - Shadow halus (`elevation: 1–2`) hanya untuk: `FloatingActionButton`, `BottomAppBar`, dialog.
 
 ## Komponen Reusable (`core/widgets/`)
 
 | Widget          | Fungsi                                              |
 |-----------------|-----------------------------------------------------|
-| `AppCard`       | Container datar, border `#EFEFEF` + radius 12       |
-| `PrimaryButton` | Tombol aksen `#FF5B1F`, teks putih                  |
+| `AppCard`       | Container datar, border `#DDD7C8` + radius 12       |
+| `PrimaryButton` | Tombol aksen `#C2410C`, teks putih                  |
 | `SecondaryButton`| Tombol outline, border 1.5 dp                      |
 | `AmountText`    | Format rupiah + tabular figures                     |
 | `ReadyChip`     | Chip hijau "Ready" / merah "Habis"                  |
@@ -68,24 +72,37 @@ Warna tambahan:
 
 ## Ikon
 
-Material Symbols (bundled Flutter):
+Set ikon **slim (garis tipis)**: Lucide (`lucide_icons_flutter`); fallback `phosphor_flutter` Light.
+Semua ikon lewat `AppIcons` (`lib/core/theme/app_icons.dart`) — dilarang `Icons.*` di layar.
+Sebelumnya: Material `Icons.*` (diganti).
 
-| Fitur     | Ikon                   |
-|-----------|------------------------|
-| Login     | `Icons.login`          |
-| Kasir/POS | `Icons.point_of_sale`  |
-| Produk    | `Icons.inventory_2`    |
-| Pengeluaran | `Icons.receipt_long` |
-| Laporan   | `Icons.bar_chart`      |
-| Pengeluaran | `Icons.receipt_long` |
-| Setting   | `Icons.settings`       |
-| Printer   | `Icons.print`          |
-| User      | `Icons.people`         |
-| Backup    | `Icons.backup`         |
+| Token | Ukuran | Pemakaian                         |
+|-------|--------|-----------------------------------|
+| `sm`  | 16 dp  | Ikon dalam chip/teks kecil        |
+| `md`  | 20 dp  | Default (tombol, list)            |
+| `lg`  | 24 dp  | Navigasi, header                  |
+
+| Fitur       | Nama `AppIcons` |
+|-------------|-----------------|
+| Login/Logout | `login` / `logout` |
+| Kasir/POS   | `pos`           |
+| Produk      | `product`       |
+| Pengeluaran | `expense`       |
+| Laporan     | `report`        |
+| Setting     | `settings`      |
+| Printer     | `print`         |
+| User        | `users`         |
+| Backup      | `backup`        |
+
+Aturan: ikon tombol tanpa teks wajib `tooltip`; ikon dekoratif di samping teks tidak diberi label;
+satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 
 ## Prinsip
 
 - Light theme only (tanpa dark mode).
+- Kontras: teks ≥ 4.5:1, batas kontrol input ≥ 3:1 (dicek tes `app_colors_contrast_test`).
+- Warna/ikon/font hanya lewat token (`AppColors`, `AppIcons`, `AppTypography`); tanpa hex/`Colors.*`/`Icons.*` di layar.
+- Bahasa UI: Indonesia.
 - Flat, clean, profesional. Minim shadow.
 - Animasi simple & purpose-driven, bukan dekorasi.
 - Mobile-first, responsive di tablet (breakpoint 600 dp).

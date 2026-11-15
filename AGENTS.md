@@ -15,7 +15,7 @@
 
 ### Saat kerja UI / tampilan
 - Bikin halaman/komponen baru: pakai `frontend-design`.
-- Poles tampilan yang sudah ada: pakai `impeccable`.
+- Poles tampilan yang sudah ada: pakai `ui-ux-pro-max`.
 - Sebelum bilang selesai: cek dengan `web-design-guidelines`.
 - Warna & gaya mengikuti `docs/DESIGN.md`.
 - selalu pake `ponytail`
