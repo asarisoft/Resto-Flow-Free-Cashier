@@ -5,6 +5,7 @@ import '../../core/theme/app_typography.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../models/resto_profile.dart';
 import '../settings/settings_providers.dart';
+import '../../core/theme/app_icons.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
   const OnboardingPage({super.key});
@@ -56,7 +57,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                         color: Colors.white.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(16),
                       ),
-                      child: const Icon(Icons.star, color: Colors.white, size: 48),
+                      child: const Icon(AppIcons.star, color: Colors.white, size: AppIcons.hero),
                     ),
                     const SizedBox(height: 32),
                     Text(
@@ -75,13 +76,13 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                       ),
                     ),
                     const SizedBox(height: 48),
-                    _featureRow(Icons.check_circle, 'Kelola Produk Tanpa Batas', textTheme),
+                    _featureRow(AppIcons.checkCircle, 'Kelola Produk Tanpa Batas', textTheme),
                     const SizedBox(height: 12),
-                    _featureRow(Icons.check_circle, 'Catat Pengeluaran & Pemasukan', textTheme),
+                    _featureRow(AppIcons.checkCircle, 'Catat Pengeluaran & Pemasukan', textTheme),
                     const SizedBox(height: 12),
-                    _featureRow(Icons.check_circle, 'Cetak Struk Bluetooth Thermal', textTheme),
+                    _featureRow(AppIcons.checkCircle, 'Cetak Struk Bluetooth Thermal', textTheme),
                     const SizedBox(height: 12),
-                    _featureRow(Icons.check_circle, 'Laporan Keuangan Realtime', textTheme),
+                    _featureRow(AppIcons.checkCircle, 'Laporan Keuangan Realtime', textTheme),
                   ],
                 ),
               ),
@@ -158,7 +159,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   Widget _featureRow(IconData icon, String text, TextTheme textTheme) {
     return Row(
       children: [
-        Icon(icon, color: Colors.white, size: 24),
+        Icon(icon, color: Colors.white, size: AppIcons.lg),
         const SizedBox(width: 12),
         Text(
           text,
@@ -191,7 +192,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         child: Column(
           children: [
             Icon(
-              Icons.print_rounded,
+              AppIcons.print,
               color: selected ? AppColors.primary : AppColors.textSecondary,
             ),
             const SizedBox(height: 8),

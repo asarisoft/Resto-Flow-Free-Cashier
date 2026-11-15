@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/primary_button.dart';
 import 'auth_controller.dart';
+import '../../core/theme/app_icons.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
   const LoginPage({super.key});
@@ -76,8 +77,8 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                         ? 'Tampilkan password'
                         : 'Sembunyikan password',
                     icon: Icon(_obscurePassword
-                        ? Icons.visibility_outlined
-                        : Icons.visibility_off_outlined),
+                        ? AppIcons.visible
+                        : AppIcons.hidden),
                     onPressed: () => setState(
                       () => _obscurePassword = !_obscurePassword,
                     ),
@@ -87,7 +88,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               const SizedBox(height: 24),
               PrimaryButton(
                 label: 'Masuk',
-                icon: Icons.login,
+                icon: AppIcons.login,
                 loading: _loading,
                 onPressed: _loading ? null : _submit,
               ),

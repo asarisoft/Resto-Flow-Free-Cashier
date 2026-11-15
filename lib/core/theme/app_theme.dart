@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'app_colors.dart';
+import 'app_icons.dart';
 import 'app_typography.dart';
 
 class AppTheme {
@@ -22,6 +23,7 @@ class AppTheme {
       ),
       scaffoldBackgroundColor: AppColors.background,
       textTheme: textTheme,
+      iconTheme: const IconThemeData(size: AppIcons.md),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,

@@ -9,6 +9,7 @@ import '../../models/product.dart';
 import '../products/product_providers.dart';
 import 'product_image.dart';
 import 'product_image_service.dart';
+import '../../core/theme/app_icons.dart';
 
 class ProductFormPage extends ConsumerStatefulWidget {
   final Product? product;
@@ -78,12 +79,12 @@ class _ProductFormPageState extends ConsumerState<ProductFormPage> {
                         ? ProductImage(
                             path: _imagePath,
                             placeholder: const Center(
-                                child: Icon(Icons.broken_image, size: 48)))
+                                child: Icon(AppIcons.brokenImage, size: AppIcons.hero)))
                         : Column(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Icon(Icons.add_photo_alternate_outlined,
-                                  size: 40, color: AppColors.textSecondary),
+                              Icon(AppIcons.addPhoto,
+                                  size: AppIcons.xl, color: AppColors.textSecondary),
                               const SizedBox(height: 8),
                               Text('Tap untuk tambah foto',
                                   style: textTheme.bodyMedium?.copyWith(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_icons.dart';
 import '../theme/app_typography.dart';
 
 class PrimaryButton extends StatelessWidget {
@@ -36,7 +37,7 @@ class PrimaryButton extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 if (icon != null) ...[
-                  Icon(icon, size: 20),
+                  Icon(icon, size: AppIcons.md),
                   const SizedBox(width: 8),
                 ],
                 Text(label),
@@ -74,7 +75,7 @@ class SecondaryButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           if (icon != null) ...[
-            Icon(icon, size: 20),
+            Icon(icon, size: AppIcons.md),
             const SizedBox(width: 8),
           ],
           Text(label),

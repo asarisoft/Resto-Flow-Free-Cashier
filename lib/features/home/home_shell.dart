@@ -11,6 +11,7 @@ import '../settings/settings_page.dart';
 import '../users/user_list_page.dart';
 import '../users/users_providers.dart';
 import '../expenses/expense_list_page.dart';
+import '../../core/theme/app_icons.dart';
 enum HomeTab { pos, products, expenses, reports, settings, users }
 
 /// Tabs visible for the current role. Pages, sidebar and bottom nav all use
@@ -103,12 +104,12 @@ class _MainShellState extends ConsumerState<_MainShell> {
 
   NavigationDestination _navDestination(HomeTab tab) {
     final (icon, selectedIcon, label) = switch (tab) {
-      HomeTab.pos => (Icons.point_of_sale_outlined, Icons.point_of_sale, 'Kasir'),
-      HomeTab.products => (Icons.inventory_2_outlined, Icons.inventory_2, 'Produk'),
-      HomeTab.expenses => (Icons.receipt_long_outlined, Icons.receipt_long, 'Pengeluaran'),
-      HomeTab.reports => (Icons.bar_chart_outlined, Icons.bar_chart, 'Laporan'),
-      HomeTab.settings => (Icons.settings_outlined, Icons.settings, 'Setting'),
-      HomeTab.users => (Icons.people_outline, Icons.people, 'Pengguna'),
+      HomeTab.pos => (AppIcons.pos, AppIcons.pos, 'Kasir'),
+      HomeTab.products => (AppIcons.product, AppIcons.product, 'Produk'),
+      HomeTab.expenses => (AppIcons.expense, AppIcons.expense, 'Pengeluaran'),
+      HomeTab.reports => (AppIcons.report, AppIcons.report, 'Laporan'),
+      HomeTab.settings => (AppIcons.settings, AppIcons.settings, 'Setting'),
+      HomeTab.users => (AppIcons.users, AppIcons.users, 'Pengguna'),
     };
     return NavigationDestination(
       icon: Icon(icon),
@@ -153,7 +154,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
                         padding: const EdgeInsets.all(24),
                         child: Row(
                           children: [
-                            const Icon(Icons.local_fire_department, color: AppColors.primary, size: 32),
+                            const Icon(AppIcons.brand, color: AppColors.primary, size: AppIcons.xl),
                             const SizedBox(width: 12),
                             Text('Resto Flow Free', style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                           ],
@@ -163,20 +164,20 @@ class _MainShellState extends ConsumerState<_MainShell> {
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
                         child: Text('MAIN MENU', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
-                      _buildSidebarItem(tabs.indexOf(HomeTab.pos), Icons.point_of_sale, 'Order'),
-                      if (canReports) _buildSidebarItem(tabs.indexOf(HomeTab.reports), Icons.bar_chart, 'Statistics'),
+                      _buildSidebarItem(tabs.indexOf(HomeTab.pos), AppIcons.pos, 'Order'),
+                      if (canReports) _buildSidebarItem(tabs.indexOf(HomeTab.reports), AppIcons.report, 'Statistics'),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8).copyWith(top: 16),
                         child: Text('MANAGEMENT', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
-                      _buildSidebarItem(tabs.indexOf(HomeTab.products), Icons.inventory_2, 'Products'),
-                      if (canExpenses) _buildSidebarItem(tabs.indexOf(HomeTab.expenses), Icons.receipt_long, 'Expenses'),
-                      if (canUsers) _buildSidebarItem(tabs.indexOf(HomeTab.users), Icons.people, 'Users'),
+                      _buildSidebarItem(tabs.indexOf(HomeTab.products), AppIcons.product, 'Products'),
+                      if (canExpenses) _buildSidebarItem(tabs.indexOf(HomeTab.expenses), AppIcons.expense, 'Expenses'),
+                      if (canUsers) _buildSidebarItem(tabs.indexOf(HomeTab.users), AppIcons.users, 'Users'),
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8).copyWith(top: 16),
                         child: Text('SUPPORT', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
-                      if (canSettings) _buildSidebarItem(tabs.indexOf(HomeTab.settings), Icons.settings, 'Settings'),
+                      if (canSettings) _buildSidebarItem(tabs.indexOf(HomeTab.settings), AppIcons.settings, 'Settings'),
                     ],
                   ),
                 ),

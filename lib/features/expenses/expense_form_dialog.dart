@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../models/expense.dart';
 import 'expense_providers.dart';
+import '../../core/theme/app_icons.dart';
 
 /// Parses an expense amount. Returns null unless it is a positive integer.
 int? parseExpenseAmount(String raw) {
@@ -133,7 +134,7 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
                   controller: _dateCtrl,
                   decoration: const InputDecoration(
                     labelText: 'Tanggal',
-                    suffixIcon: Icon(Icons.calendar_today_outlined),
+                    suffixIcon: Icon(AppIcons.calendar),
                   ),
                   readOnly: true,
                   onTap: _saving ? null : _pickDate,

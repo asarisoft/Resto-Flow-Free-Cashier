@@ -8,6 +8,7 @@ import '../../core/widgets/empty_state.dart';
 import '../../models/expense.dart';
 import 'expense_form_dialog.dart';
 import 'expense_providers.dart';
+import '../../core/theme/app_icons.dart';
 
 class ExpenseListPage extends ConsumerWidget {
   const ExpenseListPage({super.key});
@@ -40,7 +41,7 @@ class ExpenseListPage extends ConsumerWidget {
                         ),
                         const Expanded(
                           child: EmptyState(
-                            icon: Icons.receipt_long_outlined,
+                            icon: AppIcons.expense,
                             title: 'Belum ada pengeluaran',
                             subtitle: 'Catat pengeluaran pertama Anda',
                           ),
@@ -66,7 +67,7 @@ class ExpenseListPage extends ConsumerWidget {
         heroTag: 'add_expense',
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
-        icon: const Icon(Icons.add),
+        icon: const Icon(AppIcons.add),
         label: const Text('Tambah'),
         onPressed: () => showDialog(
           context: context,

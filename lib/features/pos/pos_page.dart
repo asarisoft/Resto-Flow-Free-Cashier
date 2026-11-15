@@ -16,6 +16,7 @@ import 'checkout_calc.dart';
 import '../auth/auth_controller.dart';
 import '../settings/settings_providers.dart';
 import 'pos_providers.dart';
+import '../../core/theme/app_icons.dart';
 
 class PosPage extends ConsumerStatefulWidget {
   const PosPage({super.key});
@@ -149,7 +150,7 @@ class _PosPageState extends ConsumerState<PosPage> {
               ),
               child: Row(
                 children: [
-                  const Icon(Icons.shopping_cart, color: AppColors.onPrimary),
+                  const Icon(AppIcons.cart, color: AppColors.onPrimary),
                   const SizedBox(width: 12),
                   Text('${cart.fold(0, (s, i) => s + i.qty)} Items',
                       style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.bold)),
@@ -300,14 +301,14 @@ class _PosProductCard extends ConsumerWidget {
                             placeholder: Container(
                               color: AppColors.divider,
                               child: const Center(
-                                  child: Icon(Icons.fastfood,
-                                      size: 48, color: Colors.grey)),
+                                  child: Icon(AppIcons.food,
+                                      size: AppIcons.hero, color: Colors.grey)),
                             ))
                         : Container(
                             color: AppColors.divider,
                             child: const Center(
-                                child: Icon(Icons.fastfood,
-                                    size: 48, color: Colors.grey)),
+                                child: Icon(AppIcons.food,
+                                    size: AppIcons.hero, color: Colors.grey)),
                           ),
                   ),
                   if (isSelected)
@@ -320,7 +321,7 @@ class _PosProductCard extends ConsumerWidget {
                           color: AppColors.primary,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(Icons.check, size: 16, color: AppColors.onPrimary),
+                        child: const Icon(AppIcons.check, size: AppIcons.sm, color: AppColors.onPrimary),
                       ),
                     ),
                 ],
@@ -453,7 +454,7 @@ class _CartPanel extends ConsumerWidget {
                   children: const [
                     Text('Proceed Order', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
                     SizedBox(width: 8),
-                    Icon(Icons.arrow_forward, size: 20),
+                    Icon(AppIcons.arrowRight, size: AppIcons.md),
                   ],
                 ),
               ),
@@ -498,7 +499,7 @@ class _CartItemRow extends StatelessWidget {
               color: AppColors.primary.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(12),
             ),
-            child: const Icon(Icons.fastfood, color: AppColors.primary),
+            child: const Icon(AppIcons.food, color: AppColors.primary),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -522,7 +523,7 @@ class _CartItemRow extends StatelessWidget {
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Icon(Icons.remove, size: 16, color: AppColors.primary),
+                        child: const Icon(AppIcons.remove, size: AppIcons.sm, color: AppColors.primary),
                       ),
                     ),
                     Padding(
@@ -537,7 +538,7 @@ class _CartItemRow extends StatelessWidget {
                           color: AppColors.primary.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                         ),
-                        child: const Icon(Icons.add, size: 16, color: AppColors.primary),
+                        child: const Icon(AppIcons.add, size: AppIcons.sm, color: AppColors.primary),
                       ),
                     ),
                   ],

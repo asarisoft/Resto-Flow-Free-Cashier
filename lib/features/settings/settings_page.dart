@@ -15,6 +15,7 @@ import '../../features/users/users_providers.dart';
 import 'settings_providers.dart';
 
 import 'printer_pairing_page.dart';
+import '../../core/theme/app_icons.dart';
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
@@ -57,7 +58,7 @@ class SettingsPage extends ConsumerWidget {
                     const SizedBox(height: 12),
                     SecondaryButton(
                       label: 'Edit Profil',
-                      icon: Icons.edit,
+                      icon: AppIcons.edit,
                       onPressed: () =>
                           _editProfile(context, profile),
                     ),
@@ -73,7 +74,7 @@ class SettingsPage extends ConsumerWidget {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Icon(Icons.print_outlined,
+                        Icon(AppIcons.print,
                             color: AppColors.primary),
                         const SizedBox(width: 12),
                         Text(
@@ -85,7 +86,7 @@ class SettingsPage extends ConsumerWidget {
                     const SizedBox(height: 12),
                     SecondaryButton(
                       label: 'Pairing Printer',
-                      icon: Icons.bluetooth,
+                      icon: AppIcons.bluetooth,
                       onPressed: () => _pairPrinter(context),
                     ),
                   ],
@@ -108,13 +109,13 @@ class SettingsPage extends ConsumerWidget {
                       const SizedBox(height: 12),
                       SecondaryButton(
                         label: 'Backup Sekarang',
-                        icon: Icons.upload_file,
+                        icon: AppIcons.restore,
                         onPressed: () => _exportBackup(context, ref),
                       ),
                       const SizedBox(height: 8),
                       SecondaryButton(
                         label: 'Restore dari File',
-                        icon: Icons.download,
+                        icon: AppIcons.backup,
                         onPressed: () => _restoreBackup(context, ref),
                       ),
                     ],
@@ -128,7 +129,7 @@ class SettingsPage extends ConsumerWidget {
                   title: Text('Logout',
                       style: textTheme.bodyLarge
                           ?.copyWith(color: AppColors.error)),
-                  trailing: const Icon(Icons.logout,
+                  trailing: const Icon(AppIcons.logout,
                       color: AppColors.error),
                   onTap: () => _logout(context, ref),
                 ),

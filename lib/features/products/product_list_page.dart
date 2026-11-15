@@ -9,6 +9,7 @@ import '../../models/product.dart';
 import '../products/product_providers.dart';
 import 'product_form_page.dart';
 import 'product_image.dart';
+import '../../core/theme/app_icons.dart';
 
 class ProductListPage extends ConsumerWidget {
   const ProductListPage({super.key});
@@ -30,12 +31,12 @@ class ProductListPage extends ConsumerWidget {
         data: (products) {
           if (products.isEmpty) {
             return EmptyState(
-              icon: Icons.inventory_2_outlined,
+              icon: AppIcons.product,
               title: 'Belum ada produk',
               subtitle: 'Tambahkan produk pertama Anda',
               action: FilledButton.icon(
                 style: FilledButton.styleFrom(backgroundColor: AppColors.primary, foregroundColor: AppColors.onPrimary),
-                icon: const Icon(Icons.add),
+                icon: const Icon(AppIcons.add),
                 label: const Text('Tambah Produk'),
                 onPressed: () => _openForm(context, ref),
               ),
@@ -49,7 +50,7 @@ class ProductListPage extends ConsumerWidget {
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,
         onPressed: () => _openForm(context, ref),
-        child: const Icon(Icons.add),
+        child: const Icon(AppIcons.add),
       ),
     );
   }
@@ -143,13 +144,13 @@ class _ProductCard extends StatelessWidget {
                       path: product.imagePath,
                       placeholder: Container(
                           color: AppColors.background,
-                          child: const Icon(Icons.restaurant, size: 32,
+                          child: const Icon(AppIcons.restaurant, size: AppIcons.xl,
                               color: AppColors.textSecondary)),
                     )
                   : Container(
                       color: AppColors.background,
                       child: const Center(
-                        child: Icon(Icons.restaurant, size: 32,
+                        child: Icon(AppIcons.restaurant, size: AppIcons.xl,
                             color: AppColors.textSecondary),
                       ),
                     ),

@@ -3,6 +3,7 @@ import 'package:bluetooth_serial_next/bluetooth_serial_next.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../printer/printer_service.dart';
+import '../../core/theme/app_icons.dart';
 
 class PrinterPairingPage extends StatefulWidget {
   const PrinterPairingPage({super.key});
@@ -70,14 +71,14 @@ class _PrinterPairingPageState extends State<PrinterPairingPage> {
           if (!_scanning && _devices.isEmpty)
             Column(
               children: [
-                const Icon(Icons.bluetooth_disabled,
-                    size: 48, color: AppColors.textSecondary),
+                const Icon(AppIcons.bluetoothOff,
+                    size: AppIcons.hero, color: AppColors.textSecondary),
                 const SizedBox(height: 12),
                 Text('Tidak ditemukan printer',
                     style: textTheme.bodyLarge),
                 const SizedBox(height: 16),
                 FilledButton.icon(
-                  icon: const Icon(Icons.refresh),
+                  icon: const Icon(AppIcons.refresh),
                   label: const Text('Scan Ulang'),
                   onPressed: _scan,
                 ),
@@ -109,8 +110,8 @@ class _PrinterPairingPageState extends State<PrinterPairingPage> {
         children: [
           Icon(
             connected
-                ? Icons.bluetooth_connected
-                : Icons.bluetooth,
+                ? AppIcons.bluetoothConnected
+                : AppIcons.bluetooth,
             color: connected
                 ? AppColors.primary
                 : AppColors.textSecondary,

@@ -11,6 +11,7 @@ import '../../printer/receipt_builder.dart';
 import '../../features/settings/settings_providers.dart';
 import '../reports/report_providers.dart';
 import '../reports/report_repository.dart';
+import '../../core/theme/app_icons.dart';
 
 class ReportPage extends ConsumerStatefulWidget {
   const ReportPage({super.key});
@@ -122,7 +123,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
             data: (txns) {
               if (txns.isEmpty) {
                 return const EmptyState(
-                  icon: Icons.receipt_long_outlined,
+                  icon: AppIcons.expense,
                   title: 'Belum ada transaksi',
                 );
               }
@@ -190,21 +191,21 @@ class _SummaryCards extends StatelessWidget {
             _card(
               'Omzet',
               summary.totalRevenue,
-              Icons.trending_up,
+              AppIcons.trendingUp,
               AppColors.success,
               isWide, textTheme,
             ),
             _card(
               'Pengeluaran',
               summary.totalExpense,
-              Icons.receipt_long_outlined,
+              AppIcons.expense,
               AppColors.warning,
               isWide, textTheme,
             ),
             _card(
               'Laba Bersih',
               summary.netProfit,
-              Icons.account_balance_wallet,
+              AppIcons.wallet,
               summary.netProfit >= 0
                   ? AppColors.success
                   : AppColors.error,
@@ -213,7 +214,7 @@ class _SummaryCards extends StatelessWidget {
             _card(
               'Transaksi',
               summary.transactionCount,
-              Icons.receipt,
+              AppIcons.receipt,
               AppColors.primary,
               isWide, textTheme,
               isCount: true,
@@ -235,7 +236,7 @@ class _SummaryCards extends StatelessWidget {
           children: [
             Row(
               children: [
-                Icon(icon, size: 20, color: color),
+                Icon(icon, size: AppIcons.md, color: color),
                 const SizedBox(width: 8),
                 Text(label,
                     style: tt.bodyMedium
@@ -304,7 +305,7 @@ class _TransactionRow extends StatelessWidget {
           ),
           const SizedBox(width: 8),
           IconButton(
-            icon: const Icon(Icons.print_outlined, size: 20),
+            icon: const Icon(AppIcons.print, size: AppIcons.md),
             onPressed: onReprint,
             tooltip: 'Cetak ulang',
           ),

@@ -4,6 +4,7 @@ import '../../core/services/daos/users_dao.dart';
 import '../auth/auth_controller.dart' hide usersDaoProvider;
 import 'users_providers.dart';
 import 'user_form_dialog.dart';
+import '../../core/theme/app_icons.dart';
 
 class UserListPage extends ConsumerWidget {
   const UserListPage({super.key});
@@ -15,7 +16,7 @@ class UserListPage extends ConsumerWidget {
       appBar: AppBar(title: const Text('Users')),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialog(context: context, builder: (_) => const UserFormDialog()),
-        child: const Icon(Icons.add),
+        child: const Icon(AppIcons.add),
       ),
       body: users.when(
         loading: () => const Center(child: CircularProgressIndicator()),
