@@ -9,6 +9,7 @@ class AppTheme {
     final textTheme = AppTypography.textTheme;
     return ThemeData(
       useMaterial3: true,
+      fontFamily: AppTypography.body,
       brightness: Brightness.light,
       colorScheme: ColorScheme.fromSeed(
         seedColor: AppColors.primary,

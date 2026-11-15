@@ -38,7 +38,6 @@ dependencies:
   esc_pos_utils: ^1.1.0
   bluetooth_serial_next: ^0.1.0
   shared_preferences: ^2.5.5
-  google_fonts: ^6.2.0
   drift: ^2.34.3
   sqlite3_flutter_libs: ^0.6.0+eol
   path_provider: ^2.1.6
@@ -64,6 +63,26 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+
+  fonts:
+    - family: Outfit
+      fonts:
+        - asset: assets/fonts/Outfit-Variable.ttf
+          weight: 500
+        - asset: assets/fonts/Outfit-Variable.ttf
+          weight: 600
+        - asset: assets/fonts/Outfit-Variable.ttf
+          weight: 700
+    - family: WorkSans
+      fonts:
+        - asset: assets/fonts/WorkSans-Variable.ttf
+          weight: 400
+        - asset: assets/fonts/WorkSans-Variable.ttf
+          weight: 500
+        - asset: assets/fonts/WorkSans-Variable.ttf
+          weight: 600
+        - asset: assets/fonts/WorkSans-Variable.ttf
+          weight: 700
 
   # To add assets to your application, add an assets section, like this:
   # assets:
