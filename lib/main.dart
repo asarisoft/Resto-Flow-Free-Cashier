@@ -22,8 +22,18 @@ class KasirRestoApp extends ConsumerWidget {
     return MaterialApp.router(
       title: 'Resto Flow Free',
       theme: AppTheme.light,
+      builder: clampTextScale,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
   }
+}
+
+/// Batasi ukuran teks sistem (maks 1.3x) supaya layout kasir tidak pecah.
+Widget clampTextScale(BuildContext context, Widget? child) {
+  final mq = MediaQuery.of(context);
+  return MediaQuery(
+    data: mq.copyWith(textScaler: mq.textScaler.clamp(maxScaleFactor: 1.3)),
+    child: child ?? const SizedBox.shrink(),
+  );
 }
