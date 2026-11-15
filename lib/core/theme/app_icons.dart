@@ -28,6 +28,8 @@ class AppIcons {
   static const IconData edit = LucideIcons300.pencil;
   static const IconData check = LucideIcons300.check;
   static const IconData search = LucideIcons300.search;
+  static const IconData export = LucideIcons300.fileDown;
+  static const IconData delete = LucideIcons300.trash2;
   static const IconData close = LucideIcons300.x;
   static const IconData filterReset = LucideIcons300.filterX;
   static const IconData checkCircle = LucideIcons300.circleCheck;

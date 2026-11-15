@@ -5,6 +5,7 @@ import '../../models/expense.dart';
 import 'expense_providers.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/app_form_dialog.dart';
+import '../../core/theme/app_colors.dart';
 
 /// Parses an expense amount. Returns null unless it is a positive integer.
 int? parseExpenseAmount(String raw) {
@@ -17,7 +18,9 @@ String formatExpenseDate(DateTime date) =>
     DateFormat('dd/MM/yyyy').format(date);
 
 class ExpenseFormDialog extends ConsumerStatefulWidget {
-  const ExpenseFormDialog({super.key});
+  /// `null` = tambah baru; terisi = ubah/hapus pengeluaran tsb.
+  final Expense? expense;
+  const ExpenseFormDialog({super.key, this.expense});
 
   @override
   ConsumerState<ExpenseFormDialog> createState() => _ExpenseFormDialogState();
@@ -32,9 +35,18 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
   DateTime _date = DateTime.now();
   bool _saving = false;
 
+  bool get _editing => widget.expense != null;
+
   @override
   void initState() {
     super.initState();
+    final e = widget.expense;
+    if (e != null) {
+      _categoryCtrl.text = e.category ?? '';
+      _noteCtrl.text = e.note ?? '';
+      _amountCtrl.text = e.amount.toString();
+      _date = e.date;
+    }
     _dateCtrl.text = formatExpenseDate(_date);
   }
 
@@ -68,13 +80,24 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
     try {
       final category = _categoryCtrl.text.trim();
       final note = _noteCtrl.text.trim();
-      await ref.read(expenseRepositoryProvider).add(Expense(
-            category: category.isEmpty ? null : category,
-            note: note.isEmpty ? null : note,
-            amount: amount,
-            date: _date,
-            createdAt: DateTime.now(),
-          ));
+      final repo = ref.read(expenseRepositoryProvider);
+      final old = widget.expense;
+      if (old != null) {
+        await repo.save(old.copyWith(
+          category: category.isEmpty ? null : category,
+          note: note.isEmpty ? null : note,
+          amount: amount,
+          date: _date,
+        ));
+      } else {
+        await repo.add(Expense(
+          category: category.isEmpty ? null : category,
+          note: note.isEmpty ? null : note,
+          amount: amount,
+          date: _date,
+          createdAt: DateTime.now(),
+        ));
+      }
       if (mounted) Navigator.of(context).pop();
     } catch (e) {
       if (mounted) {
@@ -86,10 +109,40 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
     }
   }
 
+  Future<void> _delete() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hapus pengeluaran?'),
+        content: const Text('Hapus pengeluaran ini? Tindakan ini tidak bisa dibatalkan.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    setState(() => _saving = true);
+    try {
+      await ref.read(expenseRepositoryProvider).delete(widget.expense!.id!);
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        setState(() => _saving = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal hapus: $e')));
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return AppFormDialog(
-      title: 'Tambah Pengeluaran',
+      title: _editing ? 'Ubah Pengeluaran' : 'Tambah Pengeluaran',
+      onDelete: _editing ? _delete : null,
       formKey: _formKey,
       saving: _saving,
       submitLabel: 'Simpan',

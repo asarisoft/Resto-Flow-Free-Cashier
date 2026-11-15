@@ -14,6 +14,9 @@ import '../../models/expense.dart';
 import 'expense_filter.dart';
 import 'expense_form_dialog.dart';
 import 'expense_providers.dart';
+import 'package:intl/intl.dart';
+import '../../core/services/csv_share.dart';
+import 'expense_export.dart';
 
 class ExpenseListPage extends ConsumerStatefulWidget {
   const ExpenseListPage({super.key});
@@ -35,6 +38,13 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
+        actions: [
+          IconButton(
+            tooltip: 'Ekspor CSV',
+            icon: const Icon(AppIcons.export),
+            onPressed: () => _export(expensesAsync.valueOrNull ?? const []),
+          ),
+        ],
       ),
       body: expensesAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -53,6 +63,21 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _export(List<Expense> all) async {
+    final rows = applyExpenseFilter(all, _filter, DateTime.now());
+    if (rows.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tidak ada data untuk diekspor')));
+      return;
+    }
+    try {
+      final stamp = DateFormat('yyyyMMdd').format(DateTime.now());
+      await shareCsv('pengeluaran_$stamp.csv', expensesCsv(rows));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ekspor gagal: $e')));
+    }
   }
 
   Widget _buildBody(List<Expense> all) {
@@ -111,7 +136,8 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
             const SizedBox(height: 16),
             AppDataTable<Expense>(
               pageSize: 25,
-              rowLabel: (e) => 'Pengeluaran ${e.category ?? ''} ${e.amount}',
+              rowLabel: (e) => 'Ubah pengeluaran ${e.category ?? ''} ${e.amount}',
+              onRowTap: (e) => showDialog(context: context, builder: (_) => ExpenseFormDialog(expense: e)),
               empty: all.isEmpty
                   ? const EmptyState(
                       icon: AppIcons.expense,

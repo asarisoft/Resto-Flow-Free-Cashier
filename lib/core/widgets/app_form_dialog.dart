@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_icons.dart';
 import 'primary_button.dart';
 
 /// Dialog form standar: judul, field berjarak 16, pesan error, lalu
@@ -12,6 +13,7 @@ class AppFormDialog extends StatelessWidget {
   final bool saving;
   final String? error;
   final GlobalKey<FormState>? formKey;
+  final VoidCallback? onDelete;
 
   const AppFormDialog({
     super.key,
@@ -22,6 +24,7 @@ class AppFormDialog extends StatelessWidget {
     this.saving = false,
     this.error,
     this.formKey,
+    this.onDelete,
   });
 
   static double _width(BuildContext context) {
@@ -62,7 +65,11 @@ class AppFormDialog extends StatelessWidget {
       actions: [
         SizedBox(
           width: _width(context),
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+Row(
             children: [
               Expanded(
                 child: OutlinedButton(
@@ -83,6 +90,18 @@ class AppFormDialog extends StatelessWidget {
                   onPressed: onSubmit,
                 ),
               ),
+            ],
+          ),
+              if (onDelete != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 8),
+                  child: TextButton.icon(
+                    onPressed: saving ? null : onDelete,
+                    style: TextButton.styleFrom(foregroundColor: AppColors.error, minimumSize: const Size(0, 48)),
+                    icon: const Icon(AppIcons.delete),
+                    label: const Text('Hapus'),
+                  ),
+                ),
             ],
           ),
         ),

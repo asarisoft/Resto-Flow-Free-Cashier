@@ -19,6 +19,8 @@ import '../../features/settings/settings_providers.dart';
 import '../reports/report_providers.dart';
 import '../reports/report_repository.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/services/csv_share.dart';
+import 'report_export.dart';
 
 class ReportPage extends ConsumerStatefulWidget {
   const ReportPage({super.key});
@@ -47,6 +49,13 @@ class _ReportPageState extends ConsumerState<ReportPage> {
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
+        actions: [
+          IconButton(
+            tooltip: 'Ekspor CSV',
+            icon: const Icon(AppIcons.export),
+            onPressed: () => _export(txnsAsync.valueOrNull ?? const []),
+          ),
+        ],
       ),
       body: Center(
         child: ConstrainedBox(
@@ -190,6 +199,21 @@ class _ReportPageState extends ConsumerState<ReportPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _export(List<models.Transaction> all) async {
+    final rows = applyTransactionFilter(all, _filter);
+    if (rows.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tidak ada data untuk diekspor')));
+      return;
+    }
+    try {
+      final stamp = DateFormat('yyyyMMdd').format(DateTime.now());
+      await shareCsv('transaksi_$stamp.csv', transactionsCsv(rows));
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ekspor gagal: $e')));
+    }
   }
 
   void _reprint(models.Transaction txn) async {

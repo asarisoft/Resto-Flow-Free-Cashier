@@ -269,12 +269,17 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
   Metode | Total | Laba | Cetak ulang; baris ringkasan "N transaksi · Total Rp X" mengikuti filter
 - Ketuk baris → dialog rincian (item, subtotal, diskon, total, dibayar, kembali, laba, Cetak ulang)
 - Periode & rentang difilter di SQL; metode & pencarian di memori (`applyTransactionFilter`)
+- Ikon "Ekspor CSV" di AppBar: satu baris per transaksi sesuai filter
+  (No, Tanggal, Metode, Item, Subtotal, Diskon, Total, Dibayar, Kembali, Laba; uang = int)
+- CSV: BOM UTF-8, CRLF; teks berawalan `= + - @` diberi `'` (anti CSV injection) — `buildCsv`
 
 ### 7.6a Pengeluaran Page (Owner only)
 - Filter: periode (default Bulan ini), kategori (dropdown dari data), cari catatan/kategori, Reset
 - Kartu total pengeluaran (mengikuti filter) + jumlah catatan
 - Tabel `AppDataTable`: Tanggal | Kategori | Catatan | Nominal (25 baris per halaman)
 - Tombol "Tambah" → dialog form `AppFormDialog` (kategori, catatan, nominal int > 0, tanggal)
+- Ketuk baris → dialog **Ubah Pengeluaran** (terisi) dengan tombol **Hapus** (konfirmasi dulu)
+- Ikon "Ekspor CSV" di AppBar: mengekspor baris sesuai filter (Tanggal, Kategori, Catatan, Nominal)
 - Logika filter murni & teruji: `applyExpenseFilter`, `expenseCategories`, `totalExpenses`
 
 ### 7.7 Kelola User Page (Owner only)
