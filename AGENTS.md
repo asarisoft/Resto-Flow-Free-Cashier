@@ -1,23 +1,5 @@
 # AGENTS.md
 
-## Proyek
-Resto Flow Free — POS kasir resto/kafe, offline total (data lokal SQLite).
-Stack: Flutter (Dart), Riverpod, Drift, go_router, cetak struk ESC/POS Bluetooth.
-
-## Cara Run
-- `flutter pub get` — install dependency
-- `flutter run` — jalankan app
-- `dart run build_runner build --delete-conflicting-outputs` — regen kode Drift
-- `flutter analyze` — lint
-- `flutter test` — unit test
-
-## Peta Folder
-- `lib/core/` — theme, services (database/auth), widgets, router
-- `lib/features/` — modul per fitur (pos, products, reports, settings, auth, home)
-- `lib/models/` — model domain
-- `lib/printer/` — builder & service struk
-- `docs/` — PRD, DESIGN, DATABASE, plans
-
 ## Aturan Koding
 ### Selalu
 - Jawab ringkas pakai skill `caveman`, bahasa Indonesia.
@@ -34,9 +16,7 @@ Stack: Flutter (Dart), Riverpod, Drift, go_router, cetak struk ESC/POS Bluetooth
 - Bikin halaman/komponen baru: pakai `frontend-design`.
 - Poles tampilan yang sudah ada: pakai `impeccable`.
 - Sebelum bilang selesai: cek dengan `web-design-guidelines`.
-- Warna & gaya mengikuti `docs/DESIGN.md` (kalau ada).
-- Palet standar (60-30-10): dasar putih tulang `#F4F1EA`, teks hitam
-  `#0E0E0E`, aksen oranye `#FF5B1F` (tombol Bayar, harga, total).
+- Warna & gaya mengikuti `docs/DESIGN.md`.
 
 ### Sebelum commit
 - Review perubahan dengan `ponytail-review`.
@@ -59,7 +39,7 @@ Stack: Flutter (Dart), Riverpod, Drift, go_router, cetak struk ESC/POS Bluetooth
 - `graphify-out/` masuk `.gitignore`, jangan di-commit.
 
 ## Baca Dulu
-- Fitur/tujuan → `PRD.md`
+- Proyek, peta folder, fitur/tujuan → `docs/SPEC.md`
 - UI → `docs/DESIGN.md`
 - Database → `docs/DATABASE.md`
-- Rencana fitur → `docs/plans/`
+- Rencana fitur → `docs/superpowers/plans/`

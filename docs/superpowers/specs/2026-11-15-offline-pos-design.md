@@ -15,7 +15,7 @@ tanpa internet, data milik sendiri di device, bisa dibackup manual.
 - Laporan: omzet, laba kotor/bersih per hari & bulan.
 - Cetak struk Bluetooth thermal 58/80mm (ESC/POS) — tetap ada.
 - User lokal + role: Owner & Kasir.
-- Login: pilih user + PIN, tetap login sampai logout manual.
+- Login: pilih user + password teks, tetap login sampai logout manual.
 - Backup/restore lokal: export file ke folder, import kembali.
 
 ## Non-Goals
@@ -67,10 +67,9 @@ banyak kerja dan sentuh hampir semua file di `features/`.
 - **Backup**: export semua tabel + folder foto → arsip `.zip` lewat
   `share_plus`/simpan ke folder; restore via `file_picker` lalu replace DB.
 
-## Diserahkan ke builder
-- Format sesi login (shared_preferences vs tabel session) — pilih yang
-  simpel.
-- Apakah PIN dipisah dari password, atau PIN = input login tunggal.
-- Paksa ganti PIN default saat pertama login owner (ya/tidak).
-- Detail layout halaman kelola user & pilih-user saat login.
-- Strategi migrasi Drift (schemaVersion naik, drop tabel Expenses).
+## Diserahkan ke builder (sudah terjawab di plan)
+- Format sesi login → `shared_preferences`, key `session_user_id`.
+- PIN vs password → password teks (bukan PIN terpisah).
+- Paksa ganti password default saat pertama login → tidak di MVP.
+- Layout halaman kelola user → list + form dialog (lihat plan Task 10).
+- Migrasi Drift → `schemaVersion` naik, `onUpgrade` drop `Expenses`, create `Users` (lihat plan Task 1).
