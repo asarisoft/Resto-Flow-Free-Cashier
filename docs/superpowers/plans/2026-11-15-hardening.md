@@ -101,10 +101,10 @@
 
 ## Task F: Bersihkan dependency & file
 
-- [ ] `grep -rn "cached_network_image\|local_auth" lib test` → kalau kosong, hapus keduanya dari `pubspec.yaml`, jalankan `flutter pub get`.
-- [ ] Hapus `android/app/google-services.json` (tidak dipakai, gitignored).
-- [ ] `flutter analyze` bersih.
-- [ ] Commit: `chore: drop unused deps`.
+- [x] `grep -rn "cached_network_image\|local_auth" lib test` → kalau kosong, hapus keduanya dari `pubspec.yaml`, jalankan `flutter pub get`.
+- [x] Hapus `android/app/google-services.json` (tidak dipakai, gitignored).
+- [x] `flutter analyze` bersih.
+- [x] Commit: `chore: drop unused deps`.
 
 ## Task G: Sinkron dokumen
 
