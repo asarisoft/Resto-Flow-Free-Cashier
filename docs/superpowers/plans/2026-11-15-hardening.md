@@ -94,10 +94,10 @@
 
 **Files:** `lib/core/theme/app_colors.dart`
 
-- [ ] Ubah konstanta: background `0xFFF4F1EA`, primary `0xFFFF5B1F`, teks utama `0xFF0E0E0E`, teks sekunder `0xFF64748B`. Nilai lain cocokkan dengan tabel `docs/DESIGN.md`.
-- [ ] `grep -rn "Color(0x" lib | grep -v app_colors` → warna hardcode yang menyimpang dari DESIGN.md ganti ke `AppColors`.
-- [ ] `flutter analyze` bersih.
-- [ ] Commit: `fix: align AppColors with DESIGN.md palette`.
+- [x] Ubah konstanta: background `0xFFF4F1EA`, primary `0xFFFF5B1F`, teks utama `0xFF0E0E0E`, teks sekunder `0xFF64748B`. Nilai lain cocokkan dengan tabel `docs/DESIGN.md`.
+- [x] `grep -rn "Color(0x" lib | grep -v app_colors` → warna hardcode yang menyimpang dari DESIGN.md ganti ke `AppColors`.
+- [x] `flutter analyze` bersih.
+- [x] Commit: `fix: align AppColors with DESIGN.md palette`.
 
 ## Task F: Bersihkan dependency & file
 

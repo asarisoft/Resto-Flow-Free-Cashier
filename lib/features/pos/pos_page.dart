@@ -298,13 +298,13 @@ class _PosProductCard extends ConsumerWidget {
                         ? ProductImage(
                             path: product.imagePath,
                             placeholder: Container(
-                              color: const Color(0xFFF3F4F6),
+                              color: AppColors.divider,
                               child: const Center(
                                   child: Icon(Icons.fastfood,
                                       size: 48, color: Colors.grey)),
                             ))
                         : Container(
-                            color: const Color(0xFFF3F4F6),
+                            color: AppColors.divider,
                             child: const Center(
                                 child: Icon(Icons.fastfood,
                                     size: 48, color: Colors.grey)),
