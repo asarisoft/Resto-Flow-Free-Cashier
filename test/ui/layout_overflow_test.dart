@@ -7,6 +7,11 @@ import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/theme/app_theme.dart';
 import 'package:kasir_resto/features/auth/login_page.dart';
 import 'package:kasir_resto/features/expenses/expense_list_page.dart';
+import 'package:kasir_resto/core/services/daos/profile_dao.dart';
+import 'package:kasir_resto/models/resto_profile.dart';
+import 'package:kasir_resto/features/home/home_shell.dart';
+import 'package:kasir_resto/features/auth/auth_controller.dart' show currentUserProvider;
+import 'package:kasir_resto/models/app_user.dart';
 import 'package:kasir_resto/features/pos/pos_page.dart';
 import 'package:kasir_resto/features/reports/report_page.dart';
 import 'package:kasir_resto/features/users/user_list_page.dart';
@@ -19,6 +24,12 @@ import 'package:kasir_resto/main.dart' show clampTextScale;
 import 'package:kasir_resto/models/product.dart';
 import 'package:kasir_resto/models/transaction_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+
+const wideSizes = <String, Size>{
+  'tablet 1280x800': Size(1280, 800),
+  'tablet 1920x1200': Size(1920, 1200),
+  'landscape 800x360': Size(800, 360),
+};
 
 const sizes = <String, Size>{
   'phone 375x667': Size(375, 667),
@@ -99,4 +110,41 @@ void main() {
       });
     }
   }
+
+  group('wide layout', () {
+    for (final e in wideSizes.entries) {
+      testWidgets('HomeShell sidebar has no overflow on ${e.key}', (tester) async {
+        tester.view.physicalSize = e.value;
+        tester.view.devicePixelRatio = 1.0;
+        addTearDown(() async {
+          await tester.pumpWidget(const SizedBox());
+          await tester.pump(const Duration(seconds: 1));
+          tester.view.resetPhysicalSize();
+          tester.view.resetDevicePixelRatio();
+        });
+        await ProfileDao(db).save(RestoProfile(name: 'Warung Budi', createdAt: DateTime(2026)));
+        await tester.pumpWidget(ProviderScope(
+          overrides: [
+            databaseProvider.overrideWithValue(db),
+            currentUserProvider.overrideWith((ref) async =>
+                AppUser(id: 'o1', username: 'admin', role: 'owner', active: true)),
+          ],
+          child: MaterialApp(theme: AppTheme.light, builder: clampTextScale, home: const HomeShell()),
+        ));
+        for (var i = 0; i < 6; i++) {
+          await tester.pump(const Duration(milliseconds: 200));
+        }
+        expect(find.text('Resto Flow Free'), findsOneWidget, reason: 'sidebar must be visible (not onboarding)');
+        expect(tester.takeException(), isNull);
+      });
+    }
+
+    for (final w in [1280.0, 1920.0]) {
+      testWidgets('POS cart panel stays 300-340dp wide at ${w.toInt()}dp', (tester) async {
+        await pump(tester, Size(w, 800), const PosPage());
+        final width = tester.getSize(find.byKey(const Key('cart_panel'))).width;
+        expect(width, inInclusiveRange(300, 340));
+      });
+    }
+  });
 }

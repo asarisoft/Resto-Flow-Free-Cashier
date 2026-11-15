@@ -83,11 +83,15 @@ class _MainShellState extends ConsumerState<_MainShell> {
           children: [
             Icon(icon, color: isSelected ? AppColors.primary : AppColors.textSecondary),
             const SizedBox(width: 16),
-            Text(
-              label,
-              style: AppTypography.textTheme.titleMedium?.copyWith(
-                color: isSelected ? AppColors.primary : AppColors.textSecondary,
-                fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+            Expanded(
+              child: Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
+                style: AppTypography.textTheme.titleMedium?.copyWith(
+                  color: isSelected ? AppColors.primary : AppColors.textSecondary,
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                ),
               ),
             ),
           ],
@@ -159,7 +163,14 @@ class _MainShellState extends ConsumerState<_MainShell> {
                           children: [
                             const Icon(AppIcons.brand, color: AppColors.primary, size: AppIcons.xl),
                             const SizedBox(width: 12),
-                            Text('Resto Flow Free', style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                            Expanded(
+                              child: Text(
+                                'Resto Flow Free',
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                              ),
+                            ),
                           ],
                         ),
                       ),

@@ -47,10 +47,12 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               flex: 4,
               child: Container(
                 color: AppColors.primary,
-                padding: const EdgeInsets.all(48),
+                padding: const EdgeInsets.all(32),
+                child: Center(
+                  child: SingleChildScrollView(
                 child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
                       padding: const EdgeInsets.all(12),
@@ -85,6 +87,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     const SizedBox(height: 12),
                     _featureRow(AppIcons.checkCircle, 'Laporan Keuangan Realtime', textTheme),
                   ],
+                ),
+                  ),
                 ),
               ),
             ),
@@ -129,11 +133,13 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       children: [
         Icon(icon, color: AppColors.onPrimary, size: AppIcons.lg),
         const SizedBox(width: 12),
-        Text(
-          text,
-          style: textTheme.bodyLarge?.copyWith(
-            color: AppColors.onPrimary.withValues(alpha: 0.9),
-            fontWeight: FontWeight.w500,
+        Expanded(
+          child: Text(
+            text,
+            style: textTheme.bodyLarge?.copyWith(
+              color: AppColors.onPrimary.withValues(alpha: 0.9),
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ),
       ],

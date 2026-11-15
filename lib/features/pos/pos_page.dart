@@ -105,11 +105,17 @@ class _PosPageState extends ConsumerState<PosPage> {
             ],
           ),
         ),
-        // Cart Sidebar
-        Container(
-          width: 380,
-          color: AppColors.surface,
-          child: _CartPanel(cart: cart),
+        // Rincian pesanan: ~26% layar, dibatasi 300-340 dp.
+        LayoutBuilder(
+          builder: (context, _) {
+            final w = (MediaQuery.sizeOf(context).width * 0.26).clamp(300.0, 340.0);
+            return Container(
+              key: const Key('cart_panel'),
+              width: w,
+              color: AppColors.surface,
+              child: _CartPanel(cart: cart),
+            );
+          },
         ),
       ],
     );

@@ -7,6 +7,7 @@ import 'package:kasir_resto/core/services/daos/users_dao.dart';
 import 'package:kasir_resto/core/services/database.dart' show AppDatabase;
 import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/theme/app_theme.dart';
+import 'package:kasir_resto/core/widgets/filter_panel.dart';
 import 'package:kasir_resto/features/expenses/expense_list_page.dart';
 import 'package:kasir_resto/features/reports/report_page.dart';
 import 'package:kasir_resto/features/users/user_list_page.dart';
@@ -58,6 +59,24 @@ void main() {
       expect(find.text('Token PLN'), findsOneWidget);
       expect(find.text('Minyak goreng'), findsNothing);
       expect(find.text('Reset filter'), findsNothing);
+    });
+
+    testWidgets('filter panel is compact on a wide screen (no wasted rows)', (tester) async {
+      await pump(tester, const ExpenseListPage());
+      final h = tester.getSize(find.byType(FilterPanel)).height;
+      expect(h, lessThanOrEqualTo(146), reason: 'panel height $h');
+      // Reset tidak makan baris sendiri saat filter default.
+      expect(find.text('Reset filter'), findsNothing);
+    });
+
+    testWidgets('Reset sits inside the panel flow (adds no extra row)', (tester) async {
+      await pump(tester, const ExpenseListPage());
+      final before = tester.getSize(find.byType(FilterPanel)).height;
+      await tester.tap(find.text('Semua'));
+      await tester.pump(const Duration(milliseconds: 300));
+      final after = tester.getSize(find.byType(FilterPanel)).height;
+      expect(find.text('Reset filter'), findsOneWidget);
+      expect(after, lessThanOrEqualTo(before + 1), reason: 'before=$before after=$after');
     });
 
     testWidgets('period "Semua" includes older expenses; Reset returns to default', (tester) async {

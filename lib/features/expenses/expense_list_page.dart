@@ -94,40 +94,31 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
           children: [
             FilterPanel(
               onReset: _filter.isDefault ? null : () => setState(() => _filter = const ExpenseFilter()),
-              children: [
-                PeriodFilterBar(
-                  value: _filter.period,
-                  onChanged: (p) => setState(() => _filter = _filter.copyWith(period: p)),
+              top: PeriodFilterBar(
+                value: _filter.period,
+                onChanged: (p) => setState(() => _filter = _filter.copyWith(period: p)),
+              ),
+              fields: [
+                SizedBox(
+                  width: 220,
+                  child: DropdownButtonFormField<String?>(
+                    key: ValueKey(category),
+                    initialValue: category,
+                    isExpanded: true,
+                    decoration: const InputDecoration(labelText: 'Kategori'),
+                    items: [
+                      const DropdownMenuItem<String?>(value: null, child: Text('Semua kategori')),
+                      for (final c in categories) DropdownMenuItem<String?>(value: c, child: Text(c)),
+                    ],
+                    onChanged: (v) => setState(() => _filter = v == null
+                        ? _filter.copyWith(clearCategory: true)
+                        : _filter.copyWith(category: v)),
+                  ),
                 ),
-                Wrap(
-                  spacing: 12,
-                  runSpacing: 12,
-                  children: [
-                    SizedBox(
-                      width: 240,
-                      child: DropdownButtonFormField<String?>(
-                        key: ValueKey(category),
-                        initialValue: category,
-                        isExpanded: true,
-                        decoration: const InputDecoration(labelText: 'Kategori'),
-                        items: [
-                          const DropdownMenuItem<String?>(value: null, child: Text('Semua kategori')),
-                          for (final c in categories) DropdownMenuItem<String?>(value: c, child: Text(c)),
-                        ],
-                        onChanged: (v) => setState(() => _filter = v == null
-                            ? _filter.copyWith(clearCategory: true)
-                            : _filter.copyWith(category: v)),
-                      ),
-                    ),
-                    SizedBox(
-                      width: 320,
-                      child: SearchField(
-                        hint: 'Cari catatan / kategori',
-                        value: _filter.query,
-                        onChanged: (q) => setState(() => _filter = _filter.copyWith(query: q)),
-                      ),
-                    ),
-                  ],
+                SearchField(
+                  hint: 'Cari catatan / kategori',
+                  value: _filter.query,
+                  onChanged: (q) => setState(() => _filter = _filter.copyWith(query: q)),
                 ),
               ],
             ),

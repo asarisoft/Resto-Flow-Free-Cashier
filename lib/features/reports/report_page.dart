@@ -65,41 +65,32 @@ class _ReportPageState extends ConsumerState<ReportPage> {
             children: [
               FilterPanel(
                 onReset: _filter.isDefault ? null : () => setState(() => _filter = const TransactionFilter()),
-                children: [
-                  PeriodFilterBar(
-                    value: _filter.period,
-                    onChanged: (p) => setState(() => _filter = _filter.copyWith(period: p)),
+                top: PeriodFilterBar(
+                  value: _filter.period,
+                  onChanged: (p) => setState(() => _filter = _filter.copyWith(period: p)),
+                ),
+                fields: [
+                  SizedBox(
+                    width: 220,
+                    child: DropdownButtonFormField<String?>(
+                      key: ValueKey(_filter.method),
+                      initialValue: _filter.method,
+                      isExpanded: true,
+                      decoration: const InputDecoration(labelText: 'Metode bayar'),
+                      items: const [
+                        DropdownMenuItem<String?>(value: null, child: Text('Semua metode')),
+                        DropdownMenuItem<String?>(value: 'cash', child: Text('Tunai')),
+                        DropdownMenuItem<String?>(value: 'qris', child: Text('QRIS')),
+                        DropdownMenuItem<String?>(value: 'card', child: Text('Kartu')),
+                      ],
+                      onChanged: (v) => setState(() => _filter =
+                          v == null ? _filter.copyWith(clearMethod: true) : _filter.copyWith(method: v)),
+                    ),
                   ),
-                  Wrap(
-                    spacing: 12,
-                    runSpacing: 12,
-                    children: [
-                      SizedBox(
-                        width: 220,
-                        child: DropdownButtonFormField<String?>(
-                          key: ValueKey(_filter.method),
-                          initialValue: _filter.method,
-                          isExpanded: true,
-                          decoration: const InputDecoration(labelText: 'Metode bayar'),
-                          items: const [
-                            DropdownMenuItem<String?>(value: null, child: Text('Semua metode')),
-                            DropdownMenuItem<String?>(value: 'cash', child: Text('Tunai')),
-                            DropdownMenuItem<String?>(value: 'qris', child: Text('QRIS')),
-                            DropdownMenuItem<String?>(value: 'card', child: Text('Kartu')),
-                          ],
-                          onChanged: (v) => setState(() => _filter =
-                              v == null ? _filter.copyWith(clearMethod: true) : _filter.copyWith(method: v)),
-                        ),
-                      ),
-                      SizedBox(
-                        width: 320,
-                        child: SearchField(
-                          hint: 'Cari no. struk / nama item',
-                          value: _filter.query,
-                          onChanged: (q) => setState(() => _filter = _filter.copyWith(query: q)),
-                        ),
-                      ),
-                    ],
+                  SearchField(
+                    hint: 'Cari no. struk / nama item',
+                    value: _filter.query,
+                    onChanged: (q) => setState(() => _filter = _filter.copyWith(query: q)),
                   ),
                 ],
               ),
