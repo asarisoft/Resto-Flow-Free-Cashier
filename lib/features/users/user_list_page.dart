@@ -5,6 +5,7 @@ import '../auth/auth_controller.dart' hide usersDaoProvider;
 import 'users_providers.dart';
 import 'user_form_dialog.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/widgets/empty_state.dart';
 
 class UserListPage extends ConsumerWidget {
   const UserListPage({super.key});
@@ -13,7 +14,7 @@ class UserListPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final users = ref.watch(userListProvider);
     return Scaffold(
-      appBar: AppBar(title: const Text('Users')),
+      appBar: AppBar(title: const Text('Pengguna')),
       floatingActionButton: FloatingActionButton(
         onPressed: () => showDialog(context: context, builder: (_) => const UserFormDialog()),
         child: const Icon(AppIcons.add),
@@ -21,13 +22,15 @@ class UserListPage extends ConsumerWidget {
       body: users.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
-        data: (list) => ListView.builder(
+        data: (list) => list.isEmpty
+            ? const EmptyState(icon: AppIcons.users, title: 'Belum ada pengguna')
+            : ListView.builder(
           itemCount: list.length,
           itemBuilder: (context, i) {
             final u = list[i];
             return ListTile(
               title: Text(u.username),
-              subtitle: Text(u.role),
+              subtitle: Text(u.role == 'owner' ? 'Owner' : 'Kasir'),
               trailing: Switch(
                 value: u.active,
                 onChanged: (v) async {

@@ -78,7 +78,7 @@ class _PosPageState extends ConsumerState<PosPage> {
             children: [
               Padding(
                 padding: const EdgeInsets.only(left: 24, top: 24),
-                child: Text('Order Menu', style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                child: Text('Menu', style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
               ),
               const SizedBox(height: 16),
               // Horizontal Categories
@@ -157,7 +157,7 @@ class _PosPageState extends ConsumerState<PosPage> {
                 children: [
                   const Icon(AppIcons.cart, color: AppColors.onPrimary),
                   const SizedBox(width: 12),
-                  Text('${cart.fold(0, (s, i) => s + i.qty)} Items',
+                  Text('${cart.fold(0, (s, i) => s + i.qty)} item',
                       style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.bold)),
                   const Spacer(),
                   AmountText(
@@ -176,6 +176,7 @@ class _PosPageState extends ConsumerState<PosPage> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
+      useSafeArea: true,
       backgroundColor: Colors.transparent,
       builder: (_) => Container(
         height: MediaQuery.of(context).size.height * 0.85,
@@ -288,7 +289,7 @@ class _PosProductCard extends ConsumerWidget {
           boxShadow: [
             if (!isSelected)
               BoxShadow(
-                color: Colors.black.withValues(alpha: 0.03),
+                color: AppColors.textPrimary.withValues(alpha: 0.03),
                 blurRadius: 10,
                 offset: const Offset(0, 4),
               )
@@ -402,7 +403,7 @@ class _CartPanel extends ConsumerWidget {
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 48, left: 24, right: 24, bottom: 16),
-          child: Text('Order Detail', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          child: Text('Rincian Pesanan', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
         ),
         Expanded(
           child: cart.isEmpty
@@ -428,7 +429,7 @@ class _CartPanel extends ConsumerWidget {
             decoration: const BoxDecoration(
             color: AppColors.surface,
             boxShadow: [
-              BoxShadow(color: Colors.black12, blurRadius: 10, offset: Offset(0, -4))
+              BoxShadow(color: Color(0x1F0E0E0E), blurRadius: 10, offset: Offset(0, -4))
             ],
           ),
           child: Column(
@@ -436,7 +437,7 @@ class _CartPanel extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Items (${cart.fold(0, (s, i) => s + i.qty)})', style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                  Text('Jumlah item (${cart.fold(0, (s, i) => s + i.qty)})', style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
                   AmountText(amount: subtotal, style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
                 ],
               ),
@@ -464,10 +465,10 @@ class _CartPanel extends ConsumerWidget {
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: const [
-                    Text('Proceed Order', style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
-                    SizedBox(width: 8),
-                    Icon(AppIcons.arrowRight, size: AppIcons.md),
+                  children: [
+                    Text('Bayar', style: AppTypography.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    const SizedBox(width: 8),
+                    const Icon(AppIcons.arrowRight, size: AppIcons.md),
                   ],
                 ),
               ),

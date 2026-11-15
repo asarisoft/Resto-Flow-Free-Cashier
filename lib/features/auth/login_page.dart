@@ -50,7 +50,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     final textTheme = AppTypography.textTheme;
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: Center(
+      body: SafeArea(child: Center(
         child: SingleChildScrollView(
           padding: const EdgeInsets.symmetric(horizontal: 48),
           child: Column(
@@ -70,6 +70,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               TextField(
                 controller: _passwordController,
                 obscureText: _obscurePassword,
+                textInputAction: TextInputAction.done,
+                autofillHints: const [AutofillHints.password],
+                onSubmitted: (_) => _loading ? null : _submit(),
                 decoration: InputDecoration(
                   labelText: 'Password',
                   suffixIcon: IconButton(
@@ -95,7 +98,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ],
           ),
         ),
-      ),
+      )),
     );
   }
 

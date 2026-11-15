@@ -131,10 +131,14 @@ class _PrinterPairingPageState extends State<PrinterPairingPage> {
             ),
           ),
           if (_connecting)
-            const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(strokeWidth: 2),
+            Semantics(
+              label: 'Menghubungkan printer',
+              liveRegion: true,
+              child: SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
             )
           else if (connected)
             FilledButton(

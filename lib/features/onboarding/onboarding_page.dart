@@ -38,7 +38,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     final textTheme = AppTypography.textTheme;
     return Scaffold(
       appBar: AppBar(title: const Text('Setup Resto')),
-      body: Form(
+      body: SafeArea(child: Form(
         key: _formKey,
         child: Row(
           children: [
@@ -55,7 +55,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.white.withValues(alpha: 0.2),
+                        color: AppColors.onPrimary.withValues(alpha: 0.2),
                         borderRadius: BorderRadius.circular(16),
                       ),
                       child: const Icon(AppIcons.star, color: Colors.white, size: AppIcons.hero),
@@ -72,7 +72,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
                     Text(
                       'Aplikasi kasir pintar untuk bisnis restoran dan kafe Anda. Didesain secara profesional, mudah digunakan, dan 100% GRATIS tanpa batasan fitur maupun biaya tersembunyi.',
                       style: textTheme.titleMedium?.copyWith(
-                        color: Colors.white.withValues(alpha: 0.9),
+                        color: AppColors.onPrimary.withValues(alpha: 0.9),
                         height: 1.5,
                       ),
                     ),
@@ -147,7 +147,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             ),
           ],
         ),
-      ),
+      )),
     );
   }
 
@@ -159,7 +159,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         Text(
           text,
           style: textTheme.bodyLarge?.copyWith(
-            color: Colors.white.withValues(alpha: 0.9),
+            color: AppColors.onPrimary.withValues(alpha: 0.9),
             fontWeight: FontWeight.w500,
           ),
         ),

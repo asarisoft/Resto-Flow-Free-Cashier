@@ -28,14 +28,15 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
         mainAxisSize: MainAxisSize.min,
         children: [
           TextField(controller: _username, decoration: const InputDecoration(labelText: 'Username')),
-          TextField(controller: _password, decoration: const InputDecoration(labelText: 'Password'), obscureText: true),
+          TextField(controller: _password, decoration: const InputDecoration(labelText: 'Password (min. 8 karakter)'), obscureText: true),
           if (_error != null)
             Padding(
               padding: const EdgeInsets.only(top: 8),
               child: Text(_error!, style: const TextStyle(color: AppColors.error)),
             ),
-          DropdownButton<String>(
-            value: _role,
+          DropdownButtonFormField<String>(
+            initialValue: _role,
+            decoration: const InputDecoration(labelText: 'Role'),
             items: const [
               DropdownMenuItem(value: 'owner', child: Text('Owner')),
               DropdownMenuItem(value: 'kasir', child: Text('Kasir')),
