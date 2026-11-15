@@ -74,6 +74,10 @@ Warna tambahan:
 | `QtyStepper`    | Tombol − qty +, target sentuh ≥ 48 dp               |
 | `TapArea`       | Ripple + Semantics tombol (pengganti `GestureDetector`) |
 | `ChoiceSegment` | Pilihan 1-dari-N (58/80 mm, Hari Ini/Bulan Ini)      |
+| `AppDataTable`  | Tabel standar: header, baris berpembatas, angka rata kanan, scroll horizontal di layar sempit, "Tampilkan lebih banyak" per 25 baris. Dipakai Pengeluaran, Transaksi, Pengguna |
+| `FilterPanel`   | Kartu kontrol filter + "Reset filter" (muncul saat filter aktif) |
+| `PeriodFilterBar`| Chip periode: Hari ini / Bulan ini / Bulan lalu / Semua / Pilih tanggal (rentang) |
+| `SearchField`   | Kolom cari dengan ikon + tombol hapus               |
 | `ReceiptPreview`| Preview nota monospace (teks sama dengan yang dicetak) di form profil |
 
 ## Ikon

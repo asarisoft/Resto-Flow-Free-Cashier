@@ -143,12 +143,18 @@ class AppTheme {
         ),
       ),
       chipTheme: ChipThemeData(
-        backgroundColor: AppColors.background,
-        side: const BorderSide(color: AppColors.border),
+        backgroundColor: AppColors.surface,
+        selectedColor: AppColors.primary.withValues(alpha: 0.14),
+        side: const BorderSide(color: AppColors.inputBorder),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
+        showCheckmark: false,
         labelStyle: textTheme.bodyMedium,
+        secondaryLabelStyle: textTheme.bodyMedium?.copyWith(
+          color: AppColors.primary,
+          fontWeight: FontWeight.w600,
+        ),
       ),
     );
   }

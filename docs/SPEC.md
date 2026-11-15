@@ -257,30 +257,30 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 - Long-press grid → add dengan qty cepat
 
 ### 7.5 Produk Page
-- List produk (search + filter ready)
-- `compact`: ListView 1 kolom; `wide`: GridView 3–4 kolom
-- Toggle ready via Switch di card
-- FAB "+" → form page (nama, kategori, harga, HPP, foto, ready)
+- Grid kartu `ProductCard` (sama dengan POS), foto penuh lebar, chip Ready/Habis (ketuk = ubah status)
+- FAB "+" → dialog form `AppFormDialog` (foto 4:3, nama, kategori, harga, HPP, ready)
 
-### 7.6 Laporan Page
-- Segmented control: Hari ini / Bulan ini
-- Cards: Omzet, Pengeluaran, Laba Bersih (laba transaksi − pengeluaran), Jumlah Transaksi
-- List transaksi terbaru (tap → reprint struk)
-- `compact`: card 1 kolom + list; `wide`: cards grid 2×2 + list
+### 7.6 Laporan Page (Owner only)
+- Filter (`FilterPanel`): periode (Hari ini / Bulan ini / Bulan lalu / Semua / rentang tanggal),
+  metode bayar (Semua/Tunai/QRIS/Kartu), cari no. struk atau nama item, tombol Reset
+- Cards (ikut periode): Omzet, Laba Kotor, Pengeluaran, Laba Bersih (laba kotor − pengeluaran),
+  Transaksi, Rata-rata per transaksi
+- Tabel transaksi (`AppDataTable`, 25 baris per halaman): No. | Tanggal (dd/MM/yyyy HH:mm) | Item |
+  Metode | Total | Laba | Cetak ulang; baris ringkasan "N transaksi · Total Rp X" mengikuti filter
+- Ketuk baris → dialog rincian (item, subtotal, diskon, total, dibayar, kembali, laba, Cetak ulang)
+- Periode & rentang difilter di SQL; metode & pencarian di memori (`applyTransactionFilter`)
 
 ### 7.6a Pengeluaran Page (Owner only)
-- Header total pengeluaran bulan ini (`AmountText`)
-- List pengeluaran: kategori, catatan, tanggal, nominal
-- Tombol "Tambah" → dialog form
-- Form: kategori (text), catatan (text, opsional), nominal (integer rupiah), tanggal
-- Validasi: nominal wajib > 0, tidak boleh desimal/negatif
-- `compact`: list 1 kolom; `wide`: max-width 520 dp
-- Warna & komponen mengikuti `docs/DESIGN.md` (`AppCard`, `PrimaryButton`, `AmountText`, `EmptyState`)
+- Filter: periode (default Bulan ini), kategori (dropdown dari data), cari catatan/kategori, Reset
+- Kartu total pengeluaran (mengikuti filter) + jumlah catatan
+- Tabel `AppDataTable`: Tanggal | Kategori | Catatan | Nominal (25 baris per halaman)
+- Tombol "Tambah" → dialog form `AppFormDialog` (kategori, catatan, nominal int > 0, tanggal)
+- Logika filter murni & teruji: `applyExpenseFilter`, `expenseCategories`, `totalExpenses`
 
 ### 7.7 Kelola User Page (Owner only)
-- List user (username, role, status aktif)
-- Toggle aktif/nonaktif
-- Tombol "Tambah User" → dialog form (username, password, role dropdown)
+- Tabel `AppDataTable`: Username (avatar inisial) | Role (pill) | Status | Aktif (switch)
+- Owner aktif terakhir tidak bisa dinonaktifkan (SnackBar)
+- FAB "Tambah pengguna" → dialog form `AppFormDialog` (username, password, role)
 
 ### 7.8 Settings Page (Owner only)
 - Edit profil resto (nama, alamat, telp, footer, logo)

@@ -27,6 +27,9 @@ class AppIcons {
   static const IconData remove = LucideIcons300.minus;
   static const IconData edit = LucideIcons300.pencil;
   static const IconData check = LucideIcons300.check;
+  static const IconData search = LucideIcons300.search;
+  static const IconData close = LucideIcons300.x;
+  static const IconData filterReset = LucideIcons300.filterX;
   static const IconData checkCircle = LucideIcons300.circleCheck;
   static const IconData cart = LucideIcons300.shoppingCart;
   static const IconData refresh = LucideIcons300.refreshCw;

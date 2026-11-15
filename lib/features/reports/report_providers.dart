@@ -32,3 +32,14 @@ final recentTransactionsProvider =
   final dao = ref.watch(salesDaoProvider);
   return dao.watchRecent();
 });
+
+/// Semua transaksi pada rentang [range] (terbaru dulu). `null` = semua waktu.
+final transactionsInRangeProvider =
+    StreamProvider.family<List<Transaction>, DateTimeRange?>((ref, range) {
+  final dao = ref.watch(salesDaoProvider);
+  // Rentang selalu diberikan ke DAO agar daftar tidak dipotong 50 baris.
+  return dao.watchRecent(
+    start: range?.start ?? DateTime(2000),
+    end: range?.end ?? DateTime(2100),
+  );
+});

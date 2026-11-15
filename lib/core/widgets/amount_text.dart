@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../theme/app_typography.dart';
 
+/// Format rupiah (int) → "Rp 15.000". Satu format untuk seluruh app.
+String formatRupiah(int amount) => AmountText._format.format(amount);
+
 class AmountText extends StatelessWidget {
   final int amount;
   final TextStyle? style;

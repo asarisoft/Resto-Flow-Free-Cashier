@@ -6,9 +6,18 @@ import 'package:kasir_resto/core/services/database.dart' show AppDatabase;
 import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/theme/app_theme.dart';
 import 'package:kasir_resto/features/auth/login_page.dart';
+import 'package:kasir_resto/features/expenses/expense_list_page.dart';
 import 'package:kasir_resto/features/pos/pos_page.dart';
+import 'package:kasir_resto/features/reports/report_page.dart';
+import 'package:kasir_resto/features/users/user_list_page.dart';
+import 'package:kasir_resto/core/services/daos/expenses_dao.dart';
+import 'package:kasir_resto/core/services/daos/sales_dao.dart';
+import 'package:kasir_resto/core/services/daos/users_dao.dart';
+import 'package:kasir_resto/models/expense.dart';
+import 'package:kasir_resto/models/transaction.dart';
 import 'package:kasir_resto/main.dart' show clampTextScale;
 import 'package:kasir_resto/models/product.dart';
+import 'package:kasir_resto/models/transaction_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 const sizes = <String, Size>{
@@ -52,6 +61,31 @@ void main() {
     for (final scale in [1.0, 1.3]) {
       testWidgets('LoginPage has no overflow on ${e.key} @ text ${scale}x', (tester) async {
         await pump(tester, e.value, const LoginPage(), textScale: scale);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('ExpenseListPage has no overflow on ${e.key} @ text ${scale}x', (tester) async {
+        final now = DateTime.now();
+        await ExpensesDao(db).add(Expense(
+            amount: 125000, category: 'Bahan baku dapur', note: 'Beras 25kg dan minyak goreng untuk satu minggu', date: now, createdAt: now));
+        await pump(tester, e.value, const ExpenseListPage(), textScale: scale);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('ReportPage has no overflow on ${e.key} @ text ${scale}x', (tester) async {
+        await SalesDao(db).save(Transaction(
+          number: 1,
+          items: const [TransactionItem(productId: 'p', name: 'Nasi Goreng', price: 30000, hpp: 9000)],
+          subtotal: 30000, total: 30000, paid: 50000, change: 20000, profit: 21000,
+          createdAt: DateTime.now(),
+        ));
+        await pump(tester, e.value, const ReportPage(), textScale: scale);
+        expect(tester.takeException(), isNull);
+      });
+
+      testWidgets('UserListPage has no overflow on ${e.key} @ text ${scale}x', (tester) async {
+        await UsersDao(db).seedDefaultOwnerIfEmpty();
+        await pump(tester, e.value, const UserListPage(), textScale: scale);
         expect(tester.takeException(), isNull);
       });
 
