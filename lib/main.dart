@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'core/theme/app_scroll_behavior.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
 import 'package:flutter/services.dart';
@@ -23,6 +24,7 @@ class KasirRestoApp extends ConsumerWidget {
       title: 'Resto Flow Free',
       theme: AppTheme.light,
       builder: clampTextScale,
+      scrollBehavior: const AppScrollBehavior(),
       routerConfig: router,
       debugShowCheckedModeBanner: false,
     );
