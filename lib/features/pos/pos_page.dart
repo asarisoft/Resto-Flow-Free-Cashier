@@ -335,7 +335,7 @@ class _CartPanel extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Text('Bayar', style: AppTypography.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    Text('Bayar', style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.w700)),
                     const SizedBox(width: 8),
                     const Icon(AppIcons.arrowRight, size: AppIcons.md),
                   ],

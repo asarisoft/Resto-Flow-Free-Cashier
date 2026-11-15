@@ -144,13 +144,13 @@ class AppTheme {
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surface,
-        selectedColor: AppColors.primary.withValues(alpha: 0.14),
+        selectedColor: AppColors.primary.withValues(alpha: 0.08),
         side: const BorderSide(color: AppColors.inputBorder),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(8),
         ),
         showCheckmark: false,
-        labelStyle: textTheme.bodyMedium,
+        labelStyle: textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
         secondaryLabelStyle: textTheme.bodyMedium?.copyWith(
           color: AppColors.primary,
           fontWeight: FontWeight.w600,
