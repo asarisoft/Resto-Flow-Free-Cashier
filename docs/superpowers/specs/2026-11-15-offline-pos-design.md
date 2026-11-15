@@ -20,7 +20,7 @@ tanpa internet, data milik sendiri di device, bisa dibackup manual.
 
 ## Non-Goals
 - Tidak ada sync online / multi-device.
-- Tidak ada fitur pengeluaran/catatan belanja (dibuang).
+- ~~Tidak ada fitur pengeluaran~~ — **diubah**: pengeluaran dikembalikan (Owner only, tetap offline), lihat plan `2026-11-15-restore-expenses.md`.
 - Tidak ada Firebase/Firestore/Storage/Google Sign-In (dibuang total).
 
 ## Anti-Goals (bikin gagal walau jalan)
@@ -50,7 +50,7 @@ banyak kerja dan sentuh hampir semua file di `features/`.
   `ReportsDao`, `UsersDao`, `ProfileDao`). Provider Riverpod ambil dari
   DAO, bukan Firestore.
 - **Hapus**: `firestore_provider.dart`, semua import `cloud_firestore`,
-  modul `features/expenses/*`, tabel `Expenses`, Google Sign-In.
+  Google Sign-In. (Modul `features/expenses/*` dan tabel `Expenses` sempat dihapus, lalu dikembalikan.)
 - **Auth lokal**: tabel `Users(id, username, passwordHash, role, active,
   createdAt)`. Role enum: `owner`, `kasir`. Login = pilih user → input
   password teks → verifikasi hash → sesi tersimpan (tetap login sampai
@@ -63,7 +63,7 @@ banyak kerja dan sentuh hampir semua file di `features/`.
   - Kasir: POS + catat penjualan + lihat menu. Tidak: laporan, user,
     setting, backup.
 - **Skema DB final**: `Products`, `Transactions`, `TransactionItems`,
-  `RestoProfiles`, `Counters`, `Users`. (Tanpa `Expenses`.)
+  `RestoProfiles`, `Counters`, `Users`, `Expenses` (dikembalikan di schema v3).
 - **Backup**: export semua tabel + folder foto → arsip `.zip` lewat
   `share_plus`/simpan ke folder; restore via `file_picker` lalu replace DB.
 

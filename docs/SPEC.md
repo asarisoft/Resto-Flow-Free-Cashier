@@ -100,7 +100,7 @@ Akses dikontrol di level provider/guard — bukan hanya disembunyikan dari sideb
 | State | `flutter_riverpod` | Scalable & testable |
 | Routing | `go_router` | Deklaratif, redirect berbasis auth state |
 | Backup | `archive` + `share_plus` + `file_picker` | Export/import ZIP |
-| Password | `crypto` (SHA-256 + salt) | Hash aman, tanpa dependency besar |
+| Password | `crypto` (PBKDF2-HMAC-SHA256, 100000 iterasi + salt) | Hash aman, tanpa dependency besar |
 
 ---
 
@@ -117,7 +117,7 @@ lib/
 │   │   ├── database.dart       # Drift AppDatabase
 │   │   ├── database_provider.dart
 │   │   ├── session_service.dart # shared_preferences login session
-│   │   ├── password_hasher.dart # SHA-256 + salt
+│   │   ├── password_hasher.dart # PBKDF2 + salt
 │   │   ├── printer_service.dart
 │   │   └── daos/               # DAO per domain
 │   │       ├── products_dao.dart
@@ -191,7 +191,9 @@ Ringkasan tabel: `Products`, `Transactions`, `TransactionItems`, `Users`, `Resto
 
 ### Login
 - Halaman login: dropdown/list user aktif + field password (obscured) + tombol submit
-- Verifikasi: hash password input dengan salt tersimpan, bandingkan dengan `passwordHash`
+- Verifikasi: hash password input dengan salt tersimpan, bandingkan (constant-time) dengan `passwordHash`. Hash lama SHA-256 tetap diterima lalu otomatis di-upgrade ke PBKDF2 saat login sukses
+- Validasi user baru: username wajib & unik, password minimal 8 karakter, role `owner`/`kasir`
+- Minimal 1 owner aktif: owner aktif terakhir tidak bisa dinonaktifkan
 - Gagal → SnackBar "Username atau password salah" (tidak boleh crash/silent)
 - User `active=false` → ditolak walau password benar
 - Berhasil → simpan `userId` di `shared_preferences` (key: `session_user_id`)
@@ -414,9 +416,9 @@ Ringkasan urutan:
 4. Local auth (session, login, router guard)
 5. Rewire Products (+ local photo)
 6. Rewire POS
-7. Rewire Reports (hapus expense dependency)
+7. Rewire Reports
 8. Rewire Settings + Onboarding
-9. Remove Expenses feature, reindex home shell
+9. Reindex home shell (Expenses sempat dihapus, dikembalikan di plan `restore-expenses`)
 10. Users management + role guard
 11. Backup & restore
 12. Remove Firebase entirely

@@ -16,8 +16,8 @@ device, tanpa internet/akun cloud. Inti: catat penjualan & lihat laporan.
 - User lokal + role (Owner/Kasir). Login pilih user + password.
   Default admin / P@ssw0rd123.
 - Backup/restore lokal (file zip: DB + foto).
+- Pengeluaran/catatan belanja (Owner only): kategori, catatan, nominal, tanggal; masuk hitungan laba bersih.
 
 ## Di Luar Cakupan
 - Sync online / multi-device / cloud.
-- Fitur pengeluaran/catatan belanja.
 - Firebase/Firestore/Google Sign-In.

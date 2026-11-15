@@ -66,7 +66,7 @@ Subtotal item = `(price − discount) × qty`.
 |----------------|------------|-----------------------------|---------------------------------|
 | `id`           | TEXT       | **PK**                      | UUID                            |
 | `username`     | TEXT       | NOT NULL, **UNIQUE**        |                                 |
-| `passwordHash` | TEXT       | NOT NULL                    | SHA-256 hex                     |
+| `passwordHash` | TEXT       | NOT NULL                    | `pbkdf2$100000$<hex>` (hash lama SHA-256 hex di-upgrade saat login) |
 | `salt`         | TEXT       | NOT NULL                    | Random 16-byte hex              |
 | `role`         | TEXT       | NOT NULL                    | `'owner'` atau `'kasir'`       |
 | `active`       | BOOLEAN    | NOT NULL, default true      | false = tidak bisa login        |

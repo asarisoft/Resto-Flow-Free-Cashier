@@ -136,7 +136,7 @@
 - [x] **Step 2: Implement list page + dialog** using existing `AppCard`/`PrimaryButton`.
 - [x] **Step 3: Add tab + provider guard.**
 - [x] **Step 4: Run `fvm flutter analyze` + relevant tests.**
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ---
 
@@ -160,7 +160,7 @@
 - [x] **Step 2: Write failing `ReportSummary` test** (totalExpense exists).
 - [x] **Step 3: Implement.**
 - [x] **Step 4: Run `fvm flutter test test/daos/reports_dao_test.dart test/features/reports/`.**
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ---
 
@@ -173,7 +173,7 @@
 - [x] Update `docs/SPEC.md`:
   - remove "Fitur pengeluaran / catatan belanja" from Non-Goals
   - add Expenses to goals/features and role table (Owner only)
-- [ ] Commit docs.
+- [x] Commit docs.
 
 ## Rollback safety
 

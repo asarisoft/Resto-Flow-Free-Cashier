@@ -108,12 +108,12 @@
 
 ## Task G: Sinkron dokumen
 
-- [ ] `PRD.md` & `docs/superpowers/specs/2026-11-15-offline-pos-design.md`: pengeluaran sudah DIKEMBALIKAN (owner only) — pindahkan dari "Di Luar Cakupan/Non-Goals" ke fitur; skema DB sebut tabel `Expenses`.
-- [ ] `docs/SPEC.md` (~baris 419): hapus/ubah "Remove Expenses feature" sesuai kondisi kode. Tambah catatan hash PBKDF2 & aturan minimal 1 owner aktif.
-- [ ] `docs/DATABASE.md`: format `passwordHash` = `pbkdf2$100000$<hex>`.
-- [ ] `docs/superpowers/plans/2026-11-15-restore-expenses.md`: centang baris 139, 163, 176 HANYA kalau commit-nya ada (`git log --oneline`). Baris 171 (tes manual) biarkan `[ ]`, laporkan ke user.
-- [ ] Update graphify: `graphify update .` (`graphify-out/` jangan di-commit).
-- [ ] Commit: `docs: sync PRD/SPEC/DATABASE with current code`.
+- [x] `PRD.md` & `docs/superpowers/specs/2026-11-15-offline-pos-design.md`: pengeluaran sudah DIKEMBALIKAN (owner only) — pindahkan dari "Di Luar Cakupan/Non-Goals" ke fitur; skema DB sebut tabel `Expenses`.
+- [x] `docs/SPEC.md` (~baris 419): hapus/ubah "Remove Expenses feature" sesuai kondisi kode. Tambah catatan hash PBKDF2 & aturan minimal 1 owner aktif.
+- [x] `docs/DATABASE.md`: format `passwordHash` = `pbkdf2$100000$<hex>`.
+- [x] `docs/superpowers/plans/2026-11-15-restore-expenses.md`: centang baris 139, 163, 176 HANYA kalau commit-nya ada (`git log --oneline`). Baris 171 (tes manual) biarkan `[ ]`, laporkan ke user.
+- [x] Update graphify: `graphify update .` (`graphify-out/` jangan di-commit).
+- [x] Commit: `docs: sync PRD/SPEC/DATABASE with current code`.
 
 ## Verifikasi akhir (tempel output di laporan)
 
