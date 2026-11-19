@@ -64,6 +64,7 @@
 - [x] Upload logo di profil (path relatif, ikut backup)
 - [x] Konversi ke raster ESC/POS hitam-putih sesuai lebar kertas 58/80
 - [x] Tes builder (bytes header gambar ada saat logo diset)
+- [x] PNG transparan diratakan ke latar putih sebelum raster (hindari kotak hitam)
 
 ### 7. #5 Batalkan/refund
 - [ ] Status transaksi `void` + alasan + user + waktu (migrasi)

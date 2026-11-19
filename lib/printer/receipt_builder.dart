@@ -3,14 +3,13 @@ import 'dart:io';
 import 'package:esc_pos_utils/esc_pos_utils.dart';
 import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
-import 'package:path/path.dart' as p;
-import 'package:path_provider/path_provider.dart';
 
 import '../models/transaction.dart' as models;
 import '../models/resto_profile.dart';
 import '../models/transaction_item.dart';
 import '../models/shift.dart';
 import '../features/shifts/shift_calc.dart';
+import '../features/settings/logo_image_service.dart';
 
 class ReceiptBuilder {
   static final _fmt = NumberFormat.currency(
@@ -44,15 +43,19 @@ class ReceiptBuilder {
     final path = profile.logoPath;
     if (!profile.useLogo || path == null || path.isEmpty) return null;
     try {
-      final abs = await _resolveLogo(path);
+      final abs = await LogoImageService.resolvePath(path);
       final file = File(abs);
       if (!await file.exists()) return null;
       final decoded = img.decodeImage(await file.readAsBytes());
       if (decoded == null) return null;
 
+      // Ratakan ke latar putih: piksel transparan (hitam + alpha 0) kalau
+      // langsung diraster jadi kotak hitam.
+      final flattened = LogoImageService.flattenToWhite(decoded);
+
       // ±60% lebar kertas: 58mm ≈ 384 dot, 80mm ≈ 576 dot.
       final targetWidth = profile.paperWidth == 80 ? 346 : 230;
-      final resized = img.copyResize(decoded, width: targetWidth);
+      final resized = img.copyResize(flattened, width: targetWidth);
 
       final gen = Generator(
         profile.paperWidth == 80 ? PaperSize.mm80 : PaperSize.mm58,
@@ -64,12 +67,6 @@ class ReceiptBuilder {
     } catch (_) {
       return null;
     }
-  }
-
-  static Future<String> _resolveLogo(String logoPath) async {
-    if (p.isAbsolute(logoPath)) return logoPath;
-    final docs = await getApplicationDocumentsDirectory();
-    return p.join(docs.path, 'images', logoPath);
   }
 
   /// Contoh transaksi untuk preview nota.

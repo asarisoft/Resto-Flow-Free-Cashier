@@ -355,7 +355,7 @@ Kembali                 9.000
 - Format uang: `NumberFormat.currency(locale: 'id_ID', symbol: 'Rp ')`
 - Reprint struk dari halaman laporan
 - Error handling: timeout / disconnect → toast + retry
-- Logo opsional: jika `useLogo=true`, raster image di atas nama resto
+- Logo opsional: jika `useLogo=true`, raster image di atas nama resto (PNG transparan diratakan ke latar putih agar tidak jadi kotak hitam)
 
 ---
 

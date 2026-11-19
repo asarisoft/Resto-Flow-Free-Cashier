@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:image/image.dart' as img;
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -41,6 +42,17 @@ class LogoImageService {
     if (p.isAbsolute(logoPath)) return logoPath;
     final docs = await getApplicationDocumentsDirectory();
     return p.join(docs.path, imagesDirName, logoPath);
+  }
+
+  /// Flattens [src] onto a white background.
+  ///
+  /// Transparent pixels (black RGB with alpha 0, common in PNG logos) rasterize
+  /// as black boxes on the receipt; compositing over white makes them print as
+  /// white instead. Opaque pixels keep their color.
+  static img.Image flattenToWhite(img.Image src) {
+    final white = img.Image(src.width, src.height);
+    img.fill(white, img.getColor(255, 255, 255, 255));
+    return img.drawImage(white, src);
   }
 
   Future<Directory> _logoDir() async {

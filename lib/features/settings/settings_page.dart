@@ -471,6 +471,14 @@ class _EditProfileDialogState
     });
   }
 
+  /// Logo selalu disimpan ke `logo/logo.jpg`; setelah diganti/dihapus, buang
+  /// cache [FileImage] path itu supaya preview tidak menampilkan gambar lama.
+  Future<void> _evictLogoPreviewCache() async {
+    final abs = await LogoImageService.resolvePath(
+        '${LogoImageService.logoDirName}/${LogoImageService.logoFileName}');
+    await FileImage(File(abs)).evict();
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
@@ -481,9 +489,11 @@ class _EditProfileDialogState
       var useLogo = _removeLogo ? false : widget.profile.useLogo;
       if (_removeLogo && widget.profile.logoPath != null) {
         await _logoService.deleteLocal();
+        await _evictLogoPreviewCache();
       } else if (_pickedLogo != null) {
         logoPath = await _logoService.saveLocal(_pickedLogo!);
         useLogo = true;
+        await _evictLogoPreviewCache();
       }
 
       // Build a fresh profile instead of copyWith: copyWith treats null as
