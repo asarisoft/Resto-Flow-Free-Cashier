@@ -37,9 +37,9 @@
 ## Checklist per fitur
 
 ### 1. #7 Auto-reconnect printer terakhir
-- [ ] Simpan address printer saat connect berhasil; hapus saat "Putus"
-- [ ] Saat app start: coba connect diam-diam (tanpa blokir UI), gagal = abaikan
-- [ ] Tes unit `PrinterService` (simpan/hapus address)
+- [x] Simpan address printer saat connect berhasil; hapus saat "Putus"
+- [x] Saat app start: coba connect diam-diam (tanpa blokir UI), gagal = abaikan
+- [x] Tes unit `PrinterService` (simpan/hapus address)
 
 ### 2. #3 Tombol uang cepat
 - [x] Tombol "Uang pas" + nominal pecahan terdekat di atas total (mis. total 37rb → 40rb, 50rb, 100rb)
