@@ -761,7 +761,7 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
   Future<void> _tryPrint(
       models.Transaction txn, RestoProfile profile) async {
     try {
-      final bytes = ReceiptBuilder.fromTransaction(txn, profile);
+      final bytes = await ReceiptBuilder.buildReceipt(txn, profile);
       final printer = ref.read(printerServiceProvider);
       if (printer.isConnected) {
         await printer.printBytes(bytes);

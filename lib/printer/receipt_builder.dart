@@ -1,4 +1,11 @@
+import 'dart:io';
+
+import 'package:esc_pos_utils/esc_pos_utils.dart';
+import 'package:image/image.dart' as img;
 import 'package:intl/intl.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+
 import '../models/transaction.dart' as models;
 import '../models/resto_profile.dart';
 import '../models/transaction_item.dart';
@@ -16,6 +23,54 @@ class ReceiptBuilder {
   static List<int> fromTransaction(
           models.Transaction txn, RestoProfile profile) =>
       buildText(txn, profile).codeUnits;
+
+  /// Bytes lengkap untuk printer: logo raster hitam-putih (bila diset) di atas
+  /// header, lalu teks struk. Logo hilang/rusak/gagal decode → cetak tanpa
+  /// logo (tidak pernah gagal cetak).
+  static Future<List<int>> buildReceipt(
+      models.Transaction txn, RestoProfile profile) async {
+    final bytes = <int>[];
+    final logo = await _logoRasterBytes(profile);
+    if (logo != null) bytes.addAll(logo);
+    bytes.addAll(buildText(txn, profile).codeUnits);
+    return bytes;
+  }
+
+  static Future<CapabilityProfile>? _profileFuture;
+
+  /// Raster logo ESC/POS (GS v 0) hitam-putih, lebar ±60% kertas, rata tengah.
+  /// Returns null bila logo tidak diset / hilang / rusak / gagal decode.
+  static Future<List<int>?> _logoRasterBytes(RestoProfile profile) async {
+    final path = profile.logoPath;
+    if (!profile.useLogo || path == null || path.isEmpty) return null;
+    try {
+      final abs = await _resolveLogo(path);
+      final file = File(abs);
+      if (!await file.exists()) return null;
+      final decoded = img.decodeImage(await file.readAsBytes());
+      if (decoded == null) return null;
+
+      // ±60% lebar kertas: 58mm ≈ 384 dot, 80mm ≈ 576 dot.
+      final targetWidth = profile.paperWidth == 80 ? 346 : 230;
+      final resized = img.copyResize(decoded, width: targetWidth);
+
+      final gen = Generator(
+        profile.paperWidth == 80 ? PaperSize.mm80 : PaperSize.mm58,
+        await (_profileFuture ??= CapabilityProfile.load()),
+      );
+      final raster = gen.imageRaster(resized, align: PosAlign.center);
+      // Kembalikan alignment ke kiri + pindah baris sebelum teks struk.
+      return [...raster, 0x1B, 0x61, 0x00, 0x0A];
+    } catch (_) {
+      return null;
+    }
+  }
+
+  static Future<String> _resolveLogo(String logoPath) async {
+    if (p.isAbsolute(logoPath)) return logoPath;
+    final docs = await getApplicationDocumentsDirectory();
+    return p.join(docs.path, 'images', logoPath);
+  }
 
   /// Contoh transaksi untuk preview nota.
   static models.Transaction sampleTransaction() => models.Transaction(

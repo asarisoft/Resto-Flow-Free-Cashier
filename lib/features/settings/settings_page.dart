@@ -1,6 +1,9 @@
+import 'dart:io';
+
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
 import '../../core/services/database_provider.dart';
@@ -19,6 +22,7 @@ import 'printer_pairing_page.dart';
 import '../../printer/printer_service.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/app_form_dialog.dart';
+import 'logo_image_service.dart';
 import 'profile_fields.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -321,8 +325,12 @@ class _EditProfileDialogState
   late final TextEditingController _phoneCtrl;
   late final TextEditingController _footerCtrl;
   final _formKey = GlobalKey<FormState>();
+  final _logoService = LogoImageService();
   int _paperWidth = 58;
   bool _saving = false;
+  String? _logoPath;
+  XFile? _pickedLogo;
+  bool _removeLogo = false;
 
   @override
   void initState() {
@@ -336,6 +344,7 @@ class _EditProfileDialogState
     _footerCtrl =
         TextEditingController(text: widget.profile.footerNote ?? '');
     _paperWidth = widget.profile.paperWidth;
+    _logoPath = widget.profile.logoPath;
   }
 
   @override
@@ -355,6 +364,7 @@ class _EditProfileDialogState
       saving: _saving,
       onSubmit: _save,
       fields: [
+        _logoSection(context),
         ProfileFields(
           name: _nameCtrl,
           address: _addrCtrl,
@@ -367,11 +377,115 @@ class _EditProfileDialogState
     );
   }
 
+  Widget _logoSection(BuildContext context) {
+    final textTheme = AppTypography.textTheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text('Logo Struk', style: textTheme.titleSmall),
+        const SizedBox(height: 8),
+        Center(
+          child: Container(
+            height: 96,
+            width: 160,
+            decoration: BoxDecoration(
+              color: AppColors.background,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: AppColors.border),
+            ),
+            clipBehavior: Clip.antiAlias,
+            child: _logoPreview(),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          children: [
+            Expanded(
+              child: SecondaryButton(
+                label: _hasLogo ? 'Ganti Logo' : 'Pilih Logo',
+                icon: AppIcons.addPhoto,
+                onPressed: _saving ? null : _pickLogo,
+              ),
+            ),
+            if (_hasLogo) ...[
+              const SizedBox(width: 8),
+              Expanded(
+                child: SecondaryButton(
+                  label: 'Hapus',
+                  icon: AppIcons.delete,
+                  onPressed: _saving ? null : _removeLogoAction,
+                ),
+              ),
+            ],
+          ],
+        ),
+      ],
+    );
+  }
+
+  bool get _hasLogo =>
+      (_pickedLogo != null) || (!_removeLogo && _logoPath != null);
+
+  Widget _logoPreview() {
+    final placeholder = Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(AppIcons.brokenImage,
+            size: AppIcons.xl, color: AppColors.textSecondary),
+        const SizedBox(height: 4),
+        Text('Belum ada logo',
+            style: AppTypography.textTheme.labelSmall
+                ?.copyWith(color: AppColors.textSecondary)),
+      ],
+    );
+    if (_pickedLogo != null) {
+      return Image.file(File(_pickedLogo!.path),
+          fit: BoxFit.contain, errorBuilder: (_, __, ___) => placeholder);
+    }
+    final path = _removeLogo ? null : _logoPath;
+    if (path == null) return placeholder;
+    return FutureBuilder<String>(
+      future: LogoImageService.resolvePath(path),
+      builder: (context, snap) {
+        final abs = snap.data;
+        if (abs == null) return placeholder;
+        return Image.file(File(abs),
+            fit: BoxFit.contain, errorBuilder: (_, __, ___) => placeholder);
+      },
+    );
+  }
+
+  Future<void> _pickLogo() async {
+    final file = await _logoService.pickImage();
+    if (file == null || !mounted) return;
+    setState(() {
+      _pickedLogo = file;
+      _removeLogo = false;
+    });
+  }
+
+  void _removeLogoAction() {
+    setState(() {
+      _pickedLogo = null;
+      _removeLogo = true;
+    });
+  }
+
   Future<void> _save() async {
     if (!_formKey.currentState!.validate()) return;
     setState(() => _saving = true);
     try {
       final repo = ref.read(settingsRepositoryProvider);
+
+      var logoPath = _removeLogo ? null : _logoPath;
+      var useLogo = _removeLogo ? false : widget.profile.useLogo;
+      if (_removeLogo && widget.profile.logoPath != null) {
+        await _logoService.deleteLocal();
+      } else if (_pickedLogo != null) {
+        logoPath = await _logoService.saveLocal(_pickedLogo!);
+        useLogo = true;
+      }
+
       // Build a fresh profile instead of copyWith: copyWith treats null as
       // "keep old value", so cleared fields would never be saved.
       final updated = RestoProfile(
@@ -386,8 +500,8 @@ class _EditProfileDialogState
             ? null
             : _footerCtrl.text.trim(),
         paperWidth: _paperWidth,
-        useLogo: widget.profile.useLogo,
-        logoPath: widget.profile.logoPath,
+        useLogo: useLogo,
+        logoPath: logoPath,
         createdAt: widget.profile.createdAt,
       );
       await repo.updateProfile(updated);

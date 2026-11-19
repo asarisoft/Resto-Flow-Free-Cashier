@@ -61,9 +61,9 @@
 - [x] Tes logika tanggal
 
 ### 6. #9 Logo di struk
-- [ ] Upload logo di profil (path relatif, ikut backup)
-- [ ] Konversi ke raster ESC/POS hitam-putih sesuai lebar kertas 58/80
-- [ ] Tes builder (bytes header gambar ada saat logo diset)
+- [x] Upload logo di profil (path relatif, ikut backup)
+- [x] Konversi ke raster ESC/POS hitam-putih sesuai lebar kertas 58/80
+- [x] Tes builder (bytes header gambar ada saat logo diset)
 
 ### 7. #5 Batalkan/refund
 - [ ] Status transaksi `void` + alasan + user + waktu (migrasi)
