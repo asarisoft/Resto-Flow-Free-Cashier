@@ -8,6 +8,7 @@ import '../../core/widgets/choice_segment.dart';
 import '../../core/widgets/empty_state.dart';
 import 'category_form_dialog.dart';
 import 'category_providers.dart';
+import '../users/users_providers.dart';
 
 /// Kelola kategori produk & pengeluaran (Owner).
 class CategoryPage extends ConsumerStatefulWidget {
@@ -47,6 +48,9 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (!ref.watch(canManageProductsProvider)) {
+      return const Scaffold(body: Center(child: Text('Hanya Owner yang bisa mengelola kategori')));
+    }
     final list = ref.watch(categoryListProvider(_type));
     return Scaffold(
       backgroundColor: AppColors.background,

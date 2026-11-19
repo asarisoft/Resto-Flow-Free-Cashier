@@ -147,4 +147,21 @@ void main() {
     await d.delete(newId);
     expect((await d.list(CategoryType.product)).map((c) => c.name), ['Minuman']);
   });
+
+  test('migration v3 -> v4 survives long names that collide after cutting to 60 chars', () async {
+    final dir = Directory.systemTemp.createTempSync('cat_mig_long');
+    addTearDown(() => dir.deleteSync(recursive: true));
+    final file = File(p.join(dir.path, 'v3.sqlite'));
+    final raw = sql.sqlite3.open(file.path);
+    raw.execute('CREATE TABLE products (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, category TEXT, price INTEGER NOT NULL, hpp INTEGER NOT NULL DEFAULT 0, ready INTEGER NOT NULL DEFAULT 1, archived INTEGER NOT NULL DEFAULT 0, image_path TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)');
+    raw.execute('CREATE TABLE expenses (id TEXT NOT NULL PRIMARY KEY, category TEXT, note TEXT, amount INTEGER NOT NULL, date INTEGER NOT NULL, created_at INTEGER NOT NULL)');
+    final base = 'K' * 60;
+    raw.execute("INSERT INTO products (id,name,category,price,created_at,updated_at) VALUES ('1','A','${base}AAAA',1,0,0),('2','B','${base}BBBB',1,0,0)");
+    raw.execute('PRAGMA user_version = 3');
+    raw.dispose();
+
+    final migrated = AppDatabase.forFile(file);
+    addTearDown(migrated.close);
+    expect((await CategoriesDao(migrated).list(CategoryType.product)).map((c) => c.name), [base]);
+  });
 }

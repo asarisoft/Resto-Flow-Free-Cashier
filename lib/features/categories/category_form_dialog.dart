@@ -44,6 +44,8 @@ class _CategoryFormDialogState extends ConsumerState<CategoryFormDialog> {
       if (mounted) setState(() => _error = '${e.message}');
     } on StateError catch (e) {
       if (mounted) setState(() => _error = e.message);
+    } catch (e) {
+      if (mounted) setState(() => _error = 'Gagal menyimpan: $e');
     } finally {
       if (mounted) setState(() => _saving = false);
     }

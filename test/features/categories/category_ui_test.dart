@@ -8,6 +8,7 @@ import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/theme/app_theme.dart';
 import 'package:kasir_resto/features/categories/category_field.dart';
 import 'package:kasir_resto/features/categories/category_page.dart';
+import 'package:kasir_resto/features/users/users_providers.dart';
 
 void main() {
   late AppDatabase db;
@@ -28,7 +29,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
     await tester.pumpWidget(ProviderScope(
-      overrides: [databaseProvider.overrideWithValue(db)],
+      overrides: [databaseProvider.overrideWithValue(db), canManageProductsProvider.overrideWithValue(true)],
       child: MaterialApp(theme: AppTheme.light, home: Scaffold(body: page)),
     ));
     await settle(tester);
@@ -92,6 +93,16 @@ void main() {
       await settle(tester);
       expect(find.text('Drinks'), findsOneWidget);
       expect((await db.select(db.products).get()).single.category, 'Drinks');
+    });
+
+    testWidgets('kasir (non-owner) cannot open category management', (tester) async {
+      await tester.pumpWidget(ProviderScope(
+        overrides: [databaseProvider.overrideWithValue(db), canManageProductsProvider.overrideWithValue(false)],
+        child: MaterialApp(theme: AppTheme.light, home: const CategoryPage()),
+      ));
+      await tester.pump();
+      expect(find.text('Hanya Owner yang bisa mengelola kategori'), findsOneWidget);
+      expect(find.text('Tambah'), findsNothing);
     });
 
     testWidgets('an unexpected database error is shown, not swallowed (e.g. table missing)', (tester) async {

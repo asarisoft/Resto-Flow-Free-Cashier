@@ -172,7 +172,8 @@ class AppDatabase extends _$AppDatabase {
       final seen = <String, String>{};
       for (final r in rows) {
         final c = (r.read<String>('category')).trim();
-        if (c.isNotEmpty) seen.putIfAbsent(c.toLowerCase(), () => c.length > 60 ? c.substring(0, 60) : c);
+        final name = c.length > 60 ? c.substring(0, 60) : c;
+        if (name.isNotEmpty) seen.putIfAbsent(name.toLowerCase(), () => name);
       }
       var i = 0;
       for (final name in seen.values) {

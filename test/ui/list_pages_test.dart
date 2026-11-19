@@ -15,6 +15,7 @@ import 'package:kasir_resto/features/users/user_list_page.dart';
 import 'package:kasir_resto/models/expense.dart';
 import 'package:kasir_resto/models/transaction.dart';
 import 'package:kasir_resto/models/transaction_item.dart';
+import 'package:kasir_resto/features/users/users_providers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -35,7 +36,7 @@ void main() {
       tester.view.resetDevicePixelRatio();
     });
     await tester.pumpWidget(ProviderScope(
-      overrides: [databaseProvider.overrideWithValue(db)],
+      overrides: [databaseProvider.overrideWithValue(db), canManageProductsProvider.overrideWithValue(true)],
       child: MaterialApp(theme: AppTheme.light, home: page),
     ));
     for (var i = 0; i < 6; i++) {
