@@ -6,6 +6,8 @@ import 'expense_providers.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/app_form_dialog.dart';
 import '../../core/theme/app_colors.dart';
+import '../categories/category_field.dart';
+import '../../core/services/daos/categories_dao.dart';
 
 /// Parses an expense amount. Returns null unless it is a positive integer.
 int? parseExpenseAmount(String raw) {
@@ -148,13 +150,10 @@ class _ExpenseFormDialogState extends ConsumerState<ExpenseFormDialog> {
       submitLabel: 'Simpan',
       onSubmit: _save,
       fields: [
-        TextFormField(
-          controller: _categoryCtrl,
-          decoration: const InputDecoration(
-            labelText: 'Kategori',
-            hintText: 'Bahan, Listrik, Gaji, dll',
-          ),
-          textCapitalization: TextCapitalization.words,
+        CategoryField(
+          type: CategoryType.expense,
+          value: _categoryCtrl.text,
+          onChanged: (v) => setState(() => _categoryCtrl.text = v ?? ''),
         ),
         TextFormField(
           controller: _noteCtrl,

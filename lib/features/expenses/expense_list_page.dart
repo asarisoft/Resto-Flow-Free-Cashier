@@ -17,6 +17,8 @@ import 'expense_providers.dart';
 import 'package:intl/intl.dart';
 import '../../core/services/csv_share.dart';
 import 'expense_export.dart';
+import '../categories/category_page.dart';
+import '../../core/services/daos/categories_dao.dart';
 
 class ExpenseListPage extends ConsumerStatefulWidget {
   const ExpenseListPage({super.key});
@@ -39,6 +41,13 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         actions: [
+          IconButton(
+            tooltip: 'Kelola kategori',
+            icon: const Icon(AppIcons.category),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CategoryPage(initialType: CategoryType.expense)),
+            ),
+          ),
           IconButton(
             tooltip: 'Ekspor CSV',
             icon: const Icon(AppIcons.export),

@@ -101,6 +101,24 @@ class Expenses extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Daftar kategori (master). Produk/Pengeluaran menyimpan NAMA kategori (teks);
+/// mengubah nama di sini ikut mengubah item yang memakainya.
+@DataClassName('CategoryRow')
+class Categories extends Table {
+  TextColumn get id => text()();
+  TextColumn get type => text()(); // 'product' | 'expense'
+  TextColumn get name => text().withLength(min: 1, max: 60)();
+  DateTimeColumn get createdAt => dateTime()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+
+  @override
+  List<Set<Column>> get uniqueKeys => [
+        {type, name},
+      ];
+}
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -111,7 +129,7 @@ LazyDatabase _openConnection() {
 
 @DriftDatabase(
     tables: [Products, Transactions, TransactionItems, Users,
-             RestoProfiles, Counters, Expenses])
+             RestoProfiles, Counters, Expenses, Categories])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 
@@ -122,7 +140,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forFile(File file) : super(NativeDatabase.createInBackground(file));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -134,11 +152,42 @@ class AppDatabase extends _$AppDatabase {
           if (from < 3) {
             await m.createTable(expenses);
           }
+          if (from < 4) {
+            await m.createTable(categories);
+            await _seedCategoriesFromItems();
+          }
         },
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
         },
       );
+
+  /// v3 → v4: isi daftar kategori dari teks kategori yang sudah dipakai
+  /// (trim, tanpa beda huruf besar/kecil, ejaan pertama dipakai).
+  Future<void> _seedCategoriesFromItems() async {
+    Future<void> seed(String type, String table) async {
+      final rows = await customSelect(
+        'SELECT category FROM $table WHERE category IS NOT NULL ORDER BY rowid',
+      ).get();
+      final seen = <String, String>{};
+      for (final r in rows) {
+        final c = (r.read<String>('category')).trim();
+        if (c.isNotEmpty) seen.putIfAbsent(c.toLowerCase(), () => c.length > 60 ? c.substring(0, 60) : c);
+      }
+      var i = 0;
+      for (final name in seen.values) {
+        await into(categories).insert(CategoriesCompanion.insert(
+          id: '${DateTime.now().microsecondsSinceEpoch}_${type}_${i++}',
+          type: type,
+          name: name,
+          createdAt: DateTime.now(),
+        ));
+      }
+    }
+
+    await seed('product', 'products');
+    await seed('expense', 'expenses');
+  }
 
   /// Atomically increments and returns the receipt number.
   Future<int> getNextReceiptNumber() async {

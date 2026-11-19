@@ -212,7 +212,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
     if (profile == null) return;
     try {
       final bytes = ReceiptBuilder.fromTransaction(txn, profile);
-      final printer = PrinterService();
+      final printer = ref.read(printerServiceProvider);
       if (printer.isConnected) {
         await printer.printBytes(bytes);
         if (mounted) {

@@ -39,7 +39,7 @@ void main() {
     expect(rows.single.amount, 25000);
     expect(rows.single.category, isNull);
     expect(rows.single.note, isNull);
-    expect(db.schemaVersion, 3);
+    expect(db.schemaVersion, 4);
   });
 
   test('receipt counter increments atomically', () async {

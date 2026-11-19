@@ -154,7 +154,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
                 Container(
                   width: 250,
                   color: AppColors.surface,
-                  child: Column(
+                  child: SingleChildScrollView(child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
@@ -193,7 +193,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
                       ),
                       if (canSettings) _buildSidebarItem(tabs.indexOf(HomeTab.settings), AppIcons.settings, 'Pengaturan'),
                     ],
-                  ),
+                  )),
                 ),
                 // Main Content
                 Expanded(

@@ -1,8 +1,13 @@
 import 'dart:async';
-import 'dart:typed_data';
+import 'dart:convert';
 import 'package:bluetooth_serial_next/bluetooth_serial_next.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-class PrinterService {
+/// One shared printer connection for the whole app.
+final printerServiceProvider = ChangeNotifierProvider<PrinterService>((ref) => PrinterService());
+
+class PrinterService extends ChangeNotifier {
   BluetoothSerialDevice? _device;
   BluetoothSerialPort? _connection;
 
@@ -24,12 +29,14 @@ class PrinterService {
     final port = await BluetoothSerial.instance.open(device.address);
     _connection = port;
     _device = device;
+    notifyListeners();
   }
 
   Future<void> disconnect() async {
     await _connection?.close();
     _device = null;
     _connection = null;
+    notifyListeners();
   }
 
   Future<void> printBytes(List<int> bytes) async {
@@ -40,7 +47,11 @@ class PrinterService {
     await port.write(Uint8List.fromList(bytes));
   }
 
-  Future<void> dispose() async {
-    await disconnect();
+  Future<void> printTest() => printBytes([...utf8.encode('Resto Flow\n'), 10, 10, 10]);
+
+  @override
+  void dispose() {
+    _connection?.close();
+    super.dispose();
   }
 }

@@ -1,19 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluetooth_serial_next/bluetooth_serial_next.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../printer/printer_service.dart';
 import '../../core/theme/app_icons.dart';
 
-class PrinterPairingPage extends StatefulWidget {
+class PrinterPairingPage extends ConsumerStatefulWidget {
   const PrinterPairingPage({super.key});
 
   @override
-  State<PrinterPairingPage> createState() => _PrinterPairingPageState();
+  ConsumerState<PrinterPairingPage> createState() => _PrinterPairingPageState();
 }
 
-class _PrinterPairingPageState extends State<PrinterPairingPage> {
-  final PrinterService _printer = PrinterService();
+class _PrinterPairingPageState extends ConsumerState<PrinterPairingPage> {
+  PrinterService get _printer => ref.read(printerServiceProvider);
   List<BluetoothSerialDevice> _devices = [];
   bool _scanning = false;
   bool _connecting = false;

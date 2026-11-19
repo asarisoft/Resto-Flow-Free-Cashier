@@ -15,6 +15,7 @@ import '../../features/users/users_providers.dart';
 import 'settings_providers.dart';
 
 import 'printer_pairing_page.dart';
+import '../../printer/printer_service.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/app_form_dialog.dart';
 import 'profile_fields.dart';
@@ -27,6 +28,7 @@ class SettingsPage extends ConsumerWidget {
     final textTheme = AppTypography.textTheme;
     final profileAsync = ref.watch(profileProvider);
     final canBackup = ref.watch(canSeeBackupProvider);
+    final printer = ref.watch(printerServiceProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -76,12 +78,18 @@ class SettingsPage extends ConsumerWidget {
                     const SizedBox(height: 12),
                     Row(
                       children: [
-                        Icon(AppIcons.print,
-                            color: AppColors.primary),
+                        Icon(
+                            printer.isConnected ? AppIcons.bluetoothConnected : AppIcons.print,
+                            color: printer.isConnected ? AppColors.success : AppColors.primary),
                         const SizedBox(width: 12),
-                        Text(
-                          'Bluetooth Thermal',
-                          style: textTheme.bodyLarge,
+                        Expanded(
+                          child: Text(
+                            printer.isConnected
+                                ? 'Terhubung: ${printer.device?.name ?? printer.device?.address ?? '-'}'
+                                : 'Bluetooth Thermal · Belum terhubung',
+                            style: textTheme.bodyLarge?.copyWith(
+                                color: printer.isConnected ? AppColors.success : null),
+                          ),
                         ),
                       ],
                     ),
@@ -91,6 +99,14 @@ class SettingsPage extends ConsumerWidget {
                       icon: AppIcons.bluetooth,
                       onPressed: () => _pairPrinter(context),
                     ),
+                    if (printer.isConnected) ...[
+                      const SizedBox(height: 8),
+                      SecondaryButton(
+                        label: 'Test Print',
+                        icon: AppIcons.print,
+                        onPressed: () => _testPrint(context, printer),
+                      ),
+                    ],
                   ],
                 ),
               ),
@@ -177,6 +193,17 @@ class SettingsPage extends ConsumerWidget {
       context: context,
       builder: (_) => _EditProfileDialog(profile: profile),
     );
+  }
+
+  Future<void> _testPrint(BuildContext context, PrinterService printer) async {
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      await printer.printTest();
+    } catch (e) {
+      messenger.showSnackBar(
+        SnackBar(content: Text('Test print gagal: $e'), backgroundColor: AppColors.error),
+      );
+    }
   }
 
   void _pairPrinter(BuildContext context) {

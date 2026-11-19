@@ -12,6 +12,8 @@ import 'product_image_service.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/tap_area.dart';
 import '../../core/widgets/app_form_dialog.dart';
+import '../categories/category_field.dart';
+import '../../core/services/daos/categories_dao.dart';
 
 class ProductFormDialog extends ConsumerStatefulWidget {
   final Product? product;
@@ -110,10 +112,10 @@ class _ProductFormDialogState extends ConsumerState<ProductFormDialog> {
           validator: (v) => v == null || v.trim().isEmpty ? 'Wajib diisi' : null,
           textCapitalization: TextCapitalization.words,
         ),
-        TextFormField(
-          controller: _categoryCtrl,
-          decoration: const InputDecoration(labelText: 'Kategori', hintText: 'Makanan, Minuman, dll'),
-          textCapitalization: TextCapitalization.words,
+        CategoryField(
+          type: CategoryType.product,
+          value: _categoryCtrl.text,
+          onChanged: (v) => setState(() => _categoryCtrl.text = v ?? ''),
         ),
         TextFormField(
           controller: _priceCtrl,

@@ -19,6 +19,7 @@ class AppIcons {
   static const IconData expense = LucideIcons300.receiptText;
   static const IconData report = LucideIcons300.chartColumn;
   static const IconData users = LucideIcons300.users;
+  static const IconData category = LucideIcons300.tags;
   static const IconData settings = LucideIcons300.settings;
   static const IconData brand = LucideIcons300.flame;
 

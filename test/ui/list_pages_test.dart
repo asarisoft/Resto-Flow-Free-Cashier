@@ -9,6 +9,7 @@ import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/theme/app_theme.dart';
 import 'package:kasir_resto/core/widgets/filter_panel.dart';
 import 'package:kasir_resto/features/expenses/expense_list_page.dart';
+import 'package:kasir_resto/features/categories/category_page.dart';
 import 'package:kasir_resto/features/reports/report_page.dart';
 import 'package:kasir_resto/features/users/user_list_page.dart';
 import 'package:kasir_resto/models/expense.dart';
@@ -96,6 +97,17 @@ void main() {
       expect(find.text('Token PLN'), findsOneWidget);
       expect(find.text('Beras 5kg'), findsNothing);
       expect(find.text('Rp 25.000'), findsWidgets);
+    });
+
+    testWidgets('"Kelola kategori" opens the expense category page', (tester) async {
+      await pump(tester, const ExpenseListPage());
+      await tester.tap(find.byTooltip('Kelola kategori'));
+      for (var i = 0; i < 6; i++) {
+        await tester.pump(const Duration(milliseconds: 200));
+      }
+      expect(find.byType(CategoryPage), findsOneWidget);
+      // dibuka di tab Pengeluaran
+      expect(find.text('Belum ada kategori'), findsOneWidget);
     });
 
     testWidgets('no match shows the "tidak cocok" empty state', (tester) async {

@@ -7,6 +7,8 @@ import '../products/product_providers.dart';
 import 'product_form_dialog.dart';
 import '../../core/theme/app_icons.dart';
 import 'product_card.dart';
+import '../categories/category_page.dart';
+import '../../core/services/daos/categories_dao.dart';
 
 class ProductListPage extends ConsumerWidget {
   const ProductListPage({super.key});
@@ -21,6 +23,15 @@ class ProductListPage extends ConsumerWidget {
         backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
+        actions: [
+          IconButton(
+            tooltip: 'Kelola kategori',
+            icon: const Icon(AppIcons.category),
+            onPressed: () => Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const CategoryPage(initialType: CategoryType.product)),
+            ),
+          ),
+        ],
       ),
       body: productsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),

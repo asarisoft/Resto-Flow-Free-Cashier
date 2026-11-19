@@ -289,7 +289,8 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 
 ### 7.8 Settings Page (Owner only)
 - Edit profil resto (nama, alamat, telp, footer, logo)
-- Printer pairing → `PrinterPairingPage` (scan BLE, connect, test print)
+- Printer pairing → `PrinterPairingPage` (scan BLE, connect)
+- Kartu Printer: status "Terhubung: <nama>" (hijau) / "Belum terhubung"; tombol "Test Print" (cetak `Resto Flow`) muncul hanya saat terhubung
 - Ukuran kertas (58/80)
 - Backup & Restore (lihat §9)
 - Logout
@@ -297,8 +298,7 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 
 ### 7.9 Printer Pairing Page
 - Scan perangkat BLE thermal
-- Pilih device → connect
-- Tombol "Test Print"
+- Pilih device → connect / putus
 - Simpan device ID di `shared_preferences`
 
 ---
@@ -306,6 +306,7 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 ## 8. Print Struk (ESC/POS)
 
 - Service: `PrinterService` via package `bluetooth_serial_next`
+- Satu koneksi bersama: `printerServiceProvider` (`ChangeNotifierProvider`); dipakai Pairing, Settings, POS, Laporan. Jangan buat `PrinterService()` baru.
 - Layout menyesuaikan `paperWidth`:
   - 58mm → 32 char/line
   - 80mm → 48 char/line
@@ -348,7 +349,7 @@ Kembali                 9.000
 1. Snapshot DB via `VACUUM INTO`
 2. Kemas ZIP:
    ```
-   kasir_resto_backup_YYYY-MM-DD_HHmm.zip
+   ddMMMyy HH.mm.zip  (mis. 19Nov26 10.00.zip)
    ├── database.db
    ├── manifest.json     (versi app, tanggal, jumlah record)
    └── images/

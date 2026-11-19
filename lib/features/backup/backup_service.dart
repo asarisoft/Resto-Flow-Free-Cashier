@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:archive/archive.dart';
+import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
 
 import '../../core/services/database.dart';
@@ -84,7 +85,7 @@ class BackupService {
 
       final zipBytes = ZipEncoder().encode(archive)!;
       final out =
-          File(p.join(Directory.systemTemp.path, 'kasir_resto_backup_$ts.zip'));
+          File(p.join(Directory.systemTemp.path, '${DateFormat('ddMMMyy HH.mm').format(DateTime.now())}.zip'));
       await out.writeAsBytes(zipBytes, flush: true);
       return out;
     } finally {
