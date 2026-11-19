@@ -42,8 +42,8 @@
 - [ ] Tes unit `PrinterService` (simpan/hapus address)
 
 ### 2. #3 Tombol uang cepat
-- [ ] Tombol "Uang pas" + nominal pecahan terdekat di atas total (mis. total 37rb → 40rb, 50rb, 100rb)
-- [ ] Tes logika pembulatan nominal (int)
+- [x] Tombol "Uang pas" + nominal pecahan terdekat di atas total (mis. total 37rb → 40rb, 50rb, 100rb)
+- [x] Tes logika pembulatan nominal (int)
 
 ### 3. #2 Catatan per item
 - [ ] Kolom `note` nullable di item keranjang & `transaction_items` (migrasi)

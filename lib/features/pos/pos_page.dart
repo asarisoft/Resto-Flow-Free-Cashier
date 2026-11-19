@@ -508,6 +508,19 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                 keyboardType: TextInputType.number,
                 onChanged: (_) => setState(() {}),
               ),
+              if (_method == 'cash' && _total > 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Wrap(
+                    spacing: 8,
+                    runSpacing: 8,
+                    children: [
+                      _quickCashButton('Uang pas', _total),
+                      for (final s in quickCashSuggestions(_total))
+                        if (s != _total) _quickCashButton(formatRupiah(s), s),
+                    ],
+                  ),
+                ),
               if (_change > 0)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
@@ -554,6 +567,23 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _quickCashButton(String label, int amount) {
+    return OutlinedButton(
+      onPressed: () {
+        _paidCtrl.text = amount.toString();
+        setState(() {});
+      },
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.primary,
+        side: const BorderSide(color: AppColors.border),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+      ),
+      child: Text(label),
     );
   }
 

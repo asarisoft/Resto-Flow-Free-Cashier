@@ -77,4 +77,29 @@ void main() {
     expect(c.change, isA<int>());
     expect(c.profit, isA<int>());
   });
+
+  group('quickCashSuggestions', () {
+    test('rounds up to nearest denominations above total', () {
+      expect(quickCashSuggestions(37000), [40000, 50000, 100000]);
+    });
+
+    test('dedups when total is already a denomination', () {
+      expect(quickCashSuggestions(50000), [50000, 100000]);
+    });
+
+    test('zero or negative total returns empty', () {
+      expect(quickCashSuggestions(0), isEmpty);
+      expect(quickCashSuggestions(-100), isEmpty);
+    });
+
+    test('small total still rounds up to 10k', () {
+      expect(quickCashSuggestions(1500), [10000, 50000, 100000]);
+    });
+
+    test('all values are int', () {
+      for (final v in quickCashSuggestions(37000)) {
+        expect(v, isA<int>());
+      }
+    });
+  });
 }
