@@ -312,6 +312,7 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 - Rekap (rentang `openedAt..closedAt`): omzet per metode bayar, total pengeluaran,
   kas seharusnya = modal awal + omzet tunai − pengeluaran (pengeluaran dianggap tunai, disebut di rekap),
   selisih = laci − seharusnya (int, bisa minus).
+  Pengeluaran dihitung berdasarkan `createdAt` (waktu dicatat), bukan `date` (tanggal dipilih di date picker).
 - Cetak rekap lewat `ReceiptBuilder.buildShiftRecapText` (lebar 58/80 sesuai setting).
 - Transaksi tetap bisa dicatat tanpa shift terbuka (tidak memblokir kasir).
 

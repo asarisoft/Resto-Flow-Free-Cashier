@@ -144,6 +144,8 @@ Aturan:
 - `openedBy`/`closedBy` menyimpan **username** (teks snapshot), bukan FK ke `Users`.
 - Rekap shift: kas seharusnya = `openingCash` + omzet tunai − pengeluaran.
   Pengeluaran (`Expenses`) tidak punya metode bayar → **semua dianggap tunai**.
+  Pengeluaran dihitung berdasarkan `createdAt` (waktu dicatat = uang keluar laci),
+  bukan `date` (tanggal yang dipilih di date picker).
   Selisih = `countedCash` − kas seharusnya (int, bisa minus).
 - Transaksi tetap bisa dicatat tanpa shift terbuka (shift tidak memblokir kasir).
 Data class Drift: **`ShiftRow`**.

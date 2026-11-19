@@ -77,4 +77,34 @@ void main() {
       expect(await reports.sumExpenses(start, end), 12000);
     });
   });
+
+  group('sumExpensesCreatedBetween', () {
+    test('Given expense dated today 00:00 but created inside shift, Then counted',
+        () async {
+      final openedAt = DateTime(2026, 11, 15, 8, 0);
+      final closedAt = DateTime(2026, 11, 15, 20, 0);
+      // `date` dari date picker = 00:00 (lebih awal dari openedAt), tapi
+      // uang keluar laci saat dicatat (createdAt) = di dalam shift.
+      await expenses.add(Expense(
+        amount: 15000,
+        date: DateTime(2026, 11, 15),
+        createdAt: DateTime(2026, 11, 15, 10, 0),
+      ));
+
+      expect(
+          await reports.sumExpensesCreatedBetween(openedAt, closedAt), 15000);
+    });
+
+    test('Given expense created before shift opened, Then not counted', () async {
+      final openedAt = DateTime(2026, 11, 15, 8, 0);
+      final closedAt = DateTime(2026, 11, 15, 20, 0);
+      await expenses.add(Expense(
+        amount: 5000,
+        date: DateTime(2026, 11, 15),
+        createdAt: DateTime(2026, 11, 15, 7, 59),
+      ));
+
+      expect(await reports.sumExpensesCreatedBetween(openedAt, closedAt), 0);
+    });
+  });
 }

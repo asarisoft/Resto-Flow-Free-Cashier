@@ -37,6 +37,16 @@ class ReportsDao {
     return rows.first.read<int>('v');
   }
 
+  /// Total pengeluaran berdasarkan waktu dicatat (created_at), untuk rekap shift
+  /// (uang keluar laci = kapan dicatat, bukan tanggal yang dipilih di date picker).
+  Future<int> sumExpensesCreatedBetween(DateTime start, DateTime end) async {
+    final rows = await db.customSelect(
+      'SELECT COALESCE(SUM(amount),0) AS v FROM expenses WHERE created_at >= ? AND created_at <= ?',
+      variables: [Variable.withDateTime(start), Variable.withDateTime(end)],
+    ).get();
+    return rows.first.read<int>('v');
+  }
+
   /// Omzet per metode bayar dalam rentang. Metode tanpa transaksi tidak muncul.
   Future<Map<String, int>> sumRevenueByMethod(DateTime start, DateTime end) async {
     final rows = await db.customSelect(

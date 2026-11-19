@@ -277,7 +277,8 @@ class _CloseShiftDialogState extends ConsumerState<_CloseShiftDialog> {
       final now = DateTime.now();
       final reports = ref.read(reportsDaoProvider);
       final revenue = await reports.sumRevenueByMethod(widget.shift.openedAt, now);
-      final expense = await reports.sumExpenses(widget.shift.openedAt, now);
+      final expense =
+          await reports.sumExpensesCreatedBetween(widget.shift.openedAt, now);
       final recap = computeShiftRecap(
         openingCash: widget.shift.openingCash,
         revenueByMethod: revenue,
