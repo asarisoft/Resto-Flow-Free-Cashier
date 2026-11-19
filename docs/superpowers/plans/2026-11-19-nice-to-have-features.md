@@ -51,10 +51,10 @@
 - [x] Tes migrasi + tes `ReceiptBuilder`
 
 ### 4. #12 Tutup kasir harian
-- [ ] Tabel `shifts` (buka: modal awal; tutup: uang laci, selisih) — migrasi
-- [ ] Rekap: omzet per metode bayar, pengeluaran, kas seharusnya vs laci
-- [ ] Cetak rekap ke printer
-- [ ] Tes perhitungan selisih (int)
+- [x] Tabel `shifts` (buka: modal awal; tutup: uang laci, selisih) — migrasi
+- [x] Rekap: omzet per metode bayar, pengeluaran, kas seharusnya vs laci
+- [x] Cetak rekap ke printer
+- [x] Tes perhitungan selisih (int)
 
 ### 5. #14 Pengingat backup
 - [ ] Simpan tanggal backup terakhir; banner di Pengaturan/Home kalau > 7 hari

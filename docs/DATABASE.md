@@ -125,6 +125,29 @@ Unique key: `(type, name)`. Produk/Pengeluaran menyimpan **nama** kategori (teks
 bukan FK; rename kategori ikut mengubah teks di item. Kategori yang dipakai tidak bisa dihapus.
 Data class Drift: **`CategoryRow`**.
 
+### `Shifts`
+
+| Kolom         | Tipe     | Constraint | Catatan                                     |
+|---------------|----------|------------|---------------------------------------------|
+| `id`          | TEXT     | **PK**     | UUID                                        |
+| `openedAt`    | DATETIME | NOT NULL   | Waktu buka shift                            |
+| `openedBy`    | TEXT     | NOT NULL   | Username yang buka (snapshot)               |
+| `openingCash` | INTEGER  | NOT NULL   | Modal awal laci (rupiah)                    |
+| `closedAt`    | DATETIME | nullable   | Waktu tutup; null = masih terbuka           |
+| `closedBy`    | TEXT     | nullable   | Username yang tutup (snapshot)              |
+| `countedCash` | INTEGER  | nullable   | Uang di laci saat tutup                     |
+| `expectedCash`| INTEGER  | nullable   | Kas seharusnya (lihat §Rekap)               |
+
+Aturan:
+- Maksimal **1 shift terbuka** (`closedAt IS NULL`); dipaksa di `ShiftsDao.open`
+  (gagal `StateError` bila masih ada yang terbuka).
+- `openedBy`/`closedBy` menyimpan **username** (teks snapshot), bukan FK ke `Users`.
+- Rekap shift: kas seharusnya = `openingCash` + omzet tunai − pengeluaran.
+  Pengeluaran (`Expenses`) tidak punya metode bayar → **semua dianggap tunai**.
+  Selisih = `countedCash` − kas seharusnya (int, bisa minus).
+- Transaksi tetap bisa dicatat tanpa shift terbuka (shift tidak memblokir kasir).
+Data class Drift: **`ShiftRow`**.
+
 ## Relasi
 
 ```

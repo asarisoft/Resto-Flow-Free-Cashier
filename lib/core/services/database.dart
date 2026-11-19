@@ -120,6 +120,23 @@ class Categories extends Table {
       ];
 }
 
+/// Shift kasir (buka/tutup laci harian). Maksimal 1 shift terbuka
+/// (dipaksa di DAO). `openedBy`/`closedBy` menyimpan username (snapshot).
+@DataClassName('ShiftRow')
+class Shifts extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get openedAt => dateTime()();
+  TextColumn get openedBy => text()();
+  IntColumn get openingCash => integer()();
+  DateTimeColumn get closedAt => dateTime().nullable()();
+  TextColumn get closedBy => text().nullable()();
+  IntColumn get countedCash => integer().nullable()();
+  IntColumn get expectedCash => integer().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -130,7 +147,7 @@ LazyDatabase _openConnection() {
 
 @DriftDatabase(
     tables: [Products, Transactions, TransactionItems, Users,
-             RestoProfiles, Counters, Expenses, Categories])
+             RestoProfiles, Counters, Expenses, Categories, Shifts])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 

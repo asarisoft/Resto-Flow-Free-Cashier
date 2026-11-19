@@ -4,7 +4,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
-import '../../core/widgets/primary_button.dart';
 import '../../models/product.dart';
 import '../products/product_providers.dart';
 import 'product_image.dart';

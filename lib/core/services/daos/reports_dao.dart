@@ -36,4 +36,14 @@ class ReportsDao {
     ).get();
     return rows.first.read<int>('v');
   }
+
+  /// Omzet per metode bayar dalam rentang. Metode tanpa transaksi tidak muncul.
+  Future<Map<String, int>> sumRevenueByMethod(DateTime start, DateTime end) async {
+    final rows = await db.customSelect(
+      'SELECT payment_method AS m, COALESCE(SUM(total),0) AS v FROM transactions '
+      'WHERE created_at >= ? AND created_at <= ? GROUP BY payment_method',
+      variables: [Variable.withDateTime(start), Variable.withDateTime(end)],
+    ).get();
+    return {for (final r in rows) r.read<String>('m'): r.read<int>('v')};
+  }
 }

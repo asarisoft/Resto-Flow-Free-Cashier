@@ -34,6 +34,7 @@
 - Produk/menu: nama, kategori, harga, HPP, foto lokal, status ready
 - Laporan: omzet, laba kotor/bersih per hari & bulan
 - Cetak struk via Bluetooth thermal printer (58mm / 80mm, ESC/POS)
+- Shift kasir harian: buka (modal awal) & tutup laci (rekap omzet, pengeluaran, selisih) + cetak rekap
 - User lokal + role (Owner/Kasir). Login pilih user + password teks
 - Backup/restore lokal (file ZIP: DB + foto)
 
@@ -300,6 +301,19 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 - Scan perangkat BLE thermal
 - Pilih device → connect / putus
 - Simpan device ID di `shared_preferences`
+
+### 7.10 Shift Kasir (Kasir & Owner)
+- Akses: tombol "Shift Kasir" di AppBar POS (mobile) & header POS (tablet). Terbuka untuk
+  Owner & Kasir.
+- Halaman `ShiftPage`: kartu status shift (terbuka/belum) + tombol **Buka Shift** / **Tutup Shift**,
+  lalu riwayat shift (daftar sederhana).
+- **Buka shift**: input modal awal laci (int ≥ 0). Maksimal 1 shift terbuka — buka lagi ditolak.
+- **Tutup shift**: input uang di laci → hitung rekap → dialog rekap + tombol Cetak.
+- Rekap (rentang `openedAt..closedAt`): omzet per metode bayar, total pengeluaran,
+  kas seharusnya = modal awal + omzet tunai − pengeluaran (pengeluaran dianggap tunai, disebut di rekap),
+  selisih = laci − seharusnya (int, bisa minus).
+- Cetak rekap lewat `ReceiptBuilder.buildShiftRecapText` (lebar 58/80 sesuai setting).
+- Transaksi tetap bisa dicatat tanpa shift terbuka (tidak memblokir kasir).
 
 ---
 

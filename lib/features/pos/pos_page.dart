@@ -18,6 +18,7 @@ import '../../core/theme/app_icons.dart';
 import '../../core/widgets/qty_stepper.dart';
 import '../../core/widgets/tap_area.dart';
 import '../products/product_card.dart';
+import '../shifts/shift_page.dart';
 
 class PosPage extends ConsumerStatefulWidget {
   const PosPage({super.key});
@@ -37,7 +38,16 @@ class _PosPageState extends ConsumerState<PosPage> {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: isWide ? null : AppBar(title: const Text('Kasir')),
+      appBar: isWide ? null : AppBar(
+        title: const Text('Kasir'),
+        actions: [
+          IconButton(
+            tooltip: 'Shift Kasir',
+            icon: const Icon(AppIcons.wallet),
+            onPressed: () => _openShiftPage(context),
+          ),
+        ],
+      ),
       body: productsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -65,6 +75,12 @@ class _PosPageState extends ConsumerState<PosPage> {
     );
   }
 
+  void _openShiftPage(BuildContext context) {
+    Navigator.of(context).push(
+      MaterialPageRoute(builder: (_) => const ShiftPage()),
+    );
+  }
+
   Widget _buildTabletLayout(List<String> categories, List<Product> products, List<TransactionItem> cart) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -75,8 +91,18 @@ class _PosPageState extends ConsumerState<PosPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Padding(
-                padding: const EdgeInsets.only(left: 24, top: 24),
-                child: Text('Menu', style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                padding: const EdgeInsets.only(left: 24, top: 24, right: 24),
+                child: Row(
+                  children: [
+                    Text('Menu', style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                    const Spacer(),
+                    IconButton(
+                      tooltip: 'Shift Kasir',
+                      icon: const Icon(AppIcons.wallet),
+                      onPressed: () => _openShiftPage(context),
+                    ),
+                  ],
+                ),
               ),
               const SizedBox(height: 16),
               // Horizontal Categories

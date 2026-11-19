@@ -2,6 +2,8 @@ import 'package:intl/intl.dart';
 import '../models/transaction.dart' as models;
 import '../models/resto_profile.dart';
 import '../models/transaction_item.dart';
+import '../models/shift.dart';
+import '../features/shifts/shift_calc.dart';
 
 class ReceiptBuilder {
   static final _fmt = NumberFormat.currency(
@@ -123,6 +125,72 @@ class ReceiptBuilder {
     }
 
     buf.writeln();
+    if (profile.footerNote != null && profile.footerNote!.isNotEmpty) {
+      center(profile.footerNote!);
+    }
+    buf.writeln();
+    buf.writeln();
+    buf.writeln();
+
+    return buf.toString();
+  }
+
+  /// Rekap tutup kasir (teks sama untuk printer & preview).
+  static String buildShiftRecapText({
+    required RestoProfile profile,
+    required Shift shift,
+    required ShiftRecap recap,
+  }) {
+    final buf = StringBuffer();
+    final w = profile.paperWidth == 80 ? 48 : 32;
+    final df = DateFormat('dd/MM/yy HH:mm');
+
+    void center(String text) {
+      for (final s in wrap(text, w)) {
+        final pad = ((w - s.length) ~/ 2).clamp(0, w);
+        buf.writeln(s.isEmpty ? '' : ' ' * pad + s);
+      }
+    }
+
+    void divider() => buf.writeln('─' * w);
+
+    void line(String left, String right) {
+      final r = right.length;
+      final pad = (w - r - left.length).clamp(1, w);
+      buf.writeln(left + ' ' * pad + right);
+    }
+
+    center(profile.name.toUpperCase());
+    if (profile.address != null && profile.address!.isNotEmpty) {
+      center(profile.address!);
+    }
+    if (profile.phone != null && profile.phone!.isNotEmpty) {
+      center('Telp ${profile.phone}');
+    }
+    buf.writeln();
+    divider();
+    center('REKAP KASIR');
+    divider();
+    line('Buka', df.format(shift.openedAt));
+    line('Tutup', df.format(shift.closedAt ?? DateTime.now()));
+    line('Oleh', '${shift.openedBy} → ${shift.closedBy ?? '-'}');
+    divider();
+    line('Omzet Tunai', _fmt.format(recap.cashRevenue));
+    line('Omzet QRIS', _fmt.format(recap.qrisRevenue));
+    line('Omzet Kartu', _fmt.format(recap.cardRevenue));
+    if (recap.otherRevenue != 0) {
+      line('Omzet Lain', _fmt.format(recap.otherRevenue));
+    }
+    line('Pengeluaran', _fmt.format(recap.totalExpense));
+    divider();
+    line('Modal awal', _fmt.format(shift.openingCash));
+    line('Omzet tunai', _fmt.format(recap.cashRevenue));
+    line('Pengeluaran', '-${_fmt.format(recap.totalExpense)}');
+    line('Kas seharusnya', _fmt.format(recap.expectedCash));
+    line('Kas di laci', _fmt.format(shift.countedCash ?? 0));
+    line('Selisih', _fmt.format(recap.difference));
+    divider();
+
     if (profile.footerNote != null && profile.footerNote!.isNotEmpty) {
       center(profile.footerNote!);
     }
