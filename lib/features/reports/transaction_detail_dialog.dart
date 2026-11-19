@@ -63,7 +63,17 @@ class TransactionDetailDialog extends StatelessWidget {
                 pageSize: 100,
                 rows: txn.items,
                 columns: [
-                  AppColumn(label: 'Item', flex: 3, minWidth: 160, cell: (i) => Text(i.name)),
+                  AppColumn(label: 'Item', flex: 3, minWidth: 160, cell: (i) => Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(i.name),
+                      if (i.note != null && i.note!.isNotEmpty)
+                        Text(i.note!,
+                            style: textTheme.labelSmall?.copyWith(
+                                color: AppColors.textSecondary,
+                                fontStyle: FontStyle.italic)),
+                    ],
+                  )),
                   AppColumn(label: 'Qty', minWidth: 60, numeric: true, cell: (i) => Text('${i.qty}')),
                   AppColumn(
                     label: 'Subtotal',

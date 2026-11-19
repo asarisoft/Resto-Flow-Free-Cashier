@@ -12,7 +12,7 @@ class CartNotifier extends Notifier<List<TransactionItem>> {
 
   void addItem(Product product) {
     final existing = state.indexWhere(
-        (i) => i.productId == product.id && i.discount == 0);
+        (i) => i.productId == product.id && i.discount == 0 && (i.note == null || i.note!.isEmpty));
     if (existing >= 0) {
       state = [
         for (var i = 0; i < state.length; i++)

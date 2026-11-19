@@ -50,4 +50,14 @@ void main() {
     cart().setNote(0, null);
     expect(c.read(cartProvider).first.note, isNull);
   });
+
+  test('adding same product after a note is set keeps a separate line', () {
+    cart().addItem(product('a', 10000));
+    cart().setNote(0, 'tanpa sambal');
+    cart().addItem(product('a', 10000));
+    final items = c.read(cartProvider);
+    expect(items.length, 2);
+    expect(items[0].note, 'tanpa sambal');
+    expect(items[1].note, isNull);
+  });
 }
