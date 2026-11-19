@@ -28,6 +28,7 @@ void main() {
     'settings': canSeeSettingsProvider,
     'backup': canSeeBackupProvider,
     'expenses': canSeeExpensesProvider,
+    'void': canVoidTransactionProvider,
   };
 
   test('kasir session cannot see any owner-only area', () async {

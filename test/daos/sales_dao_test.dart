@@ -55,6 +55,73 @@ void main() {
     expect(ranged.length, 52);
     expect(ranged.last.createdAt, old);
   });
+
+  group('voidTransaction', () {
+    Future<String> saveTxn() => dao.save(Transaction(
+          number: 1,
+          items: const [TransactionItem(productId: 'p1', name: 'Nasi', price: 15000, hpp: 8000)],
+          subtotal: 15000,
+          total: 15000,
+          paid: 15000,
+          profit: 7000,
+          createdAt: DateTime.now(),
+        ));
+
+    test('owner can void, snapshot reason/actor/time stored', () async {
+      final id = await saveTxn();
+
+      await dao.voidTransaction(
+          id: id, actorRole: 'owner', username: 'admin', reason: 'salah input');
+
+      final saved = await dao.get(id);
+      expect(saved!.isVoid, true);
+      expect(saved.voidReason, 'salah input');
+      expect(saved.voidedBy, 'admin');
+      expect(saved.voidedAt, isNotNull);
+    });
+
+    test('kasir cannot void', () async {
+      final id = await saveTxn();
+
+      expect(
+        () => dao.voidTransaction(
+            id: id, actorRole: 'kasir', username: 'budi', reason: 'salah input'),
+        throwsA(isA<StateError>()),
+      );
+    });
+
+    test('already void transaction cannot be voided again', () async {
+      final id = await saveTxn();
+      await dao.voidTransaction(
+          id: id, actorRole: 'owner', username: 'admin', reason: 'salah input');
+
+      expect(
+        () => dao.voidTransaction(
+            id: id, actorRole: 'owner', username: 'admin', reason: 'double void'),
+        throwsA(isA<StateError>()),
+      );
+    });
+
+    test('reason shorter than 3 chars is rejected', () async {
+      final id = await saveTxn();
+
+      expect(
+        () => dao.voidTransaction(
+            id: id, actorRole: 'owner', username: 'admin', reason: 'ab'),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+
+    test('empty reason is rejected', () async {
+      final id = await saveTxn();
+
+      expect(
+        () => dao.voidTransaction(
+            id: id, actorRole: 'owner', username: 'admin', reason: '   '),
+        throwsA(isA<ArgumentError>()),
+      );
+    });
+  });
 }
 
 Future<String> _save(SalesDao dao, int number, DateTime createdAt) => dao.save(Transaction(

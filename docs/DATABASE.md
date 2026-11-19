@@ -42,8 +42,17 @@ Schema version: **1** (riwayat dev di-reset sebelum rilis pertama, 2026-11-19).
 | `change`        | INTEGER    | NOT NULL, default 0         | Kembalian                 |
 | `paymentMethod` | TEXT       | NOT NULL, default `'cash'`  | cash / qris / card        |
 | `profit`        | INTEGER    | NOT NULL                    | Laba kotor                |
+| `status`        | TEXT       | NOT NULL, default `'paid'`  | `'paid'` \| `'void'` (nanti #1 tambah `'open'`) |
+| `voidReason`    | TEXT       | nullable                    | Alasan pembatalan         |
+| `voidedBy`      | TEXT       | nullable                    | Username yang batalkan (snapshot) |
+| `voidedAt`      | DATETIME   | nullable                    | Waktu dibatalkan          |
 | `printedAt`     | DATETIME   | nullable                    | Waktu cetak struk         |
 | `createdAt`     | DATETIME   | NOT NULL                    |                           |
+
+Aturan:
+- Transaksi batal (`status = 'void'`) **hanya Owner**, alasan wajib (min 3 karakter).
+- Transaksi `void` tetap tersimpan (tidak dihapus) tapi **tidak dihitung** di laporan.
+- Semua query laporan (omzet, laba, jumlah transaksi, omzet per metode bayar) mengecualikan `status != 'paid'`.
 
 ### `TransactionItems`
 

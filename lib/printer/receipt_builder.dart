@@ -149,6 +149,13 @@ class ReceiptBuilder {
     final dateStr = DateFormat('dd/MM/yy HH:mm').format(txn.createdAt);
     line('No: #${txn.number}', dateStr);
     divider();
+    if (txn.isVoid) {
+      center('*** DIBATALKAN ***');
+      if (txn.voidReason != null && txn.voidReason!.isNotEmpty) {
+        center(txn.voidReason!);
+      }
+      divider();
+    }
 
     for (final item in txn.items) {
       for (final l in wrap(item.name, w)) {

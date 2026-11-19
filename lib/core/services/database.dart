@@ -34,6 +34,10 @@ class Transactions extends Table {
   TextColumn get paymentMethod =>
       text().withDefault(const Constant('cash'))();
   IntColumn get profit => integer()();
+  TextColumn get status => text().withDefault(const Constant('paid'))();
+  TextColumn get voidReason => text().nullable()();
+  TextColumn get voidedBy => text().nullable()();
+  DateTimeColumn get voidedAt => dateTime().nullable()();
   DateTimeColumn get printedAt => dateTime().nullable()();
   DateTimeColumn get createdAt => dateTime()();
 

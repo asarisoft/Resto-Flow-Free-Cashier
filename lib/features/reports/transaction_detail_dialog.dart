@@ -14,8 +14,16 @@ import 'transaction_filter.dart';
 class TransactionDetailDialog extends StatelessWidget {
   final models.Transaction txn;
   final VoidCallback onReprint;
+  final VoidCallback? onVoid;
+  final bool canVoid;
 
-  const TransactionDetailDialog({super.key, required this.txn, required this.onReprint});
+  const TransactionDetailDialog({
+    super.key,
+    required this.txn,
+    required this.onReprint,
+    this.onVoid,
+    this.canVoid = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +66,35 @@ class TransactionDetailDialog extends StatelessWidget {
                 '${DateFormat('dd/MM/yyyy HH:mm').format(txn.createdAt)} · ${paymentLabel(txn.paymentMethod)}',
                 style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
               ),
+              if (txn.isVoid) ...[
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: AppColors.error.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('*** DIBATALKAN ***',
+                          style: textTheme.bodyLarge?.copyWith(
+                              color: AppColors.error, fontWeight: FontWeight.w700)),
+                      if (txn.voidReason != null && txn.voidReason!.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Text('Alasan: ${txn.voidReason}',
+                            style: textTheme.bodyMedium?.copyWith(color: AppColors.error)),
+                      ],
+                      if (txn.voidedBy != null) ...[
+                        const SizedBox(height: 4),
+                        Text('Oleh ${txn.voidedBy}'
+                            '${txn.voidedAt == null ? '' : ' · ${DateFormat('dd/MM/yyyy HH:mm').format(txn.voidedAt!)}'}',
+                            style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
               const SizedBox(height: 16),
               AppDataTable<TransactionItem>(
                 pageSize: 100,
@@ -100,22 +137,41 @@ class TransactionDetailDialog extends StatelessWidget {
       actions: [
         SizedBox(
           width: width,
-          child: Row(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.of(context).pop(),
+              if (canVoid && !txn.isVoid) ...[
+                OutlinedButton.icon(
+                  onPressed: onVoid,
                   style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(0, 52),
-                    foregroundColor: AppColors.textPrimary,
-                    side: const BorderSide(color: AppColors.inputBorder),
+                    minimumSize: const Size(0, 48),
+                    foregroundColor: AppColors.error,
+                    side: const BorderSide(color: AppColors.error),
                   ),
-                  child: const Text('Tutup'),
+                  icon: const Icon(AppIcons.delete),
+                  label: const Text('Batalkan'),
                 ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: PrimaryButton(label: 'Cetak ulang', icon: AppIcons.print, onPressed: onReprint),
+                const SizedBox(height: 12),
+              ],
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(0, 52),
+                        foregroundColor: AppColors.textPrimary,
+                        side: const BorderSide(color: AppColors.inputBorder),
+                      ),
+                      child: const Text('Tutup'),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: PrimaryButton(label: 'Cetak ulang', icon: AppIcons.print, onPressed: onReprint),
+                  ),
+                ],
               ),
             ],
           ),

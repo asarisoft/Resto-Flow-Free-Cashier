@@ -18,6 +18,9 @@ final canSeeSettingsProvider = Provider<bool>((ref) => _isOwner(ref));
 final canSeeBackupProvider = Provider<bool>((ref) => _isOwner(ref));
 final canSeeExpensesProvider = Provider<bool>((ref) => _isOwner(ref));
 
+/// SPEC §2.2: batalkan/refund transaksi (void) hanya Owner.
+final canVoidTransactionProvider = Provider<bool>((ref) => _isOwner(ref));
+
 /// SPEC §2.2: kelola produk & kategori (CRUD) hanya Owner.
 final canManageProductsProvider = Provider<bool>((ref) => _isOwner(ref));
 

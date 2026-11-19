@@ -67,9 +67,9 @@
 - [x] PNG transparan diratakan ke latar putih sebelum raster (hindari kotak hitam)
 
 ### 7. #5 Batalkan/refund
-- [ ] Status transaksi `void` + alasan + user + waktu (migrasi)
-- [ ] Hanya Owner; laporan mengecualikan transaksi void
-- [ ] Tes laporan & guard role
+- [x] Status transaksi `void` + alasan + user + waktu (migrasi)
+- [x] Hanya Owner; laporan mengecualikan transaksi void
+- [x] Tes laporan & guard role
 
 ### 8. #1 Simpan pesanan
 - [ ] Status `open` (belum bayar); daftar pesanan terbuka di POS

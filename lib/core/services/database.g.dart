@@ -705,6 +705,49 @@ class $TransactionsTable extends Transactions
     type: DriftSqlType.int,
     requiredDuringInsert: true,
   );
+  static const VerificationMeta _statusMeta = const VerificationMeta('status');
+  @override
+  late final GeneratedColumn<String> status = GeneratedColumn<String>(
+    'status',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('paid'),
+  );
+  static const VerificationMeta _voidReasonMeta = const VerificationMeta(
+    'voidReason',
+  );
+  @override
+  late final GeneratedColumn<String> voidReason = GeneratedColumn<String>(
+    'void_reason',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _voidedByMeta = const VerificationMeta(
+    'voidedBy',
+  );
+  @override
+  late final GeneratedColumn<String> voidedBy = GeneratedColumn<String>(
+    'voided_by',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _voidedAtMeta = const VerificationMeta(
+    'voidedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> voidedAt = GeneratedColumn<DateTime>(
+    'voided_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _printedAtMeta = const VerificationMeta(
     'printedAt',
   );
@@ -738,6 +781,10 @@ class $TransactionsTable extends Transactions
     change,
     paymentMethod,
     profit,
+    status,
+    voidReason,
+    voidedBy,
+    voidedAt,
     printedAt,
     createdAt,
   ];
@@ -819,6 +866,30 @@ class $TransactionsTable extends Transactions
     } else if (isInserting) {
       context.missing(_profitMeta);
     }
+    if (data.containsKey('status')) {
+      context.handle(
+        _statusMeta,
+        status.isAcceptableOrUnknown(data['status']!, _statusMeta),
+      );
+    }
+    if (data.containsKey('void_reason')) {
+      context.handle(
+        _voidReasonMeta,
+        voidReason.isAcceptableOrUnknown(data['void_reason']!, _voidReasonMeta),
+      );
+    }
+    if (data.containsKey('voided_by')) {
+      context.handle(
+        _voidedByMeta,
+        voidedBy.isAcceptableOrUnknown(data['voided_by']!, _voidedByMeta),
+      );
+    }
+    if (data.containsKey('voided_at')) {
+      context.handle(
+        _voidedAtMeta,
+        voidedAt.isAcceptableOrUnknown(data['voided_at']!, _voidedAtMeta),
+      );
+    }
     if (data.containsKey('printed_at')) {
       context.handle(
         _printedAtMeta,
@@ -878,6 +949,22 @@ class $TransactionsTable extends Transactions
         DriftSqlType.int,
         data['${effectivePrefix}profit'],
       )!,
+      status: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}status'],
+      )!,
+      voidReason: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}void_reason'],
+      ),
+      voidedBy: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}voided_by'],
+      ),
+      voidedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}voided_at'],
+      ),
       printedAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}printed_at'],
@@ -905,6 +992,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final int change;
   final String paymentMethod;
   final int profit;
+  final String status;
+  final String? voidReason;
+  final String? voidedBy;
+  final DateTime? voidedAt;
   final DateTime? printedAt;
   final DateTime createdAt;
   const Transaction({
@@ -917,6 +1008,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     required this.change,
     required this.paymentMethod,
     required this.profit,
+    required this.status,
+    this.voidReason,
+    this.voidedBy,
+    this.voidedAt,
     this.printedAt,
     required this.createdAt,
   });
@@ -932,6 +1027,16 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     map['change'] = Variable<int>(change);
     map['payment_method'] = Variable<String>(paymentMethod);
     map['profit'] = Variable<int>(profit);
+    map['status'] = Variable<String>(status);
+    if (!nullToAbsent || voidReason != null) {
+      map['void_reason'] = Variable<String>(voidReason);
+    }
+    if (!nullToAbsent || voidedBy != null) {
+      map['voided_by'] = Variable<String>(voidedBy);
+    }
+    if (!nullToAbsent || voidedAt != null) {
+      map['voided_at'] = Variable<DateTime>(voidedAt);
+    }
     if (!nullToAbsent || printedAt != null) {
       map['printed_at'] = Variable<DateTime>(printedAt);
     }
@@ -950,6 +1055,16 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       change: Value(change),
       paymentMethod: Value(paymentMethod),
       profit: Value(profit),
+      status: Value(status),
+      voidReason: voidReason == null && nullToAbsent
+          ? const Value.absent()
+          : Value(voidReason),
+      voidedBy: voidedBy == null && nullToAbsent
+          ? const Value.absent()
+          : Value(voidedBy),
+      voidedAt: voidedAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(voidedAt),
       printedAt: printedAt == null && nullToAbsent
           ? const Value.absent()
           : Value(printedAt),
@@ -972,6 +1087,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       change: serializer.fromJson<int>(json['change']),
       paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
       profit: serializer.fromJson<int>(json['profit']),
+      status: serializer.fromJson<String>(json['status']),
+      voidReason: serializer.fromJson<String?>(json['voidReason']),
+      voidedBy: serializer.fromJson<String?>(json['voidedBy']),
+      voidedAt: serializer.fromJson<DateTime?>(json['voidedAt']),
       printedAt: serializer.fromJson<DateTime?>(json['printedAt']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
@@ -989,6 +1108,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'change': serializer.toJson<int>(change),
       'paymentMethod': serializer.toJson<String>(paymentMethod),
       'profit': serializer.toJson<int>(profit),
+      'status': serializer.toJson<String>(status),
+      'voidReason': serializer.toJson<String?>(voidReason),
+      'voidedBy': serializer.toJson<String?>(voidedBy),
+      'voidedAt': serializer.toJson<DateTime?>(voidedAt),
       'printedAt': serializer.toJson<DateTime?>(printedAt),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
@@ -1004,6 +1127,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     int? change,
     String? paymentMethod,
     int? profit,
+    String? status,
+    Value<String?> voidReason = const Value.absent(),
+    Value<String?> voidedBy = const Value.absent(),
+    Value<DateTime?> voidedAt = const Value.absent(),
     Value<DateTime?> printedAt = const Value.absent(),
     DateTime? createdAt,
   }) => Transaction(
@@ -1016,6 +1143,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     change: change ?? this.change,
     paymentMethod: paymentMethod ?? this.paymentMethod,
     profit: profit ?? this.profit,
+    status: status ?? this.status,
+    voidReason: voidReason.present ? voidReason.value : this.voidReason,
+    voidedBy: voidedBy.present ? voidedBy.value : this.voidedBy,
+    voidedAt: voidedAt.present ? voidedAt.value : this.voidedAt,
     printedAt: printedAt.present ? printedAt.value : this.printedAt,
     createdAt: createdAt ?? this.createdAt,
   );
@@ -1032,6 +1163,12 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ? data.paymentMethod.value
           : this.paymentMethod,
       profit: data.profit.present ? data.profit.value : this.profit,
+      status: data.status.present ? data.status.value : this.status,
+      voidReason: data.voidReason.present
+          ? data.voidReason.value
+          : this.voidReason,
+      voidedBy: data.voidedBy.present ? data.voidedBy.value : this.voidedBy,
+      voidedAt: data.voidedAt.present ? data.voidedAt.value : this.voidedAt,
       printedAt: data.printedAt.present ? data.printedAt.value : this.printedAt,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
@@ -1049,6 +1186,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('change: $change, ')
           ..write('paymentMethod: $paymentMethod, ')
           ..write('profit: $profit, ')
+          ..write('status: $status, ')
+          ..write('voidReason: $voidReason, ')
+          ..write('voidedBy: $voidedBy, ')
+          ..write('voidedAt: $voidedAt, ')
           ..write('printedAt: $printedAt, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
@@ -1066,6 +1207,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     change,
     paymentMethod,
     profit,
+    status,
+    voidReason,
+    voidedBy,
+    voidedAt,
     printedAt,
     createdAt,
   );
@@ -1082,6 +1227,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.change == this.change &&
           other.paymentMethod == this.paymentMethod &&
           other.profit == this.profit &&
+          other.status == this.status &&
+          other.voidReason == this.voidReason &&
+          other.voidedBy == this.voidedBy &&
+          other.voidedAt == this.voidedAt &&
           other.printedAt == this.printedAt &&
           other.createdAt == this.createdAt);
 }
@@ -1096,6 +1245,10 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<int> change;
   final Value<String> paymentMethod;
   final Value<int> profit;
+  final Value<String> status;
+  final Value<String?> voidReason;
+  final Value<String?> voidedBy;
+  final Value<DateTime?> voidedAt;
   final Value<DateTime?> printedAt;
   final Value<DateTime> createdAt;
   final Value<int> rowid;
@@ -1109,6 +1262,10 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.change = const Value.absent(),
     this.paymentMethod = const Value.absent(),
     this.profit = const Value.absent(),
+    this.status = const Value.absent(),
+    this.voidReason = const Value.absent(),
+    this.voidedBy = const Value.absent(),
+    this.voidedAt = const Value.absent(),
     this.printedAt = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -1123,6 +1280,10 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.change = const Value.absent(),
     this.paymentMethod = const Value.absent(),
     required int profit,
+    this.status = const Value.absent(),
+    this.voidReason = const Value.absent(),
+    this.voidedBy = const Value.absent(),
+    this.voidedAt = const Value.absent(),
     this.printedAt = const Value.absent(),
     required DateTime createdAt,
     this.rowid = const Value.absent(),
@@ -1143,6 +1304,10 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<int>? change,
     Expression<String>? paymentMethod,
     Expression<int>? profit,
+    Expression<String>? status,
+    Expression<String>? voidReason,
+    Expression<String>? voidedBy,
+    Expression<DateTime>? voidedAt,
     Expression<DateTime>? printedAt,
     Expression<DateTime>? createdAt,
     Expression<int>? rowid,
@@ -1157,6 +1322,10 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (change != null) 'change': change,
       if (paymentMethod != null) 'payment_method': paymentMethod,
       if (profit != null) 'profit': profit,
+      if (status != null) 'status': status,
+      if (voidReason != null) 'void_reason': voidReason,
+      if (voidedBy != null) 'voided_by': voidedBy,
+      if (voidedAt != null) 'voided_at': voidedAt,
       if (printedAt != null) 'printed_at': printedAt,
       if (createdAt != null) 'created_at': createdAt,
       if (rowid != null) 'rowid': rowid,
@@ -1173,6 +1342,10 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Value<int>? change,
     Value<String>? paymentMethod,
     Value<int>? profit,
+    Value<String>? status,
+    Value<String?>? voidReason,
+    Value<String?>? voidedBy,
+    Value<DateTime?>? voidedAt,
     Value<DateTime?>? printedAt,
     Value<DateTime>? createdAt,
     Value<int>? rowid,
@@ -1187,6 +1360,10 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       change: change ?? this.change,
       paymentMethod: paymentMethod ?? this.paymentMethod,
       profit: profit ?? this.profit,
+      status: status ?? this.status,
+      voidReason: voidReason ?? this.voidReason,
+      voidedBy: voidedBy ?? this.voidedBy,
+      voidedAt: voidedAt ?? this.voidedAt,
       printedAt: printedAt ?? this.printedAt,
       createdAt: createdAt ?? this.createdAt,
       rowid: rowid ?? this.rowid,
@@ -1223,6 +1400,18 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (profit.present) {
       map['profit'] = Variable<int>(profit.value);
     }
+    if (status.present) {
+      map['status'] = Variable<String>(status.value);
+    }
+    if (voidReason.present) {
+      map['void_reason'] = Variable<String>(voidReason.value);
+    }
+    if (voidedBy.present) {
+      map['voided_by'] = Variable<String>(voidedBy.value);
+    }
+    if (voidedAt.present) {
+      map['voided_at'] = Variable<DateTime>(voidedAt.value);
+    }
     if (printedAt.present) {
       map['printed_at'] = Variable<DateTime>(printedAt.value);
     }
@@ -1247,6 +1436,10 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('change: $change, ')
           ..write('paymentMethod: $paymentMethod, ')
           ..write('profit: $profit, ')
+          ..write('status: $status, ')
+          ..write('voidReason: $voidReason, ')
+          ..write('voidedBy: $voidedBy, ')
+          ..write('voidedAt: $voidedAt, ')
           ..write('printedAt: $printedAt, ')
           ..write('createdAt: $createdAt, ')
           ..write('rowid: $rowid')
@@ -4550,6 +4743,10 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       Value<int> change,
       Value<String> paymentMethod,
       required int profit,
+      Value<String> status,
+      Value<String?> voidReason,
+      Value<String?> voidedBy,
+      Value<DateTime?> voidedAt,
       Value<DateTime?> printedAt,
       required DateTime createdAt,
       Value<int> rowid,
@@ -4565,6 +4762,10 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<int> change,
       Value<String> paymentMethod,
       Value<int> profit,
+      Value<String> status,
+      Value<String?> voidReason,
+      Value<String?> voidedBy,
+      Value<DateTime?> voidedAt,
       Value<DateTime?> printedAt,
       Value<DateTime> createdAt,
       Value<int> rowid,
@@ -4646,6 +4847,26 @@ class $$TransactionsTableFilterComposer
 
   ColumnFilters<int> get profit => $composableBuilder(
     column: $table.profit,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get voidReason => $composableBuilder(
+    column: $table.voidReason,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get voidedBy => $composableBuilder(
+    column: $table.voidedBy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get voidedAt => $composableBuilder(
+    column: $table.voidedAt,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4739,6 +4960,26 @@ class $$TransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get status => $composableBuilder(
+    column: $table.status,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get voidReason => $composableBuilder(
+    column: $table.voidReason,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get voidedBy => $composableBuilder(
+    column: $table.voidedBy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get voidedAt => $composableBuilder(
+    column: $table.voidedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get printedAt => $composableBuilder(
     column: $table.printedAt,
     builder: (column) => ColumnOrderings(column),
@@ -4787,6 +5028,20 @@ class $$TransactionsTableAnnotationComposer
 
   GeneratedColumn<int> get profit =>
       $composableBuilder(column: $table.profit, builder: (column) => column);
+
+  GeneratedColumn<String> get status =>
+      $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get voidReason => $composableBuilder(
+    column: $table.voidReason,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get voidedBy =>
+      $composableBuilder(column: $table.voidedBy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get voidedAt =>
+      $composableBuilder(column: $table.voidedAt, builder: (column) => column);
 
   GeneratedColumn<DateTime> get printedAt =>
       $composableBuilder(column: $table.printedAt, builder: (column) => column);
@@ -4857,6 +5112,10 @@ class $$TransactionsTableTableManager
                 Value<int> change = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
                 Value<int> profit = const Value.absent(),
+                Value<String> status = const Value.absent(),
+                Value<String?> voidReason = const Value.absent(),
+                Value<String?> voidedBy = const Value.absent(),
+                Value<DateTime?> voidedAt = const Value.absent(),
                 Value<DateTime?> printedAt = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -4870,6 +5129,10 @@ class $$TransactionsTableTableManager
                 change: change,
                 paymentMethod: paymentMethod,
                 profit: profit,
+                status: status,
+                voidReason: voidReason,
+                voidedBy: voidedBy,
+                voidedAt: voidedAt,
                 printedAt: printedAt,
                 createdAt: createdAt,
                 rowid: rowid,
@@ -4885,6 +5148,10 @@ class $$TransactionsTableTableManager
                 Value<int> change = const Value.absent(),
                 Value<String> paymentMethod = const Value.absent(),
                 required int profit,
+                Value<String> status = const Value.absent(),
+                Value<String?> voidReason = const Value.absent(),
+                Value<String?> voidedBy = const Value.absent(),
+                Value<DateTime?> voidedAt = const Value.absent(),
                 Value<DateTime?> printedAt = const Value.absent(),
                 required DateTime createdAt,
                 Value<int> rowid = const Value.absent(),
@@ -4898,6 +5165,10 @@ class $$TransactionsTableTableManager
                 change: change,
                 paymentMethod: paymentMethod,
                 profit: profit,
+                status: status,
+                voidReason: voidReason,
+                voidedBy: voidedBy,
+                voidedAt: voidedAt,
                 printedAt: printedAt,
                 createdAt: createdAt,
                 rowid: rowid,

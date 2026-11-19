@@ -7,7 +7,7 @@ class ReportsDao {
 
   Future<int> sumRevenue(DateTime start, DateTime end) async {
     final rows = await db.customSelect(
-      'SELECT COALESCE(SUM(total),0) AS v FROM transactions WHERE created_at >= ? AND created_at <= ?',
+      "SELECT COALESCE(SUM(total),0) AS v FROM transactions WHERE created_at >= ? AND created_at <= ? AND status = 'paid'",
       variables: [Variable.withDateTime(start), Variable.withDateTime(end)],
     ).get();
     return rows.first.read<int>('v');
@@ -15,7 +15,7 @@ class ReportsDao {
 
   Future<int> sumProfit(DateTime start, DateTime end) async {
     final rows = await db.customSelect(
-      'SELECT COALESCE(SUM(profit),0) AS v FROM transactions WHERE created_at >= ? AND created_at <= ?',
+      "SELECT COALESCE(SUM(profit),0) AS v FROM transactions WHERE created_at >= ? AND created_at <= ? AND status = 'paid'",
       variables: [Variable.withDateTime(start), Variable.withDateTime(end)],
     ).get();
     return rows.first.read<int>('v');
@@ -23,7 +23,7 @@ class ReportsDao {
 
   Future<int> countTransactions(DateTime start, DateTime end) async {
     final rows = await db.customSelect(
-      'SELECT COUNT(*) AS v FROM transactions WHERE created_at >= ? AND created_at <= ?',
+      "SELECT COUNT(*) AS v FROM transactions WHERE created_at >= ? AND created_at <= ? AND status = 'paid'",
       variables: [Variable.withDateTime(start), Variable.withDateTime(end)],
     ).get();
     return rows.first.read<int>('v');
@@ -51,7 +51,7 @@ class ReportsDao {
   Future<Map<String, int>> sumRevenueByMethod(DateTime start, DateTime end) async {
     final rows = await db.customSelect(
       'SELECT payment_method AS m, COALESCE(SUM(total),0) AS v FROM transactions '
-      'WHERE created_at >= ? AND created_at <= ? GROUP BY payment_method',
+      "WHERE created_at >= ? AND created_at <= ? AND status = 'paid' GROUP BY payment_method",
       variables: [Variable.withDateTime(start), Variable.withDateTime(end)],
     ).get();
     return {for (final r in rows) r.read<String>('m'): r.read<int>('v')};

@@ -269,7 +269,12 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
   Transaksi, Rata-rata per transaksi
 - Tabel transaksi (`AppDataTable`, 25 baris per halaman): No. | Tanggal (dd/MM/yyyy HH:mm) | Item |
   Metode | Total | Laba | Cetak ulang; baris ringkasan "N transaksi · Total Rp X" mengikuti filter
-- Ketuk baris → dialog rincian (item, subtotal, diskon, total, dibayar, kembali, laba, Cetak ulang)
+- Transaksi `void` tetap tampil di daftar dengan tanda **BATAL** + alasan; tidak dihitung di
+  ringkasan maupun ekspor CSV (laporan hanya menghitung `status = 'paid'`)
+- Ketuk baris → dialog rincian (item, subtotal, diskon, total, dibayar, kembali, laba, Cetak ulang);
+  Owner melihat tombol **Batalkan** (konfirmasi + alasan wajib min 3 karakter); transaksi void
+  menampilkan banner "*** DIBATALKAN ***" + alasan
+- Struk dicetak ulang dari transaksi void memuat baris "*** DIBATALKAN ***"
 - Periode & rentang difilter di SQL; metode & pencarian di memori (`applyTransactionFilter`)
 - Ikon "Ekspor CSV" di AppBar: satu baris per transaksi sesuai filter
   (No, Tanggal, Metode, Item, Subtotal, Diskon, Total, Dibayar, Kembali, Laba; uang = int)

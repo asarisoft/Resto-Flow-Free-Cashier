@@ -11,6 +11,10 @@ class Transaction {
   final int change;
   final String paymentMethod;
   final int profit;
+  final String status;
+  final String? voidReason;
+  final String? voidedBy;
+  final DateTime? voidedAt;
   final DateTime? printedAt;
   final DateTime createdAt;
 
@@ -25,6 +29,10 @@ class Transaction {
     this.change = 0,
     this.paymentMethod = 'cash',
     required this.profit,
+    this.status = 'paid',
+    this.voidReason,
+    this.voidedBy,
+    this.voidedAt,
     this.printedAt,
     required this.createdAt,
   });
@@ -32,4 +40,6 @@ class Transaction {
   bool get hasDiscount => discount > 0 || items.any((i) => i.discount > 0);
 
   bool get isPrinted => printedAt != null;
+
+  bool get isVoid => status == 'void';
 }

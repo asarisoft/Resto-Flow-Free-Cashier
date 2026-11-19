@@ -85,4 +85,22 @@ void main() {
     final text = ReceiptBuilder.buildText(txn, profile());
     expect(text, isNot(contains('  - ')));
   });
+
+  test('void transaction prints DIBATALKAN marker and reason', () {
+    final voidTxn = Transaction(
+      number: 7,
+      items: const [TransactionItem(productId: 'a', name: 'Nasi Goreng', price: 15000, hpp: 6000, qty: 2)],
+      subtotal: 30000,
+      total: 30000,
+      paid: 50000,
+      change: 20000,
+      profit: 18000,
+      status: 'void',
+      voidReason: 'salah input',
+      createdAt: DateTime(2026, 11, 15, 10, 30),
+    );
+    final text = ReceiptBuilder.buildText(voidTxn, profile());
+    expect(text, contains('*** DIBATALKAN ***'));
+    expect(text, contains('salah input'));
+  });
 }

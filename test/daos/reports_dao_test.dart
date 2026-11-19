@@ -107,4 +107,41 @@ void main() {
       expect(await reports.sumExpensesCreatedBetween(openedAt, closedAt), 0);
     });
   });
+
+  group('void transactions excluded from reports', () {
+    var n = 1000;
+    Future<String> save(int total, int profit) => sales.save(Transaction(
+          number: n++,
+          items: const [],
+          subtotal: total,
+          total: total,
+          paid: total,
+          profit: profit,
+          createdAt: DateTime(2026, 11, 10),
+        ));
+
+    test('sumRevenue, sumProfit and count exclude void', () async {
+      await save(1000, 400);
+      final voidId = await save(2000, 800);
+      await sales.voidTransaction(
+          id: voidId, actorRole: 'owner', username: 'admin', reason: 'salah');
+
+      final start = DateTime(2026, 11, 1);
+      final end = DateTime(2026, 11, 30, 23, 59, 59);
+      expect(await reports.sumRevenue(start, end), 1000);
+      expect(await reports.sumProfit(start, end), 400);
+      expect(await reports.countTransactions(start, end), 1);
+    });
+
+    test('sumRevenueByMethod excludes void (shift recap)', () async {
+      await save(3000, 1000);
+      final voidId = await save(4000, 1500);
+      await sales.voidTransaction(
+          id: voidId, actorRole: 'owner', username: 'admin', reason: 'salah');
+
+      final byMethod = await reports.sumRevenueByMethod(
+          DateTime(2026, 11, 1), DateTime(2026, 11, 30, 23, 59, 59));
+      expect(byMethod['cash'], 3000);
+    });
+  });
 }

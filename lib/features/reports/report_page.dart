@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/widgets/app_data_table.dart';
+import '../../core/widgets/app_form_dialog.dart';
 import '../../core/widgets/filter_panel.dart';
 import '../../core/widgets/period_filter_bar.dart';
 import '../../core/widgets/search_field.dart';
@@ -21,6 +22,9 @@ import '../reports/report_repository.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/services/csv_share.dart';
 import 'report_export.dart';
+import '../auth/auth_controller.dart';
+import '../pos/pos_providers.dart';
+import '../users/users_providers.dart';
 
 class ReportPage extends ConsumerStatefulWidget {
   const ReportPage({super.key});
@@ -41,6 +45,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
     final textTheme = AppTypography.textTheme;
     final summaryAsync = ref.watch(reportSummaryProvider(_range));
     final txnsAsync = ref.watch(transactionsInRangeProvider(_filter.period.range(DateTime.now())));
+    final canVoid = ref.watch(canVoidTransactionProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -108,13 +113,15 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                 error: (e, _) => Center(child: Text('Error: $e')),
                 data: (all) {
                   final txns = applyTransactionFilter(all, _filter);
+                  // Transaksi void tetap tampil (tanda BATAL) tapi tidak dihitung.
+                  final counted = txns.where((t) => !t.isVoid).toList();
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Text(
-                          '${txns.length} transaksi · Total ${formatRupiah(totalOf(txns))}',
+                          '${counted.length} transaksi · Total ${formatRupiah(totalOf(counted))}',
                           style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
                         ),
                       ),
@@ -124,7 +131,17 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         rowLabel: (t) => 'Transaksi nomor ${t.number}',
                         onRowTap: (t) => showDialog(
                           context: context,
-                          builder: (_) => TransactionDetailDialog(txn: t, onReprint: () => _reprint(t)),
+                          builder: (dialogCtx) => TransactionDetailDialog(
+                            txn: t,
+                            onReprint: () => _reprint(t),
+                            canVoid: canVoid,
+                            onVoid: () async {
+                              final ok = await _confirmVoid(t);
+                              if (ok && dialogCtx.mounted) {
+                                Navigator.of(dialogCtx).pop();
+                              }
+                            },
+                          ),
                         ),
                         empty: all.isEmpty
                             ? const EmptyState(icon: AppIcons.receipt, title: 'Belum ada transaksi')
@@ -135,6 +152,28 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                               ),
                         columns: [
                           AppColumn(label: 'No.', minWidth: 80, cell: (t) => Text('#${t.number}')),
+                          AppColumn(
+                            label: 'Status',
+                            minWidth: 140,
+                            cell: (t) => t.isVoid
+                                ? Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Text('BATAL',
+                                          style: textTheme.labelSmall?.copyWith(
+                                              color: AppColors.error,
+                                              fontWeight: FontWeight.w700)),
+                                      if (t.voidReason != null && t.voidReason!.isNotEmpty)
+                                        Text(t.voidReason!,
+                                            maxLines: 1,
+                                            overflow: TextOverflow.ellipsis,
+                                            style: textTheme.bodySmall?.copyWith(
+                                                color: AppColors.textSecondary)),
+                                    ],
+                                  )
+                                : const SizedBox.shrink(),
+                          ),
                           AppColumn(
                             label: 'Tanggal',
                             flex: 2,
@@ -193,7 +232,8 @@ class _ReportPageState extends ConsumerState<ReportPage> {
   }
 
   Future<void> _export(List<models.Transaction> all) async {
-    final rows = applyTransactionFilter(all, _filter);
+    final rows =
+        applyTransactionFilter(all, _filter).where((t) => !t.isVoid).toList();
     if (rows.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Tidak ada data untuk diekspor')));
       return;
@@ -205,6 +245,14 @@ class _ReportPageState extends ConsumerState<ReportPage> {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Ekspor gagal: $e')));
     }
+  }
+
+  Future<bool> _confirmVoid(models.Transaction txn) async {
+    return await showDialog<bool>(
+          context: context,
+          builder: (_) => _VoidDialog(txn: txn),
+        ) ??
+        false;
   }
 
   void _reprint(models.Transaction txn) async {
@@ -338,6 +386,83 @@ class _SummaryCards extends StatelessWidget {
           ],
         ),
       ),
+    );
+  }
+}
+
+class _VoidDialog extends ConsumerStatefulWidget {
+  final models.Transaction txn;
+  const _VoidDialog({required this.txn});
+
+  @override
+  ConsumerState<_VoidDialog> createState() => _VoidDialogState();
+}
+
+class _VoidDialogState extends ConsumerState<_VoidDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _reasonCtrl = TextEditingController();
+  bool _saving = false;
+
+  @override
+  void dispose() {
+    _reasonCtrl.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    if (!_formKey.currentState!.validate()) return;
+    setState(() => _saving = true);
+    try {
+      final user = ref.read(currentUserProvider).valueOrNull;
+      await ref.read(transactionRepositoryProvider).voidTransaction(
+            id: widget.txn.id!,
+            actorRole: user?.role ?? '',
+            username: user?.username ?? '',
+            reason: _reasonCtrl.text,
+          );
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Transaksi #${widget.txn.number} dibatalkan')),
+      );
+      Navigator.of(context).pop(true);
+    } catch (e) {
+      if (!mounted) return;
+      setState(() => _saving = false);
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Gagal membatalkan: $e')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AppFormDialog(
+      title: 'Batalkan #${widget.txn.number}?',
+      formKey: _formKey,
+      saving: _saving,
+      submitLabel: 'Batalkan',
+      onSubmit: _submit,
+      fields: [
+        const Text(
+          'Transaksi akan ditandai BATAL dan tidak dihitung di laporan. '
+          'Tindakan ini tidak bisa dibatalkan.',
+          style: TextStyle(color: AppColors.error),
+        ),
+        TextFormField(
+          controller: _reasonCtrl,
+          autofocus: true,
+          maxLines: 3,
+          decoration: const InputDecoration(
+            labelText: 'Alasan *',
+            hintText: 'minimal 3 karakter',
+          ),
+          validator: (v) {
+            if (v == null || v.trim().length < 3) {
+              return 'Alasan wajib diisi minimal 3 karakter';
+            }
+            return null;
+          },
+        ),
+      ],
     );
   }
 }

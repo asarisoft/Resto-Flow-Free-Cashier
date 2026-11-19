@@ -20,6 +20,7 @@ class SalesDao {
             change: Value(txn.change),
             paymentMethod: Value(txn.paymentMethod),
             profit: txn.profit,
+            status: Value(txn.status),
             printedAt: Value(txn.printedAt),
             createdAt: txn.createdAt,
           ));
@@ -81,6 +82,10 @@ class SalesDao {
           change: r.change,
           paymentMethod: r.paymentMethod,
           profit: r.profit,
+          status: r.status,
+          voidReason: r.voidReason,
+          voidedBy: r.voidedBy,
+          voidedAt: r.voidedAt,
           printedAt: r.printedAt,
           createdAt: r.createdAt,
         ));
@@ -114,9 +119,45 @@ class SalesDao {
       change: r.change,
       paymentMethod: r.paymentMethod,
       profit: r.profit,
+      status: r.status,
+      voidReason: r.voidReason,
+      voidedBy: r.voidedBy,
+      voidedAt: r.voidedAt,
       printedAt: r.printedAt,
       createdAt: r.createdAt,
     );
+  }
+
+  /// Batalkan transaksi. Hanya Owner; alasan wajib (min 3 karakter);
+  /// transaksi yang sudah void tidak bisa di-void lagi.
+  Future<void> voidTransaction({
+    required String id,
+    required String actorRole,
+    required String username,
+    required String reason,
+  }) async {
+    if (actorRole != 'owner') {
+      throw StateError('Hanya Owner yang bisa membatalkan transaksi');
+    }
+    final trimmed = reason.trim();
+    if (trimmed.length < 3) {
+      throw ArgumentError('Alasan wajib diisi minimal 3 karakter');
+    }
+    final existing = await (db.select(db.transactions)
+          ..where((t) => t.id.equals(id)))
+        .getSingleOrNull();
+    if (existing == null) throw StateError('Transaksi tidak ditemukan');
+    if (existing.status == 'void') {
+      throw StateError('Transaksi sudah dibatalkan');
+    }
+    await (db.update(db.transactions)..where((t) => t.id.equals(id))).write(
+          TransactionsCompanion(
+            status: const Value('void'),
+            voidReason: Value(trimmed),
+            voidedBy: Value(username),
+            voidedAt: Value(DateTime.now()),
+          ),
+        );
   }
 
   Future<void> markPrinted(String id) async {
