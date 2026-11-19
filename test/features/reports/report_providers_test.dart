@@ -147,6 +147,54 @@ void main() {
       expect(txns.map((t) => t.total), [20000, 10000]);
     });
   });
+
+  group('dailyRevenueProvider (stream)', () {
+    final month = DateTime(2026, 3);
+
+    test('memancar ulang setelah transaksi paid ditambah', () async {
+      await save(10000, 3000, DateTime(2026, 3, 5));
+
+      final initial =
+          await container.read(dailyRevenueProvider(month).future);
+      expect(initial[4], 10000);
+
+      final updated =
+          _nextDailyRevenueEmission(container, month, (v) => v[5] == 20000);
+      await save(20000, 6000, DateTime(2026, 3, 6));
+
+      final values = await updated;
+      expect(values[4], 10000);
+      expect(values[5], 20000);
+    });
+
+    test('turun setelah transaksi di-void', () async {
+      await save(10000, 3000, DateTime(2026, 3, 5));
+      final voidId = await SalesDao(db).save(Transaction(
+        number: ++number,
+        items: const [
+          TransactionItem(productId: 'p1', name: 'Nasi', price: 0, hpp: 0),
+        ],
+        subtotal: 20000,
+        total: 20000,
+        paid: 20000,
+        profit: 6000,
+        createdAt: DateTime(2026, 3, 6),
+      ));
+
+      final initial =
+          await container.read(dailyRevenueProvider(month).future);
+      expect(initial[5], 20000);
+
+      final updated =
+          _nextDailyRevenueEmission(container, month, (v) => v[5] == 0);
+      await SalesDao(db).voidTransaction(
+          id: voidId, actorRole: 'owner', username: 'admin', reason: 'salah');
+
+      final values = await updated;
+      expect(values[4], 10000);
+      expect(values[5], 0);
+    });
+  });
 }
 
 Future<List<Transaction>> _nextEmission(
@@ -156,6 +204,23 @@ Future<List<Transaction>> _nextEmission(
   final completer = Completer<List<Transaction>>();
   late final ProviderSubscription<AsyncValue<List<Transaction>>> sub;
   sub = container.listen(recentTransactionsProvider, (_, next) {
+    if (!next.hasValue || completer.isCompleted) return;
+    if (predicate(next.requireValue)) {
+      completer.complete(next.requireValue);
+      sub.close();
+    }
+  });
+  return completer.future;
+}
+
+Future<List<int>> _nextDailyRevenueEmission(
+  ProviderContainer container,
+  DateTime month,
+  bool Function(List<int>) predicate,
+) {
+  final completer = Completer<List<int>>();
+  late final ProviderSubscription<AsyncValue<List<int>>> sub;
+  sub = container.listen(dailyRevenueProvider(month), (_, next) {
     if (!next.hasValue || completer.isCompleted) return;
     if (predicate(next.requireValue)) {
       completer.complete(next.requireValue);

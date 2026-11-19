@@ -45,13 +45,15 @@ final transactionsInRangeProvider =
 });
 
 /// Omzet harian per tanggal (bulan [month]), index 0 = tanggal 1.
+/// Stream: memancar ulang saat transaksi berubah (bayar pesanan / void)
+/// sehingga grafik di halaman Laporan yang hidup di IndexedStack tetap segar.
 final dailyRevenueProvider =
-    FutureProvider.family<List<int>, DateTime>((ref, month) async {
-  return ref.watch(reportsDaoProvider).dailyRevenue(month);
+    StreamProvider.family<List<int>, DateTime>((ref, month) {
+  return ref.watch(reportsDaoProvider).watchDailyRevenue(month);
 });
 
 /// Omzet bulanan per bulan (tahun [year]), index 0 = Januari.
 final monthlyRevenueProvider =
-    FutureProvider.family<List<int>, DateTime>((ref, year) async {
-  return ref.watch(reportsDaoProvider).monthlyRevenue(year);
+    StreamProvider.family<List<int>, DateTime>((ref, year) {
+  return ref.watch(reportsDaoProvider).watchMonthlyRevenue(year);
 });

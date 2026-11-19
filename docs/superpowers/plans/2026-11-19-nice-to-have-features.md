@@ -82,6 +82,7 @@
 ### 9. #10 Grafik omzet ⚠️
 - [x] Update SPEC Non-Goals
 - [x] Grafik batang harian (bulan ini) & bulanan (tahun ini), offline
+- [x] Review fix: grafik jadi stream (StreamProvider) agar ter-update setelah bayar/void di IndexedStack
 
 ### 10. #15 Password
 - [ ] Ganti password sendiri (password lama wajib)
