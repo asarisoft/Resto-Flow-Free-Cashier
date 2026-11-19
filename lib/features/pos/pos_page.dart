@@ -12,7 +12,6 @@ import '../../printer/receipt_builder.dart';
 import '../../features/products/product_providers.dart';
 import '../pos/cart_provider.dart';
 import 'checkout_calc.dart';
-import '../auth/auth_controller.dart';
 import '../settings/settings_providers.dart';
 import 'pos_providers.dart';
 import '../../core/theme/app_icons.dart';
@@ -573,7 +572,11 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
   Widget _quickCashButton(String label, int amount) {
     return OutlinedButton(
       onPressed: () {
-        _paidCtrl.text = amount.toString();
+        final s = amount.toString();
+        _paidCtrl.value = TextEditingValue(
+          text: s,
+          selection: TextSelection.collapsed(offset: s.length),
+        );
         setState(() {});
       },
       style: OutlinedButton.styleFrom(
