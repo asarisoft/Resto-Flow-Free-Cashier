@@ -20,6 +20,22 @@ void main() {
     expect(saved!.items.single.name, 'Nasi');
   });
 
+  test('save and read back item note', () async {
+    final n1 = await dao.getNextNumber();
+    final txn = Transaction(number: n1, items: [TransactionItem(productId: 'p1', name: 'Nasi', price: 15000, hpp: 8000, note: 'tanpa sambal')], subtotal: 15000, total: 15000, paid: 15000, profit: 7000, createdAt: DateTime.now());
+    final id = await dao.save(txn);
+    final saved = await dao.get(id);
+    expect(saved!.items.single.note, 'tanpa sambal');
+  });
+
+  test('item without note reads back as null', () async {
+    final n1 = await dao.getNextNumber();
+    final txn = Transaction(number: n1, items: [TransactionItem(productId: 'p1', name: 'Nasi', price: 15000, hpp: 8000)], subtotal: 15000, total: 15000, paid: 15000, profit: 7000, createdAt: DateTime.now());
+    final id = await dao.save(txn);
+    final saved = await dao.get(id);
+    expect(saved!.items.single.note, isNull);
+  });
+
   test('watchRecent date range filters in SQL, keeps rows older than limit', () async {
     final old = DateTime(2025, 1, 1, 9);
     final base = DateTime(2026, 1, 31, 12);

@@ -65,4 +65,24 @@ void main() {
     final text = ReceiptBuilder.buildText(ReceiptBuilder.sampleTransaction(), profile(footer: 'x'));
     expect(text, contains('TOTAL'));
   });
+
+  test('item note prints indented below the item line', () {
+    final t = Transaction(
+      number: 1,
+      items: const [TransactionItem(productId: 'a', name: 'Nasi Goreng', price: 15000, hpp: 6000, qty: 1, note: 'tanpa sambal')],
+      subtotal: 15000,
+      total: 15000,
+      paid: 15000,
+      change: 0,
+      profit: 9000,
+      createdAt: DateTime(2026),
+    );
+    final text = ReceiptBuilder.buildText(t, profile());
+    expect(text, contains('  - tanpa sambal'));
+  });
+
+  test('item without note prints no note line', () {
+    final text = ReceiptBuilder.buildText(txn, profile());
+    expect(text, isNot(contains('  - ')));
+  });
 }

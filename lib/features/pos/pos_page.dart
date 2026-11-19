@@ -394,11 +394,39 @@ class _CartItemRow extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  item.name, 
-                  style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
+                TapArea(
+                  label: item.note == null || item.note!.isEmpty
+                      ? 'Tambah catatan ${item.name}'
+                      : 'Ubah catatan ${item.name}',
+                  onTap: () => _editNote(context),
+                  borderRadius: BorderRadius.circular(8),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 2),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          item.name,
+                          style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        if (item.note != null && item.note!.isNotEmpty)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 2),
+                            child: Text(
+                              item.note!,
+                              style: textTheme.labelSmall?.copyWith(
+                                color: AppColors.textSecondary,
+                                fontStyle: FontStyle.italic,
+                              ),
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                      ],
+                    ),
+                  ),
                 ),
                 const SizedBox(height: 8),
                 QtyStepper(
@@ -424,6 +452,65 @@ class _CartItemRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+
+  Future<void> _editNote(BuildContext context) async {
+    final result = await showDialog<String>(
+      context: context,
+      builder: (_) => _NoteDialog(title: item.name, initial: item.note),
+    );
+    if (result == null) return;
+    final note = result.trim();
+    notifier.setNote(index, note.isEmpty ? null : note);
+  }
+}
+
+class _NoteDialog extends StatefulWidget {
+  final String title;
+  final String? initial;
+
+  const _NoteDialog({required this.title, this.initial});
+
+  @override
+  State<_NoteDialog> createState() => _NoteDialogState();
+}
+
+class _NoteDialogState extends State<_NoteDialog> {
+  late final TextEditingController _ctrl =
+      TextEditingController(text: widget.initial);
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text(widget.title),
+      content: TextField(
+        controller: _ctrl,
+        autofocus: true,
+        maxLength: 100,
+        decoration: const InputDecoration(
+          labelText: 'Catatan',
+          hintText: 'mis. tanpa sambal',
+        ),
+        textInputAction: TextInputAction.done,
+        onSubmitted: (_) => Navigator.pop(context, _ctrl.text),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Batal'),
+        ),
+        FilledButton(
+          onPressed: () => Navigator.pop(context, _ctrl.text),
+          child: const Text('Simpan'),
+        ),
+      ],
     );
   }
 }

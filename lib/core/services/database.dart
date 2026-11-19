@@ -51,6 +51,7 @@ class TransactionItems extends Table {
   IntColumn get hpp => integer().withDefault(const Constant(0))();
   IntColumn get qty => integer()();
   IntColumn get discount => integer().withDefault(const Constant(0))();
+  TextColumn get note => text().nullable()();
 }
 
 class Users extends Table {

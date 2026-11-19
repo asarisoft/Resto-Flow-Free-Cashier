@@ -57,8 +57,10 @@ Schema version: **1** (riwayat dev di-reset sebelum rilis pertama, 2026-11-19).
 | `hpp`           | INTEGER    | NOT NULL, default 0                                 | HPP saat transaksi             |
 | `qty`           | INTEGER    | NOT NULL                                            |                                |
 | `discount`      | INTEGER    | NOT NULL, default 0                                 | Diskon per item (rupiah)       |
+| `note`          | TEXT       | nullable                                            | Catatan per item (opsional, ≤100 karakter) |
 
 Subtotal item = `(price − discount) × qty`.
+Catatan (`note`) dicetak di struk (satu baris `- <catatan>` di bawah item) dan ditampilkan di preview nota.
 
 ### `Users`
 

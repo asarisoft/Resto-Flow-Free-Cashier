@@ -41,6 +41,13 @@ class CartNotifier extends Notifier<List<TransactionItem>> {
     ];
   }
 
+  void setNote(int index, String? note) {
+    state = [
+      for (var i = 0; i < state.length; i++)
+        if (i == index) state[i].copyWith(note: note) else state[i],
+    ];
+  }
+
   void removeAt(int index) {
     state = [...state.take(index), ...state.skip(index + 1)];
   }

@@ -46,9 +46,9 @@
 - [x] Tes logika pembulatan nominal (int)
 
 ### 3. #2 Catatan per item
-- [ ] Kolom `note` nullable di item keranjang & `transaction_items` (migrasi)
-- [ ] Input catatan di baris keranjang; tampil di struk & preview
-- [ ] Tes migrasi + tes `ReceiptBuilder`
+- [x] Kolom `note` nullable di item keranjang & `transaction_items` (migrasi)
+- [x] Input catatan di baris keranjang; tampil di struk & preview
+- [x] Tes migrasi + tes `ReceiptBuilder`
 
 ### 4. #12 Tutup kasir harian
 - [ ] Tabel `shifts` (buka: modal awal; tutup: uang laci, selisih) — migrasi

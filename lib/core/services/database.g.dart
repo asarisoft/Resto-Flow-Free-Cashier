@@ -1348,6 +1348,15 @@ class $TransactionItemsTable extends TransactionItems
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -1358,6 +1367,7 @@ class $TransactionItemsTable extends TransactionItems
     hpp,
     qty,
     discount,
+    note,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -1427,6 +1437,12 @@ class $TransactionItemsTable extends TransactionItems
         discount.isAcceptableOrUnknown(data['discount']!, _discountMeta),
       );
     }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
     return context;
   }
 
@@ -1468,6 +1484,10 @@ class $TransactionItemsTable extends TransactionItems
         DriftSqlType.int,
         data['${effectivePrefix}discount'],
       )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
     );
   }
 
@@ -1486,6 +1506,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
   final int hpp;
   final int qty;
   final int discount;
+  final String? note;
   const TransactionItem({
     required this.id,
     required this.transactionId,
@@ -1495,6 +1516,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
     required this.hpp,
     required this.qty,
     required this.discount,
+    this.note,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -1509,6 +1531,9 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
     map['hpp'] = Variable<int>(hpp);
     map['qty'] = Variable<int>(qty);
     map['discount'] = Variable<int>(discount);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
     return map;
   }
 
@@ -1524,6 +1549,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
       hpp: Value(hpp),
       qty: Value(qty),
       discount: Value(discount),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
     );
   }
 
@@ -1541,6 +1567,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
       hpp: serializer.fromJson<int>(json['hpp']),
       qty: serializer.fromJson<int>(json['qty']),
       discount: serializer.fromJson<int>(json['discount']),
+      note: serializer.fromJson<String?>(json['note']),
     );
   }
   @override
@@ -1555,6 +1582,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
       'hpp': serializer.toJson<int>(hpp),
       'qty': serializer.toJson<int>(qty),
       'discount': serializer.toJson<int>(discount),
+      'note': serializer.toJson<String?>(note),
     };
   }
 
@@ -1567,6 +1595,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
     int? hpp,
     int? qty,
     int? discount,
+    Value<String?> note = const Value.absent(),
   }) => TransactionItem(
     id: id ?? this.id,
     transactionId: transactionId ?? this.transactionId,
@@ -1576,6 +1605,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
     hpp: hpp ?? this.hpp,
     qty: qty ?? this.qty,
     discount: discount ?? this.discount,
+    note: note.present ? note.value : this.note,
   );
   TransactionItem copyWithCompanion(TransactionItemsCompanion data) {
     return TransactionItem(
@@ -1589,6 +1619,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
       hpp: data.hpp.present ? data.hpp.value : this.hpp,
       qty: data.qty.present ? data.qty.value : this.qty,
       discount: data.discount.present ? data.discount.value : this.discount,
+      note: data.note.present ? data.note.value : this.note,
     );
   }
 
@@ -1602,7 +1633,8 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
           ..write('price: $price, ')
           ..write('hpp: $hpp, ')
           ..write('qty: $qty, ')
-          ..write('discount: $discount')
+          ..write('discount: $discount, ')
+          ..write('note: $note')
           ..write(')'))
         .toString();
   }
@@ -1617,6 +1649,7 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
     hpp,
     qty,
     discount,
+    note,
   );
   @override
   bool operator ==(Object other) =>
@@ -1629,7 +1662,8 @@ class TransactionItem extends DataClass implements Insertable<TransactionItem> {
           other.price == this.price &&
           other.hpp == this.hpp &&
           other.qty == this.qty &&
-          other.discount == this.discount);
+          other.discount == this.discount &&
+          other.note == this.note);
 }
 
 class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
@@ -1641,6 +1675,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
   final Value<int> hpp;
   final Value<int> qty;
   final Value<int> discount;
+  final Value<String?> note;
   const TransactionItemsCompanion({
     this.id = const Value.absent(),
     this.transactionId = const Value.absent(),
@@ -1650,6 +1685,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     this.hpp = const Value.absent(),
     this.qty = const Value.absent(),
     this.discount = const Value.absent(),
+    this.note = const Value.absent(),
   });
   TransactionItemsCompanion.insert({
     this.id = const Value.absent(),
@@ -1660,6 +1696,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     this.hpp = const Value.absent(),
     required int qty,
     this.discount = const Value.absent(),
+    this.note = const Value.absent(),
   }) : transactionId = Value(transactionId),
        name = Value(name),
        price = Value(price),
@@ -1673,6 +1710,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     Expression<int>? hpp,
     Expression<int>? qty,
     Expression<int>? discount,
+    Expression<String>? note,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -1683,6 +1721,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
       if (hpp != null) 'hpp': hpp,
       if (qty != null) 'qty': qty,
       if (discount != null) 'discount': discount,
+      if (note != null) 'note': note,
     });
   }
 
@@ -1695,6 +1734,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     Value<int>? hpp,
     Value<int>? qty,
     Value<int>? discount,
+    Value<String?>? note,
   }) {
     return TransactionItemsCompanion(
       id: id ?? this.id,
@@ -1705,6 +1745,7 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
       hpp: hpp ?? this.hpp,
       qty: qty ?? this.qty,
       discount: discount ?? this.discount,
+      note: note ?? this.note,
     );
   }
 
@@ -1735,6 +1776,9 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
     if (discount.present) {
       map['discount'] = Variable<int>(discount.value);
     }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
     return map;
   }
 
@@ -1748,7 +1792,8 @@ class TransactionItemsCompanion extends UpdateCompanion<TransactionItem> {
           ..write('price: $price, ')
           ..write('hpp: $hpp, ')
           ..write('qty: $qty, ')
-          ..write('discount: $discount')
+          ..write('discount: $discount, ')
+          ..write('note: $note')
           ..write(')'))
         .toString();
   }
@@ -4395,6 +4440,7 @@ typedef $$TransactionItemsTableCreateCompanionBuilder =
       Value<int> hpp,
       required int qty,
       Value<int> discount,
+      Value<String?> note,
     });
 typedef $$TransactionItemsTableUpdateCompanionBuilder =
     TransactionItemsCompanion Function({
@@ -4406,6 +4452,7 @@ typedef $$TransactionItemsTableUpdateCompanionBuilder =
       Value<int> hpp,
       Value<int> qty,
       Value<int> discount,
+      Value<String?> note,
     });
 
 final class $$TransactionItemsTableReferences
@@ -4480,6 +4527,11 @@ class $$TransactionItemsTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
   $$TransactionsTableFilterComposer get transactionId {
     final $$TransactionsTableFilterComposer composer = $composerBuilder(
       composer: this,
@@ -4548,6 +4600,11 @@ class $$TransactionItemsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   $$TransactionsTableOrderingComposer get transactionId {
     final $$TransactionsTableOrderingComposer composer = $composerBuilder(
       composer: this,
@@ -4601,6 +4658,9 @@ class $$TransactionItemsTableAnnotationComposer
 
   GeneratedColumn<int> get discount =>
       $composableBuilder(column: $table.discount, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
 
   $$TransactionsTableAnnotationComposer get transactionId {
     final $$TransactionsTableAnnotationComposer composer = $composerBuilder(
@@ -4664,6 +4724,7 @@ class $$TransactionItemsTableTableManager
                 Value<int> hpp = const Value.absent(),
                 Value<int> qty = const Value.absent(),
                 Value<int> discount = const Value.absent(),
+                Value<String?> note = const Value.absent(),
               }) => TransactionItemsCompanion(
                 id: id,
                 transactionId: transactionId,
@@ -4673,6 +4734,7 @@ class $$TransactionItemsTableTableManager
                 hpp: hpp,
                 qty: qty,
                 discount: discount,
+                note: note,
               ),
           createCompanionCallback:
               ({
@@ -4684,6 +4746,7 @@ class $$TransactionItemsTableTableManager
                 Value<int> hpp = const Value.absent(),
                 required int qty,
                 Value<int> discount = const Value.absent(),
+                Value<String?> note = const Value.absent(),
               }) => TransactionItemsCompanion.insert(
                 id: id,
                 transactionId: transactionId,
@@ -4693,6 +4756,7 @@ class $$TransactionItemsTableTableManager
                 hpp: hpp,
                 qty: qty,
                 discount: discount,
+                note: note,
               ),
           withReferenceMapper: (p0) => p0
               .map(

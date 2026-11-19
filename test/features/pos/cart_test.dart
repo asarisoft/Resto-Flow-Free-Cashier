@@ -42,4 +42,12 @@ void main() {
     expect(c.read(cartProvider), isEmpty);
     expect(cart().subtotal, 0);
   });
+
+  test('setNote sets and clears the note', () {
+    cart().addItem(product('a', 10000));
+    cart().setNote(0, 'tanpa sambal');
+    expect(c.read(cartProvider).first.note, 'tanpa sambal');
+    cart().setNote(0, null);
+    expect(c.read(cartProvider).first.note, isNull);
+  });
 }

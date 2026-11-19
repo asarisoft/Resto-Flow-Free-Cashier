@@ -32,6 +32,7 @@ class SalesDao {
               hpp: Value(item.hpp),
               qty: item.qty,
               discount: Value(item.discount),
+              note: Value(item.note),
             ));
       }
     });
@@ -70,6 +71,7 @@ class SalesDao {
                     hpp: i.hpp,
                     qty: i.qty,
                     discount: i.discount,
+                    note: i.note,
                   ))
               .toList(),
           subtotal: r.subtotal,
@@ -102,6 +104,7 @@ class SalesDao {
                 hpp: i.hpp,
                 qty: i.qty,
                 discount: i.discount,
+                note: i.note,
               ))
           .toList(),
       subtotal: r.subtotal,

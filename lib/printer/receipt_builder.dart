@@ -19,7 +19,7 @@ class ReceiptBuilder {
   static models.Transaction sampleTransaction() => models.Transaction(
         number: 1,
         items: const [
-          TransactionItem(productId: 'a', name: 'Nasi Goreng Spesial', price: 25000, hpp: 9000, qty: 2),
+          TransactionItem(productId: 'a', name: 'Nasi Goreng Spesial', price: 25000, hpp: 9000, qty: 2, note: 'tanpa sambal'),
           TransactionItem(productId: 'b', name: 'Es Teh Manis', price: 5000, hpp: 1500, qty: 1),
         ],
         subtotal: 55000,
@@ -104,6 +104,11 @@ class ReceiptBuilder {
           item.discount > 0 ? '(disc ${_fmt.format(item.discount)}) ' : '';
       buf.writeln(
           '  ${item.qty} x ${_fmt.format(item.price)} $discStr${_fmt.format(item.subtotal)}');
+      if (item.note != null && item.note!.isNotEmpty) {
+        for (final l in wrap(item.note!, w - 4)) {
+          buf.writeln('  - $l');
+        }
+      }
     }
 
     divider();
