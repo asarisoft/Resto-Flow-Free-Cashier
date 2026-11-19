@@ -51,3 +51,11 @@
 - UI → `docs/DESIGN.md`
 - Database → `docs/DATABASE.md`
 - Rencana fitur → `docs/superpowers/plans/`
+
+## Kerja Antar-Agent (OpenCode = pengerja, Claude = reviewer)
+- Pengerja: kerjakan 1 bagian plan per giliran, berurutan. Melewati satu → sebutkan alasannya.
+- Sebelum ubah model/kolom: grep semua tempat yang menampilkan/memakai data itu, update semua.
+- Tulis minimal 1 tes skenario nyata kasir, bukan cuma bunyi checklist.
+- Keputusan berisiko (skema, data user, hapus file) → berhenti dan tulis pertanyaannya di laporan, jangan putuskan sendiri.
+- Flutter pakai `.fvm/flutter_sdk/bin/flutter`. Commit 1x per tugas. **Jangan push**, jangan reset/checkout/rebase.
+- Akhiri dengan laporan ringkas: commit hash, file berubah, hasil analyze/test, yang belum dicek.
