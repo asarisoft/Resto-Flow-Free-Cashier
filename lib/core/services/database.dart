@@ -25,7 +25,10 @@ class Products extends Table {
 
 class Transactions extends Table {
   TextColumn get id => text()();
-  IntColumn get number => integer().unique()();
+  // Nullable: pesanan 'open' belum dapat nomor — nomor baru diambil saat
+  // dibayar agar urutan struk rapat tanpa lubang (SQLite boleh banyak NULL
+  // di kolom UNIQUE).
+  IntColumn get number => integer().nullable().unique()();
   IntColumn get subtotal => integer()();
   IntColumn get discount => integer().withDefault(const Constant(0))();
   IntColumn get total => integer()();
@@ -35,6 +38,8 @@ class Transactions extends Table {
       text().withDefault(const Constant('cash'))();
   IntColumn get profit => integer()();
   TextColumn get status => text().withDefault(const Constant('paid'))();
+  // Nama pelanggan / no meja — wajib saat simpan pesanan terbuka (maks 30 char).
+  TextColumn get label => text().nullable()();
   TextColumn get voidReason => text().nullable()();
   TextColumn get voidedBy => text().nullable()();
   DateTimeColumn get voidedAt => dateTime().nullable()();
@@ -198,7 +203,7 @@ class AppDatabase extends _$AppDatabase {
     const txnId = 't1';
     await into(transactions).insert(TransactionsCompanion.insert(
       id: txnId,
-      number: 1,
+      number: const Value(1),
       subtotal: 10000,
       total: 10000,
       paid: 10000,

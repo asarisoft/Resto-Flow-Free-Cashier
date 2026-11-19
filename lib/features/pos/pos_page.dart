@@ -13,6 +13,7 @@ import '../../features/products/product_providers.dart';
 import '../pos/cart_provider.dart';
 import 'checkout_calc.dart';
 import '../settings/settings_providers.dart';
+import 'open_order_dialogs.dart';
 import 'pos_providers.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/qty_stepper.dart';
@@ -41,6 +42,7 @@ class _PosPageState extends ConsumerState<PosPage> {
       appBar: isWide ? null : AppBar(
         title: const Text('Kasir'),
         actions: [
+          const _OpenOrdersButton(),
           IconButton(
             tooltip: 'Shift Kasir',
             icon: const Icon(AppIcons.wallet),
@@ -96,6 +98,7 @@ class _PosPageState extends ConsumerState<PosPage> {
                   children: [
                     Text('Menu', style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
                     const Spacer(),
+                    const _OpenOrdersButton(),
                     IconButton(
                       tooltip: 'Shift Kasir',
                       icon: const Icon(AppIcons.wallet),
@@ -255,6 +258,30 @@ class _CategoryCard extends StatelessWidget {
   }
 }
 
+/// Tombol "Pesanan terbuka (N)" di header POS (mobile & tablet).
+/// Tersembunyi saat tidak ada pesanan terbuka.
+class _OpenOrdersButton extends ConsumerWidget {
+  const _OpenOrdersButton();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final count = ref.watch(openOrdersProvider).valueOrNull?.length ?? 0;
+    if (count == 0) return const SizedBox.shrink();
+    return TextButton.icon(
+      onPressed: () => showDialog(
+        context: context,
+        builder: (_) => const OpenOrdersDialog(),
+      ),
+      style: TextButton.styleFrom(
+        foregroundColor: AppColors.primary,
+        padding: const EdgeInsets.symmetric(horizontal: 12),
+      ),
+      icon: const Icon(AppIcons.receipt, size: AppIcons.md),
+      label: Text('Pesanan terbuka ($count)'),
+    );
+  }
+}
+
 class _ProductGrid extends ConsumerWidget {
   final List<Product> products;
   final List<TransactionItem> cart;
@@ -297,13 +324,27 @@ class _CartPanel extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = AppTypography.textTheme;
     final subtotal = cart.fold(0, (s, i) => s + i.subtotal);
+    final resumed = ref.watch(resumedOrderProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
           padding: const EdgeInsets.only(top: 48, left: 24, right: 24, bottom: 16),
-          child: Text('Rincian Pesanan', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Rincian Pesanan', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+              if (resumed != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    'Melanjutkan pesanan "${resumed.label}"',
+                    style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                  ),
+                ),
+            ],
+          ),
         ),
         Expanded(
           child: cart.isEmpty
@@ -353,24 +394,46 @@ class _CartPanel extends ConsumerWidget {
                 ],
               ),
               const SizedBox(height: 24),
-              ElevatedButton(
-                onPressed: cart.isEmpty ? null : () => _checkout(context, ref),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primary,
-                  foregroundColor: AppColors.onPrimary,
-                  minimumSize: const Size(double.infinity, 56),
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                  elevation: 0,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text('Bayar', style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.w700)),
-                    const SizedBox(width: 8),
-                    const Icon(AppIcons.arrowRight, size: AppIcons.md),
-                  ],
-                ),
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: cart.isEmpty ? null : () => _saveOpen(context, ref),
+                      style: OutlinedButton.styleFrom(
+                        backgroundColor: AppColors.surface,
+                        foregroundColor: AppColors.textPrimary,
+                        minimumSize: const Size(0, 56),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        side: const BorderSide(color: AppColors.border),
+                        elevation: 0,
+                      ),
+                      child: Text('Simpan', style: AppTypography.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: ElevatedButton(
+                      onPressed: cart.isEmpty ? null : () => _checkout(context, ref),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.primary,
+                        foregroundColor: AppColors.onPrimary,
+                        minimumSize: const Size(double.infinity, 56),
+                        padding: const EdgeInsets.symmetric(vertical: 20),
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+                        elevation: 0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('Bayar', style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.w700)),
+                          const SizedBox(width: 8),
+                          const Icon(AppIcons.arrowRight, size: AppIcons.md),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ),
@@ -383,6 +446,15 @@ class _CartPanel extends ConsumerWidget {
     showDialog(
       context: context,
       builder: (_) => const CheckoutDialog(),
+    );
+  }
+
+  /// Simpan keranjang sebagai pesanan terbuka (bayar nanti).
+  void _saveOpen(BuildContext context, WidgetRef ref) {
+    final resumed = ref.read(resumedOrderProvider);
+    showDialog(
+      context: context,
+      builder: (_) => OpenOrderLabelDialog(initial: resumed?.label),
     );
   }
 }
@@ -716,12 +788,11 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
       final notif = ref.read(cartProvider.notifier);
       final txnRepo = ref.read(transactionRepositoryProvider);
       final profileAsync = ref.read(profileProvider);
-      
-      final number = await txnRepo.getNextNumber();
+      final resumed = ref.read(resumedOrderProvider);
+
       final profit = _calc.profit;
 
       final txn = models.Transaction(
-        number: number,
         items: items,
         subtotal: _subtotal,
         discount: _discount,
@@ -733,14 +804,23 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
         createdAt: DateTime.now(),
       );
 
-      await txnRepo.save(txn);
+      // Pesanan terbuka yang dilanjutkan: bayar = UPDATE baris yang sama
+      // (nomor struk & createdAt baru). Pesanan baru: insert dengan nomor.
+      final int number;
+      if (resumed == null) {
+        number = await txnRepo.getNextNumber();
+        await txnRepo.save(txn.copyWith(number: number));
+      } else {
+        number = await txnRepo.payOpen(id: resumed.id, txn: txn);
+      }
 
       final profile = profileAsync.valueOrNull;
       if (profile != null) {
-        _tryPrint(txn, profile);
+        _tryPrint(txn.copyWith(number: number), profile);
       }
 
       notif.clear();
+      ref.read(resumedOrderProvider.notifier).state = null;
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(

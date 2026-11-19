@@ -72,9 +72,9 @@
 - [x] Tes laporan & guard role
 
 ### 8. #1 Simpan pesanan
-- [ ] Status `open` (belum bayar); daftar pesanan terbuka di POS
-- [ ] Lanjutkan → bayar; hapus pesanan terbuka
-- [ ] Laporan hanya hitung yang `paid`; tes
+- [x] Status `open` (belum bayar); daftar pesanan terbuka di POS
+- [x] Lanjutkan → bayar; hapus pesanan terbuka
+- [x] Laporan hanya hitung yang `paid`; tes
 
 ### 9. #10 Grafik omzet ⚠️
 - [ ] Update SPEC Non-Goals

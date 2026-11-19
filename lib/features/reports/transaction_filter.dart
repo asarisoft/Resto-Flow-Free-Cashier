@@ -28,7 +28,7 @@ List<Transaction> applyTransactionFilter(List<Transaction> all, TransactionFilte
   return all.where((t) {
     if (f.method != null && t.paymentMethod != f.method) return false;
     if (q.isEmpty) return true;
-    if ('${t.number}'.contains(q)) return true;
+    if ('${t.number ?? ''}'.contains(q)) return true;
     return t.items.any((i) => i.name.toLowerCase().contains(q));
   }).toList();
 }

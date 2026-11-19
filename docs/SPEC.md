@@ -258,6 +258,19 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 - Tap item cart → edit qty, diskon per item (Rp), hapus
 - Long-press grid → add dengan qty cepat
 
+**Simpan pesanan / bayar nanti (status `open`):**
+- Tombol **Simpan** (di samping Bayar) → dialog label (nama pelanggan / no meja,
+  wajib, maks 30 char) → keranjang disimpan sebagai pesanan terbuka **tanpa nomor struk**,
+  keranjang dikosongkan.
+- Tombol **"Pesanan terbuka (N)"** di header POS (muncul bila ada) → daftar pesanan terbuka
+  (label, jumlah item, total, waktu). Pilih → isi keranjang dengan item pesanan itu
+  (catatan item ikut) dan ingat id-nya; kalau keranjang sedang berisi item lain, konfirmasi dulu.
+- Bayar pesanan yang dilanjutkan = **update baris yang sama** (bukan insert baru): item
+  diganti sesuai keranjang terakhir, nomor struk baru, `createdAt` = waktu bayar. Simpan
+  ulang pesanan yang dilanjutkan juga update baris yang sama.
+- Hapus pesanan terbuka: kasir & owner, dengan konfirmasi; hanya status `open` yang boleh.
+- Pesanan `open` tidak dapat nomor dan tidak tampil di Laporan (daftar & rekap hanya `paid`).
+
 ### 7.5 Produk Page
 - Grid kartu `ProductCard` (sama dengan POS), foto penuh lebar, chip Ready/Habis (ketuk = ubah status)
 - FAB "+" → dialog form `AppFormDialog` (foto 4:3, nama, kategori, harga, HPP, ready)
@@ -405,6 +418,8 @@ Kembali                 9.000
 ### 10.2 Cart State
 - Riverpod provider (in-memory `List<TransactionItem>`)
 - Reset setelah transaksi tersimpan
+- Pesanan terbuka yang dilanjutkan: id + label diingat di `resumedOrderProvider`
+  (null = pesanan baru); bayar/simpan ulang meng-update baris pesanan itu
 - Tidak persist (cukup in-memory)
 
 ### 10.3 Role Guard

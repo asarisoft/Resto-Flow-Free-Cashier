@@ -34,7 +34,7 @@ Schema version: **1** (riwayat dev di-reset sebelum rilis pertama, 2026-11-19).
 | Kolom           | Tipe       | Constraint                  | Catatan                   |
 |-----------------|------------|-----------------------------|-----------------------    |
 | `id`            | TEXT       | **PK**                      | UUID                      |
-| `number`        | INTEGER    | NOT NULL, **UNIQUE**        | Nomor struk (auto-inc)    |
+| `number`        | INTEGER    | nullable, **UNIQUE**        | Nomor struk; NULL untuk status `open` (nomor baru diambil saat dibayar agar urutan rapat) |
 | `subtotal`      | INTEGER    | NOT NULL                    | Sum item sebelum diskon   |
 | `discount`      | INTEGER    | NOT NULL, default 0         | Diskon total (rupiah)     |
 | `total`         | INTEGER    | NOT NULL                    | subtotal − discount       |
@@ -42,7 +42,8 @@ Schema version: **1** (riwayat dev di-reset sebelum rilis pertama, 2026-11-19).
 | `change`        | INTEGER    | NOT NULL, default 0         | Kembalian                 |
 | `paymentMethod` | TEXT       | NOT NULL, default `'cash'`  | cash / qris / card        |
 | `profit`        | INTEGER    | NOT NULL                    | Laba kotor                |
-| `status`        | TEXT       | NOT NULL, default `'paid'`  | `'paid'` \| `'void'` (nanti #1 tambah `'open'`) |
+| `status`        | TEXT       | NOT NULL, default `'paid'`  | `'paid'` \| `'void'` \| `'open'` (pesanan belum bayar) |
+| `label`         | TEXT       | nullable                    | Nama pelanggan / no meja (wajib saat `open`, maks 30 char) |
 | `voidReason`    | TEXT       | nullable                    | Alasan pembatalan         |
 | `voidedBy`      | TEXT       | nullable                    | Username yang batalkan (snapshot) |
 | `voidedAt`      | DATETIME   | nullable                    | Waktu dibatalkan          |
@@ -53,6 +54,13 @@ Aturan:
 - Transaksi batal (`status = 'void'`) **hanya Owner**, alasan wajib (min 3 karakter).
 - Transaksi `void` tetap tersimpan (tidak dihapus) tapi **tidak dihitung** di laporan.
 - Semua query laporan (omzet, laba, jumlah transaksi, omzet per metode bayar) mengecualikan `status != 'paid'`.
+- **Pesanan terbuka** (`status = 'open'`): simpan keranjang dari POS dengan label wajib;
+  **tanpa nomor struk** dan tidak tampil di daftar/laporan transaksi (`watchRecent` mengecualikan `open`).
+  Lanjutkan → isi keranjang (id pesanan diingat di state POS); bayar = **UPDATE baris yang sama**
+  dalam satu transaksi DB (item diganti, nomor baru via counter, `createdAt` = waktu bayar);
+  simpan ulang pesanan dilanjutkan = update baris yang sama.
+- Hapus pesanan terbuka: kasir & owner, dengan konfirmasi; **hanya status `open`**
+  (paid/void ditolak di DAO `deleteOpen`). Item pesanan ikut terhapus (CASCADE).
 
 ### `TransactionItems`
 

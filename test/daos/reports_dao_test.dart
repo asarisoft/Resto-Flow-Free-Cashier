@@ -108,6 +108,48 @@ void main() {
     });
   });
 
+  group('open orders excluded from reports', () {
+    Future<String> saveOpen(int total) => sales.save(Transaction(
+          items: const [],
+          subtotal: total,
+          total: total,
+          paid: 0,
+          profit: 0,
+          status: 'open',
+          label: 'Meja 1',
+          createdAt: DateTime(2026, 11, 10),
+        ));
+
+    test('sumRevenue, sumProfit, count and method breakdown exclude open',
+        () async {
+      await sales.save(Transaction(
+        number: 1,
+        items: const [],
+        subtotal: 50000,
+        total: 50000,
+        paid: 50000,
+        profit: 10000,
+        createdAt: DateTime(2026, 11, 10),
+      ));
+      await saveOpen(20000);
+      await saveOpen(30000);
+
+      final start = DateTime(2026, 11, 1);
+      final end = DateTime(2026, 11, 30, 23, 59, 59);
+      expect(await reports.sumRevenue(start, end), 50000);
+      expect(await reports.sumProfit(start, end), 10000);
+      expect(await reports.countTransactions(start, end), 1);
+      expect((await reports.sumRevenueByMethod(start, end))['cash'], 50000);
+    });
+
+    test('daftar transaksi laporan tidak menampilkan open', () async {
+      await saveOpen(20000);
+
+      final recent = await sales.watchRecent().first;
+      expect(recent, isEmpty);
+    });
+  });
+
   group('void transactions excluded from reports', () {
     var n = 1000;
     Future<String> save(int total, int profit) => sales.save(Transaction(

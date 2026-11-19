@@ -628,9 +628,9 @@ class $TransactionsTable extends Transactions
   late final GeneratedColumn<int> number = GeneratedColumn<int>(
     'number',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
   );
   static const VerificationMeta _subtotalMeta = const VerificationMeta(
@@ -715,6 +715,15 @@ class $TransactionsTable extends Transactions
     requiredDuringInsert: false,
     defaultValue: const Constant('paid'),
   );
+  static const VerificationMeta _labelMeta = const VerificationMeta('label');
+  @override
+  late final GeneratedColumn<String> label = GeneratedColumn<String>(
+    'label',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _voidReasonMeta = const VerificationMeta(
     'voidReason',
   );
@@ -782,6 +791,7 @@ class $TransactionsTable extends Transactions
     paymentMethod,
     profit,
     status,
+    label,
     voidReason,
     voidedBy,
     voidedAt,
@@ -810,8 +820,6 @@ class $TransactionsTable extends Transactions
         _numberMeta,
         number.isAcceptableOrUnknown(data['number']!, _numberMeta),
       );
-    } else if (isInserting) {
-      context.missing(_numberMeta);
     }
     if (data.containsKey('subtotal')) {
       context.handle(
@@ -872,6 +880,12 @@ class $TransactionsTable extends Transactions
         status.isAcceptableOrUnknown(data['status']!, _statusMeta),
       );
     }
+    if (data.containsKey('label')) {
+      context.handle(
+        _labelMeta,
+        label.isAcceptableOrUnknown(data['label']!, _labelMeta),
+      );
+    }
     if (data.containsKey('void_reason')) {
       context.handle(
         _voidReasonMeta,
@@ -920,7 +934,7 @@ class $TransactionsTable extends Transactions
       number: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}number'],
-      )!,
+      ),
       subtotal: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}subtotal'],
@@ -953,6 +967,10 @@ class $TransactionsTable extends Transactions
         DriftSqlType.string,
         data['${effectivePrefix}status'],
       )!,
+      label: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}label'],
+      ),
       voidReason: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}void_reason'],
@@ -984,7 +1002,7 @@ class $TransactionsTable extends Transactions
 
 class Transaction extends DataClass implements Insertable<Transaction> {
   final String id;
-  final int number;
+  final int? number;
   final int subtotal;
   final int discount;
   final int total;
@@ -993,6 +1011,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final String paymentMethod;
   final int profit;
   final String status;
+  final String? label;
   final String? voidReason;
   final String? voidedBy;
   final DateTime? voidedAt;
@@ -1000,7 +1019,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final DateTime createdAt;
   const Transaction({
     required this.id,
-    required this.number,
+    this.number,
     required this.subtotal,
     required this.discount,
     required this.total,
@@ -1009,6 +1028,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     required this.paymentMethod,
     required this.profit,
     required this.status,
+    this.label,
     this.voidReason,
     this.voidedBy,
     this.voidedAt,
@@ -1019,7 +1039,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<String>(id);
-    map['number'] = Variable<int>(number);
+    if (!nullToAbsent || number != null) {
+      map['number'] = Variable<int>(number);
+    }
     map['subtotal'] = Variable<int>(subtotal);
     map['discount'] = Variable<int>(discount);
     map['total'] = Variable<int>(total);
@@ -1028,6 +1050,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     map['payment_method'] = Variable<String>(paymentMethod);
     map['profit'] = Variable<int>(profit);
     map['status'] = Variable<String>(status);
+    if (!nullToAbsent || label != null) {
+      map['label'] = Variable<String>(label);
+    }
     if (!nullToAbsent || voidReason != null) {
       map['void_reason'] = Variable<String>(voidReason);
     }
@@ -1047,7 +1072,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   TransactionsCompanion toCompanion(bool nullToAbsent) {
     return TransactionsCompanion(
       id: Value(id),
-      number: Value(number),
+      number: number == null && nullToAbsent
+          ? const Value.absent()
+          : Value(number),
       subtotal: Value(subtotal),
       discount: Value(discount),
       total: Value(total),
@@ -1056,6 +1083,9 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       paymentMethod: Value(paymentMethod),
       profit: Value(profit),
       status: Value(status),
+      label: label == null && nullToAbsent
+          ? const Value.absent()
+          : Value(label),
       voidReason: voidReason == null && nullToAbsent
           ? const Value.absent()
           : Value(voidReason),
@@ -1079,7 +1109,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return Transaction(
       id: serializer.fromJson<String>(json['id']),
-      number: serializer.fromJson<int>(json['number']),
+      number: serializer.fromJson<int?>(json['number']),
       subtotal: serializer.fromJson<int>(json['subtotal']),
       discount: serializer.fromJson<int>(json['discount']),
       total: serializer.fromJson<int>(json['total']),
@@ -1088,6 +1118,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
       profit: serializer.fromJson<int>(json['profit']),
       status: serializer.fromJson<String>(json['status']),
+      label: serializer.fromJson<String?>(json['label']),
       voidReason: serializer.fromJson<String?>(json['voidReason']),
       voidedBy: serializer.fromJson<String?>(json['voidedBy']),
       voidedAt: serializer.fromJson<DateTime?>(json['voidedAt']),
@@ -1100,7 +1131,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     serializer ??= driftRuntimeOptions.defaultSerializer;
     return <String, dynamic>{
       'id': serializer.toJson<String>(id),
-      'number': serializer.toJson<int>(number),
+      'number': serializer.toJson<int?>(number),
       'subtotal': serializer.toJson<int>(subtotal),
       'discount': serializer.toJson<int>(discount),
       'total': serializer.toJson<int>(total),
@@ -1109,6 +1140,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'paymentMethod': serializer.toJson<String>(paymentMethod),
       'profit': serializer.toJson<int>(profit),
       'status': serializer.toJson<String>(status),
+      'label': serializer.toJson<String?>(label),
       'voidReason': serializer.toJson<String?>(voidReason),
       'voidedBy': serializer.toJson<String?>(voidedBy),
       'voidedAt': serializer.toJson<DateTime?>(voidedAt),
@@ -1119,7 +1151,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
 
   Transaction copyWith({
     String? id,
-    int? number,
+    Value<int?> number = const Value.absent(),
     int? subtotal,
     int? discount,
     int? total,
@@ -1128,6 +1160,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     String? paymentMethod,
     int? profit,
     String? status,
+    Value<String?> label = const Value.absent(),
     Value<String?> voidReason = const Value.absent(),
     Value<String?> voidedBy = const Value.absent(),
     Value<DateTime?> voidedAt = const Value.absent(),
@@ -1135,7 +1168,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     DateTime? createdAt,
   }) => Transaction(
     id: id ?? this.id,
-    number: number ?? this.number,
+    number: number.present ? number.value : this.number,
     subtotal: subtotal ?? this.subtotal,
     discount: discount ?? this.discount,
     total: total ?? this.total,
@@ -1144,6 +1177,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     paymentMethod: paymentMethod ?? this.paymentMethod,
     profit: profit ?? this.profit,
     status: status ?? this.status,
+    label: label.present ? label.value : this.label,
     voidReason: voidReason.present ? voidReason.value : this.voidReason,
     voidedBy: voidedBy.present ? voidedBy.value : this.voidedBy,
     voidedAt: voidedAt.present ? voidedAt.value : this.voidedAt,
@@ -1164,6 +1198,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           : this.paymentMethod,
       profit: data.profit.present ? data.profit.value : this.profit,
       status: data.status.present ? data.status.value : this.status,
+      label: data.label.present ? data.label.value : this.label,
       voidReason: data.voidReason.present
           ? data.voidReason.value
           : this.voidReason,
@@ -1187,6 +1222,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('paymentMethod: $paymentMethod, ')
           ..write('profit: $profit, ')
           ..write('status: $status, ')
+          ..write('label: $label, ')
           ..write('voidReason: $voidReason, ')
           ..write('voidedBy: $voidedBy, ')
           ..write('voidedAt: $voidedAt, ')
@@ -1208,6 +1244,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     paymentMethod,
     profit,
     status,
+    label,
     voidReason,
     voidedBy,
     voidedAt,
@@ -1228,6 +1265,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.paymentMethod == this.paymentMethod &&
           other.profit == this.profit &&
           other.status == this.status &&
+          other.label == this.label &&
           other.voidReason == this.voidReason &&
           other.voidedBy == this.voidedBy &&
           other.voidedAt == this.voidedAt &&
@@ -1237,7 +1275,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
 
 class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<String> id;
-  final Value<int> number;
+  final Value<int?> number;
   final Value<int> subtotal;
   final Value<int> discount;
   final Value<int> total;
@@ -1246,6 +1284,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<String> paymentMethod;
   final Value<int> profit;
   final Value<String> status;
+  final Value<String?> label;
   final Value<String?> voidReason;
   final Value<String?> voidedBy;
   final Value<DateTime?> voidedAt;
@@ -1263,6 +1302,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.paymentMethod = const Value.absent(),
     this.profit = const Value.absent(),
     this.status = const Value.absent(),
+    this.label = const Value.absent(),
     this.voidReason = const Value.absent(),
     this.voidedBy = const Value.absent(),
     this.voidedAt = const Value.absent(),
@@ -1272,7 +1312,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   });
   TransactionsCompanion.insert({
     required String id,
-    required int number,
+    this.number = const Value.absent(),
     required int subtotal,
     this.discount = const Value.absent(),
     required int total,
@@ -1281,6 +1321,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.paymentMethod = const Value.absent(),
     required int profit,
     this.status = const Value.absent(),
+    this.label = const Value.absent(),
     this.voidReason = const Value.absent(),
     this.voidedBy = const Value.absent(),
     this.voidedAt = const Value.absent(),
@@ -1288,7 +1329,6 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     required DateTime createdAt,
     this.rowid = const Value.absent(),
   }) : id = Value(id),
-       number = Value(number),
        subtotal = Value(subtotal),
        total = Value(total),
        paid = Value(paid),
@@ -1305,6 +1345,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<String>? paymentMethod,
     Expression<int>? profit,
     Expression<String>? status,
+    Expression<String>? label,
     Expression<String>? voidReason,
     Expression<String>? voidedBy,
     Expression<DateTime>? voidedAt,
@@ -1323,6 +1364,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (paymentMethod != null) 'payment_method': paymentMethod,
       if (profit != null) 'profit': profit,
       if (status != null) 'status': status,
+      if (label != null) 'label': label,
       if (voidReason != null) 'void_reason': voidReason,
       if (voidedBy != null) 'voided_by': voidedBy,
       if (voidedAt != null) 'voided_at': voidedAt,
@@ -1334,7 +1376,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
 
   TransactionsCompanion copyWith({
     Value<String>? id,
-    Value<int>? number,
+    Value<int?>? number,
     Value<int>? subtotal,
     Value<int>? discount,
     Value<int>? total,
@@ -1343,6 +1385,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Value<String>? paymentMethod,
     Value<int>? profit,
     Value<String>? status,
+    Value<String?>? label,
     Value<String?>? voidReason,
     Value<String?>? voidedBy,
     Value<DateTime?>? voidedAt,
@@ -1361,6 +1404,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       paymentMethod: paymentMethod ?? this.paymentMethod,
       profit: profit ?? this.profit,
       status: status ?? this.status,
+      label: label ?? this.label,
       voidReason: voidReason ?? this.voidReason,
       voidedBy: voidedBy ?? this.voidedBy,
       voidedAt: voidedAt ?? this.voidedAt,
@@ -1403,6 +1447,9 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (status.present) {
       map['status'] = Variable<String>(status.value);
     }
+    if (label.present) {
+      map['label'] = Variable<String>(label.value);
+    }
     if (voidReason.present) {
       map['void_reason'] = Variable<String>(voidReason.value);
     }
@@ -1437,6 +1484,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('paymentMethod: $paymentMethod, ')
           ..write('profit: $profit, ')
           ..write('status: $status, ')
+          ..write('label: $label, ')
           ..write('voidReason: $voidReason, ')
           ..write('voidedBy: $voidedBy, ')
           ..write('voidedAt: $voidedAt, ')
@@ -4735,7 +4783,7 @@ typedef $$ProductsTableProcessedTableManager =
 typedef $$TransactionsTableCreateCompanionBuilder =
     TransactionsCompanion Function({
       required String id,
-      required int number,
+      Value<int?> number,
       required int subtotal,
       Value<int> discount,
       required int total,
@@ -4744,6 +4792,7 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       Value<String> paymentMethod,
       required int profit,
       Value<String> status,
+      Value<String?> label,
       Value<String?> voidReason,
       Value<String?> voidedBy,
       Value<DateTime?> voidedAt,
@@ -4754,7 +4803,7 @@ typedef $$TransactionsTableCreateCompanionBuilder =
 typedef $$TransactionsTableUpdateCompanionBuilder =
     TransactionsCompanion Function({
       Value<String> id,
-      Value<int> number,
+      Value<int?> number,
       Value<int> subtotal,
       Value<int> discount,
       Value<int> total,
@@ -4763,6 +4812,7 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<String> paymentMethod,
       Value<int> profit,
       Value<String> status,
+      Value<String?> label,
       Value<String?> voidReason,
       Value<String?> voidedBy,
       Value<DateTime?> voidedAt,
@@ -4852,6 +4902,11 @@ class $$TransactionsTableFilterComposer
 
   ColumnFilters<String> get status => $composableBuilder(
     column: $table.status,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get label => $composableBuilder(
+    column: $table.label,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -4965,6 +5020,11 @@ class $$TransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get label => $composableBuilder(
+    column: $table.label,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<String> get voidReason => $composableBuilder(
     column: $table.voidReason,
     builder: (column) => ColumnOrderings(column),
@@ -5031,6 +5091,9 @@ class $$TransactionsTableAnnotationComposer
 
   GeneratedColumn<String> get status =>
       $composableBuilder(column: $table.status, builder: (column) => column);
+
+  GeneratedColumn<String> get label =>
+      $composableBuilder(column: $table.label, builder: (column) => column);
 
   GeneratedColumn<String> get voidReason => $composableBuilder(
     column: $table.voidReason,
@@ -5104,7 +5167,7 @@ class $$TransactionsTableTableManager
           updateCompanionCallback:
               ({
                 Value<String> id = const Value.absent(),
-                Value<int> number = const Value.absent(),
+                Value<int?> number = const Value.absent(),
                 Value<int> subtotal = const Value.absent(),
                 Value<int> discount = const Value.absent(),
                 Value<int> total = const Value.absent(),
@@ -5113,6 +5176,7 @@ class $$TransactionsTableTableManager
                 Value<String> paymentMethod = const Value.absent(),
                 Value<int> profit = const Value.absent(),
                 Value<String> status = const Value.absent(),
+                Value<String?> label = const Value.absent(),
                 Value<String?> voidReason = const Value.absent(),
                 Value<String?> voidedBy = const Value.absent(),
                 Value<DateTime?> voidedAt = const Value.absent(),
@@ -5130,6 +5194,7 @@ class $$TransactionsTableTableManager
                 paymentMethod: paymentMethod,
                 profit: profit,
                 status: status,
+                label: label,
                 voidReason: voidReason,
                 voidedBy: voidedBy,
                 voidedAt: voidedAt,
@@ -5140,7 +5205,7 @@ class $$TransactionsTableTableManager
           createCompanionCallback:
               ({
                 required String id,
-                required int number,
+                Value<int?> number = const Value.absent(),
                 required int subtotal,
                 Value<int> discount = const Value.absent(),
                 required int total,
@@ -5149,6 +5214,7 @@ class $$TransactionsTableTableManager
                 Value<String> paymentMethod = const Value.absent(),
                 required int profit,
                 Value<String> status = const Value.absent(),
+                Value<String?> label = const Value.absent(),
                 Value<String?> voidReason = const Value.absent(),
                 Value<String?> voidedBy = const Value.absent(),
                 Value<DateTime?> voidedAt = const Value.absent(),
@@ -5166,6 +5232,7 @@ class $$TransactionsTableTableManager
                 paymentMethod: paymentMethod,
                 profit: profit,
                 status: status,
+                label: label,
                 voidReason: voidReason,
                 voidedBy: voidedBy,
                 voidedAt: voidedAt,

@@ -2,7 +2,7 @@ import 'transaction_item.dart';
 
 class Transaction {
   final String? id;
-  final int number;
+  final int? number;
   final List<TransactionItem> items;
   final int subtotal;
   final int discount;
@@ -12,6 +12,7 @@ class Transaction {
   final String paymentMethod;
   final int profit;
   final String status;
+  final String? label;
   final String? voidReason;
   final String? voidedBy;
   final DateTime? voidedAt;
@@ -20,7 +21,7 @@ class Transaction {
 
   const Transaction({
     this.id,
-    required this.number,
+    this.number,
     required this.items,
     required this.subtotal,
     this.discount = 0,
@@ -30,6 +31,7 @@ class Transaction {
     this.paymentMethod = 'cash',
     required this.profit,
     this.status = 'paid',
+    this.label,
     this.voidReason,
     this.voidedBy,
     this.voidedAt,
@@ -42,4 +44,30 @@ class Transaction {
   bool get isPrinted => printedAt != null;
 
   bool get isVoid => status == 'void';
+
+  bool get isOpen => status == 'open';
+
+  Transaction copyWith({
+    int? number,
+    String? label,
+  }) =>
+      Transaction(
+        id: id,
+        number: number ?? this.number,
+        items: items,
+        subtotal: subtotal,
+        discount: discount,
+        total: total,
+        paid: paid,
+        change: change,
+        paymentMethod: paymentMethod,
+        profit: profit,
+        status: status,
+        label: label ?? this.label,
+        voidReason: voidReason,
+        voidedBy: voidedBy,
+        voidedAt: voidedAt,
+        printedAt: printedAt,
+        createdAt: createdAt,
+      );
 }

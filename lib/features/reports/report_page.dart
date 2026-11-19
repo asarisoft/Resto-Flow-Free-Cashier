@@ -128,7 +128,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                       AppDataTable<models.Transaction>(
                         pageSize: 25,
                         rows: txns,
-                        rowLabel: (t) => 'Transaksi nomor ${t.number}',
+                        rowLabel: (t) => 'Transaksi nomor ${t.number ?? '-'}',
                         onRowTap: (t) => showDialog(
                           context: context,
                           builder: (dialogCtx) => TransactionDetailDialog(
@@ -151,7 +151,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                                 subtitle: 'Ubah atau reset filter',
                               ),
                         columns: [
-                          AppColumn(label: 'No.', minWidth: 80, cell: (t) => Text('#${t.number}')),
+                          AppColumn(label: 'No.', minWidth: 80, cell: (t) => Text(t.number == null ? '-' : '#${t.number}')),
                           AppColumn(
                             label: 'Status',
                             minWidth: 140,
@@ -422,7 +422,7 @@ class _VoidDialogState extends ConsumerState<_VoidDialog> {
           );
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Transaksi #${widget.txn.number} dibatalkan')),
+        SnackBar(content: Text('Transaksi #${widget.txn.number ?? '-'} dibatalkan')),
       );
       Navigator.of(context).pop(true);
     } catch (e) {
@@ -436,7 +436,7 @@ class _VoidDialogState extends ConsumerState<_VoidDialog> {
   @override
   Widget build(BuildContext context) {
     return AppFormDialog(
-      title: 'Batalkan #${widget.txn.number}?',
+      title: 'Batalkan #${widget.txn.number ?? '-'}?',
       formKey: _formKey,
       saving: _saving,
       submitLabel: 'Batalkan',

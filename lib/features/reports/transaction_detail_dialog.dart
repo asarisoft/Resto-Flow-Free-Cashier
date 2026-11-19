@@ -54,7 +54,7 @@ class TransactionDetailDialog extends StatelessWidget {
         );
 
     return AlertDialog(
-      title: Text('Transaksi #${txn.number}'),
+      title: Text('Transaksi ${txn.number == null ? '' : '#${txn.number}'}'),
       content: SizedBox(
         width: width,
         child: SingleChildScrollView(

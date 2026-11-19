@@ -52,8 +52,16 @@ class CartNotifier extends Notifier<List<TransactionItem>> {
     state = [...state.take(index), ...state.skip(index + 1)];
   }
 
+  /// Ganti seluruh isi keranjang (dipakai saat melanjutkan pesanan terbuka).
+  void setItems(List<TransactionItem> items) => state = List.of(items);
+
   void clear() => state = [];
 }
+
+/// Id + label pesanan terbuka yang sedang dilanjutkan di keranjang
+/// (null = keranjang adalah pesanan baru, bukan lanjutan).
+typedef OpenOrderRef = ({String id, String label});
+final resumedOrderProvider = StateProvider<OpenOrderRef?>((ref) => null);
 
 final cartProvider = NotifierProvider<CartNotifier, List<TransactionItem>>(
   CartNotifier.new,

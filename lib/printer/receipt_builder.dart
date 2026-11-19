@@ -147,7 +147,7 @@ class ReceiptBuilder {
     divider();
 
     final dateStr = DateFormat('dd/MM/yy HH:mm').format(txn.createdAt);
-    line('No: #${txn.number}', dateStr);
+    line('No: ${txn.number == null ? '-' : '#${txn.number}'}', dateStr);
     divider();
     if (txn.isVoid) {
       center('*** DIBATALKAN ***');

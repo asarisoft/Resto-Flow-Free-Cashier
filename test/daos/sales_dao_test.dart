@@ -122,6 +122,203 @@ void main() {
       );
     });
   });
+
+  group('pesanan terbuka (open order)', () {
+    final nasi =
+        TransactionItem(productId: 'p1', name: 'Nasi', price: 15000, hpp: 8000);
+    final esTeh = TransactionItem(
+        productId: 'p2', name: 'Es Teh', price: 5000, hpp: 2000, note: 'dingin');
+
+    Future<String> saveOpen(String label,
+            [List<TransactionItem> items = const []]) =>
+        dao.save(Transaction(
+          items: items,
+          subtotal: items.fold(0, (s, i) => s + i.subtotal),
+          total: items.fold(0, (s, i) => s + i.subtotal),
+          paid: 0,
+          profit: 0,
+          status: 'open',
+          label: label,
+          createdAt: DateTime.now(),
+        ));
+
+    test('label wajib dan maksimal 30 karakter', () async {
+      expect(() => saveOpen('   '), throwsA(isA<ArgumentError>()));
+      expect(() => saveOpen('a' * 31), throwsA(isA<ArgumentError>()));
+      expect(await saveOpen('a' * 30), isNotEmpty);
+    });
+
+    test('skenario kasir: simpan 2 pesanan meja, bayar meja 2 duluan', () async {
+      // Kasir simpan dua pesanan meja — belum bayar, tanpa nomor struk.
+      final meja1 = await saveOpen('Meja 1', [nasi]);
+      final meja2 = await saveOpen('Meja 2', [nasi, esTeh]);
+
+      final open = await dao.watchOpen().first;
+      expect(open.map((t) => t.label), containsAll(['Meja 1', 'Meja 2']));
+      expect(open.every((t) => t.number == null), isTrue);
+      expect(await dao.watchRecent().first, isEmpty,
+          reason: 'open tidak masuk daftar laporan');
+
+      // Meja 2 bayar duluan → dapat nomor pertama, catatan item ikut.
+      final number = await dao.payOpen(
+        id: meja2,
+        txn: Transaction(
+          items: [nasi, esTeh],
+          subtotal: 20000,
+          total: 20000,
+          paid: 20000,
+          profit: 13000,
+          createdAt: DateTime.now(),
+        ),
+      );
+      expect(number, 1);
+
+      final paid = await dao.get(meja2);
+      expect(paid!.status, 'paid');
+      expect(paid.label, 'Meja 2');
+      expect(paid.number, 1);
+      expect(paid.items.singleWhere((i) => i.name == 'Es Teh').note, 'dingin');
+
+      // Daftar terbuka tinggal Meja 1; laporan hanya berisi Meja 2.
+      final openAfter = await dao.watchOpen().first;
+      expect(openAfter.map((t) => t.label), ['Meja 1']);
+      final recent = await dao.watchRecent().first;
+      expect(recent.single.label, 'Meja 2');
+
+      // Kasir ubah isi Meja 1 lalu simpan ulang → baris sama, tetap tanpa nomor.
+      await dao.updateOpen(
+        id: meja1,
+        txn: Transaction(
+          items: [nasi, esTeh],
+          subtotal: 20000,
+          total: 20000,
+          paid: 0,
+          profit: 0,
+          status: 'open',
+          label: 'Meja 1',
+          createdAt: DateTime.now(),
+        ),
+      );
+      final meja1After = await dao.get(meja1);
+      expect(meja1After!.items.length, 2);
+      expect(meja1After.number, isNull);
+
+      // Masih 2 baris total (update, bukan insert baru).
+      final rows = await db.select(db.transactions).get();
+      expect(rows.length, 2);
+
+      // Meja 1 bayar terakhir → nomor berurutan tanpa lubang.
+      expect(
+        await dao.payOpen(
+          id: meja1,
+          txn: Transaction(
+            items: [nasi, esTeh],
+            subtotal: 20000,
+            total: 20000,
+            paid: 20000,
+            profit: 13000,
+            createdAt: DateTime.now(),
+          ),
+        ),
+        2,
+      );
+      final finalRows = await db.select(db.transactions).get();
+      expect(finalRows.length, 2,
+          reason: 'bayar pesanan open = update baris, bukan insert baru');
+      expect(finalRows.where((r) => r.status == 'paid').length, 2);
+    });
+
+    test('hapus pesanan open: item ikut terhapus, paid/void ditolak', () async {
+      final openId = await saveOpen('Meja 9', [nasi]);
+
+      await dao.deleteOpen(openId);
+      expect(await dao.get(openId), isNull);
+      final items = await db.select(db.transactionItems).get();
+      expect(items, isEmpty, reason: 'CASCADE menghapus item pesanan');
+
+      final paidId = await dao.save(Transaction(
+        number: await dao.getNextNumber(),
+        items: [nasi],
+        subtotal: 15000,
+        total: 15000,
+        paid: 15000,
+        profit: 7000,
+        createdAt: DateTime.now(),
+      ));
+      expect(() => dao.deleteOpen(paidId), throwsA(isA<StateError>()));
+
+      await dao.voidTransaction(
+          id: paidId, actorRole: 'owner', username: 'admin', reason: 'salah');
+      expect(() => dao.deleteOpen(paidId), throwsA(isA<StateError>()));
+    });
+
+    test('updateOpen/payOpen pada pesanan yang sudah dibayar ditolak', () async {
+      final openId = await saveOpen('Meja 3', [nasi]);
+      await dao.payOpen(
+        id: openId,
+        txn: Transaction(
+          items: [nasi],
+          subtotal: 15000,
+          total: 15000,
+          paid: 15000,
+          profit: 7000,
+          createdAt: DateTime.now(),
+        ),
+      );
+
+      expect(
+        () => dao.updateOpen(
+          id: openId,
+          txn: Transaction(
+            items: [nasi],
+            subtotal: 15000,
+            total: 15000,
+            paid: 0,
+            profit: 0,
+            status: 'open',
+            label: 'Meja 3',
+            createdAt: DateTime.now(),
+          ),
+        ),
+        throwsA(isA<StateError>()),
+      );
+      expect(
+        () => dao.payOpen(
+          id: openId,
+          txn: Transaction(
+            items: [nasi],
+            subtotal: 15000,
+            total: 15000,
+            paid: 15000,
+            profit: 7000,
+            createdAt: DateTime.now(),
+          ),
+        ),
+        throwsA(isA<StateError>()),
+      );
+    });
+
+    test('urutan nomor tetap rapat walau ada open yang dihapus', () async {
+      final openId = await saveOpen('Meja 7');
+
+      // Transaksi biasa → nomor 1.
+      await dao.save(Transaction(
+        number: await dao.getNextNumber(),
+        items: [nasi],
+        subtotal: 15000,
+        total: 15000,
+        paid: 15000,
+        profit: 7000,
+        createdAt: DateTime.now(),
+      ));
+
+      // Pesanan open dihapus — tidak pernah memakan nomor.
+      await dao.deleteOpen(openId);
+
+      // Transaksi berikutnya tetap nomor 2, tanpa lubang.
+      expect(await dao.getNextNumber(), 2);
+    });
+  });
 }
 
 Future<String> _save(SalesDao dao, int number, DateTime createdAt) => dao.save(Transaction(

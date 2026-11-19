@@ -11,7 +11,7 @@ String transactionsCsv(List<Transaction> txns) {
     [
       for (final t in txns)
         [
-          t.number,
+          t.number ?? '',
           fmt.format(t.createdAt),
           paymentLabel(t.paymentMethod),
           t.items.map((i) => '${i.name} x${i.qty}').join('; '),
