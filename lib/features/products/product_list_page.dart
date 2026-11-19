@@ -90,7 +90,7 @@ class _ProductGrid extends ConsumerWidget {
             itemBuilder: (_, i) => ProductCard(
               product: products[i],
               onTap: canManage ? () => _edit(context, products[i]) : null,
-              onToggleReady: () => _toggle(products[i]),
+              onToggleReady: canManage ? () => _toggle(products[i]) : null,
             ),
           ),
         );
