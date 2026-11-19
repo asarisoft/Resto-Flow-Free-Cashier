@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/widgets/app_data_table.dart';
 import '../../core/widgets/app_form_dialog.dart';
+import '../../core/widgets/bar_chart.dart';
+import '../../core/widgets/choice_segment.dart';
 import '../../core/widgets/filter_panel.dart';
 import '../../core/widgets/period_filter_bar.dart';
 import '../../core/widgets/search_field.dart';
@@ -105,6 +107,8 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                 error: (e, _) => Center(child: Text('Error: $e')),
                 data: (s) => _SummaryCards(summary: s),
               ),
+              const SizedBox(height: 24),
+              const _RevenueChart(),
               const SizedBox(height: 24),
               Text('Transaksi', style: textTheme.titleMedium),
               const SizedBox(height: 12),
@@ -385,6 +389,71 @@ class _SummaryCards extends StatelessWidget {
                   ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _RevenueChart extends ConsumerStatefulWidget {
+  const _RevenueChart();
+
+  @override
+  ConsumerState<_RevenueChart> createState() => _RevenueChartState();
+}
+
+class _RevenueChartState extends ConsumerState<_RevenueChart> {
+  static const _months = [
+    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
+    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
+  ];
+
+  late final DateTime _now = DateTime.now();
+  bool _daily = true;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = AppTypography.textTheme;
+    final valuesAsync = _daily
+        ? ref.watch(dailyRevenueProvider(DateTime(_now.year, _now.month)))
+        : ref.watch(monthlyRevenueProvider(DateTime(_now.year)));
+
+    return AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Text('Grafik Omzet', style: textTheme.titleMedium),
+              ),
+              ChoiceSegment<bool>(
+                value: _daily,
+                options: const [(true, 'Harian'), (false, 'Bulanan')],
+                onChanged: (v) => setState(() => _daily = v),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          valuesAsync.when(
+            loading: () => const SizedBox(
+              height: 180,
+              child: Center(child: CircularProgressIndicator()),
+            ),
+            error: (e, _) => Text('Error: $e'),
+            data: (values) => BarChart(
+              data: [
+                for (var i = 0; i < values.length; i++)
+                  BarChartDatum(
+                    label: _daily ? '${i + 1}' : _months[i],
+                    value: values[i],
+                    detail: _daily
+                        ? '${i + 1} ${_months[_now.month - 1]} ${_now.year} · ${formatRupiah(values[i])}'
+                        : '${_months[i]} ${_now.year} · ${formatRupiah(values[i])}',
+                  ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }

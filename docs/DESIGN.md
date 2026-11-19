@@ -74,6 +74,7 @@ Warna tambahan:
 | `QtyStepper`    | Tombol − qty +, target sentuh ≥ 48 dp               |
 | `TapArea`       | Ripple + Semantics tombol (pengganti `GestureDetector`) |
 | `ChoiceSegment` | Pilihan 1-dari-N (58/80 mm, Hari Ini/Bulan Ini)      |
+| `BarChart`       | Grafik batang sederhana (tanpa dependency chart): label sumbu bawah, batang tertinggi ditandai aksen, tap/long-press → SnackBar tanggal + nominal, scroll horizontal |
 | `AppDataTable`  | Tabel standar: header, baris berpembatas, angka rata kanan, scroll horizontal di layar sempit, "Tampilkan lebih banyak" per 25 baris. Dipakai Pengeluaran, Transaksi, Pengguna |
 | `FilterPanel`   | Kartu kontrol filter + "Reset filter" (muncul saat filter aktif) |
 | `PeriodFilterBar`| Chip periode: Hari ini / Bulan ini / Bulan lalu / Semua / Pilih tanggal (rentang) |

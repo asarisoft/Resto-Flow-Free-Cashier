@@ -33,6 +33,7 @@
 - Catat pengeluaran operasional (kategori, catatan, nominal, tanggal)
 - Produk/menu: nama, kategori, harga, HPP, foto lokal, status ready
 - Laporan: omzet, laba kotor/bersih per hari & bulan
+- Grafik omzet: batang harian (bulan berjalan) & bulanan (tahun berjalan), offline
 - Cetak struk via Bluetooth thermal printer (58mm / 80mm, ESC/POS)
 - Shift kasir harian: buka (modal awal) & tutup laci (rekap omzet, pengeluaran, selisih) + cetak rekap
 - User lokal + role (Owner/Kasir). Login pilih user + password teks
@@ -47,7 +48,6 @@
 - Stok bahan baku & resep (HPP manual cukup)
 - Export PDF / Excel
 - Pajak / service charge
-- Grafik / laporan visual (tahap 2)
 - Dark mode
 
 ### 1.3 Success Criteria

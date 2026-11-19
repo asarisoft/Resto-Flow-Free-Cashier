@@ -80,8 +80,8 @@
 - [x] Review fix: bayar gagal (pesanan tidak ditemukan) → pesan jelas + jadi transaksi baru
 
 ### 9. #10 Grafik omzet ⚠️
-- [ ] Update SPEC Non-Goals
-- [ ] Grafik batang harian (bulan ini) & bulanan (tahun ini), offline
+- [x] Update SPEC Non-Goals
+- [x] Grafik batang harian (bulan ini) & bulanan (tahun ini), offline
 
 ### 10. #15 Password
 - [ ] Ganti password sendiri (password lama wajib)

@@ -43,3 +43,15 @@ final transactionsInRangeProvider =
     end: range?.end ?? DateTime(2100),
   );
 });
+
+/// Omzet harian per tanggal (bulan [month]), index 0 = tanggal 1.
+final dailyRevenueProvider =
+    FutureProvider.family<List<int>, DateTime>((ref, month) async {
+  return ref.watch(reportsDaoProvider).dailyRevenue(month);
+});
+
+/// Omzet bulanan per bulan (tahun [year]), index 0 = Januari.
+final monthlyRevenueProvider =
+    FutureProvider.family<List<int>, DateTime>((ref, year) async {
+  return ref.watch(reportsDaoProvider).monthlyRevenue(year);
+});

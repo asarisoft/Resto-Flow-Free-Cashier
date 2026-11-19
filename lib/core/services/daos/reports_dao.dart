@@ -56,4 +56,41 @@ class ReportsDao {
     ).get();
     return {for (final r in rows) r.read<String>('m'): r.read<int>('v')};
   }
+
+  /// Omzet harian (bulan [month]), index 0 = tanggal 1. Hari tanpa transaksi = 0.
+  /// Hanya status 'paid' (void & open tidak dihitung).
+  Future<List<int>> dailyRevenue(DateTime month) async {
+    final start = DateTime(month.year, month.month, 1);
+    final end = DateTime(month.year, month.month + 1, 0, 23, 59, 59);
+    final days = DateTime(month.year, month.month + 1, 0).day;
+    final rows = await db.customSelect(
+      "SELECT CAST(strftime('%d', created_at, 'unixepoch', 'localtime') AS INTEGER) AS d, "
+      "COALESCE(SUM(total),0) AS v FROM transactions "
+      "WHERE created_at >= ? AND created_at <= ? AND status = 'paid' GROUP BY d",
+      variables: [Variable.withDateTime(start), Variable.withDateTime(end)],
+    ).get();
+    final result = List<int>.filled(days, 0);
+    for (final r in rows) {
+      result[r.read<int>('d') - 1] = r.read<int>('v');
+    }
+    return result;
+  }
+
+  /// Omzet bulanan (tahun [year]), index 0 = Januari. Bulan tanpa transaksi = 0.
+  /// Hanya status 'paid'.
+  Future<List<int>> monthlyRevenue(DateTime year) async {
+    final start = DateTime(year.year, 1, 1);
+    final end = DateTime(year.year, 12, 31, 23, 59, 59);
+    final rows = await db.customSelect(
+      "SELECT CAST(strftime('%m', created_at, 'unixepoch', 'localtime') AS INTEGER) AS m, "
+      "COALESCE(SUM(total),0) AS v FROM transactions "
+      "WHERE created_at >= ? AND created_at <= ? AND status = 'paid' GROUP BY m",
+      variables: [Variable.withDateTime(start), Variable.withDateTime(end)],
+    ).get();
+    final result = List<int>.filled(12, 0);
+    for (final r in rows) {
+      result[r.read<int>('m') - 1] = r.read<int>('v');
+    }
+    return result;
+  }
 }
