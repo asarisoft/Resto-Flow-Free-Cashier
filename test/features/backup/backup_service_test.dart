@@ -6,6 +6,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir_resto/core/services/database.dart';
 import 'package:kasir_resto/features/backup/backup_service.dart';
 import 'package:path/path.dart' as p;
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
@@ -175,23 +176,17 @@ void main() {
     });
   });
 
-  test('exportZip records the last backup time on success', () async {
-    await seed();
-    expect(await BackupService.lastBackupTime(), isNull);
+  group('shouldRecordBackup', () {
+    test('true on success', () {
+      expect(shouldRecordBackup(ShareResultStatus.success), isTrue);
+    });
 
-    await service.exportZip(database: db);
+    test('true when the platform cannot tell (unavailable)', () {
+      expect(shouldRecordBackup(ShareResultStatus.unavailable), isTrue);
+    });
 
-    final last = await BackupService.lastBackupTime();
-    expect(last, isNotNull);
-    expect(DateTime.now().difference(last!).inMinutes, lessThan(1));
-  });
-
-  test('exportZip does not record a backup time on failure', () async {
-    await seed();
-    await db.close();
-
-    await expectLater(service.exportZip(database: db), throwsA(anything));
-
-    expect(await BackupService.lastBackupTime(), isNull);
+    test('false when the user dismissed the share sheet', () {
+      expect(shouldRecordBackup(ShareResultStatus.dismissed), isFalse);
+    });
   });
 }

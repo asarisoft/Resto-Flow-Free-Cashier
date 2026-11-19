@@ -383,7 +383,7 @@ Kembali                 9.000
 **Penting:** ZIP invalid/corrupt → pesan error jelas, data existing tidak tersentuh.
 
 ### Pengingat backup
-- Setelah backup sukses, simpan `last_backup_at` (epoch ms) di `shared_preferences` (gagal = tidak tersimpan; restore tidak mengubah tanggal ini).
+- Setelah user benar-benar menyimpan/membagikan zip (share sheet `success`/`unavailable`), simpan `last_backup_at` (epoch ms) di `shared_preferences`; share sheet di-`dismissed` → tidak dicatat dan tampil "Backup dibatalkan" (gagal = tidak tersimpan; restore tidak mengubah tanggal ini).
 - `isBackupDue(last, now)` → true bila belum pernah backup atau > 7 hari.
 - Banner kecil (Owner only, tanpa dialog) di Home shell & Pengaturan bila due, dengan tombol "Backup sekarang"; "Backup terakhir: <tanggal>" tampil di Pengaturan.
 

@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
+import 'package:share_plus/share_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/services/database.dart';
@@ -20,6 +21,13 @@ class BackupFormatException implements Exception {
 bool isBackupDue(DateTime? last, DateTime now) {
   if (last == null) return true;
   return now.difference(last).inDays > 7;
+}
+
+/// Whether a share-sheet [status] means the backup was actually saved.
+/// `success` and `unavailable` (platform can't tell) both count; only an
+/// explicit `dismissed` means the user cancelled and nothing was kept.
+bool shouldRecordBackup(ShareResultStatus status) {
+  return status != ShareResultStatus.dismissed;
 }
 
 /// Creates and restores local backup zips.
@@ -58,7 +66,9 @@ class BackupService {
     return ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms);
   }
 
-  static Future<void> _recordBackup(DateTime time) async {
+  /// Records [time] as the last successful backup. Call only after the user
+  /// has actually saved/shared the zip; do not call it from [exportZip].
+  static Future<void> recordBackup(DateTime time) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setInt(_lastBackupKey, time.millisecondsSinceEpoch);
   }
@@ -109,7 +119,6 @@ class BackupService {
       final out =
           File(p.join(Directory.systemTemp.path, '${DateFormat('ddMMMyy HH.mm').format(DateTime.now())}.zip'));
       await out.writeAsBytes(zipBytes, flush: true);
-      await _recordBackup(DateTime.now());
       return out;
     } finally {
       if (await tempDir.exists()) await tempDir.delete(recursive: true);

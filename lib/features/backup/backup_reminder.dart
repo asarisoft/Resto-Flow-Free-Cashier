@@ -21,16 +21,29 @@ final backupDueProvider = Provider<bool>((ref) {
   );
 });
 
-/// Export the database zip and share it. Silently succeeds; shows a SnackBar
-/// on failure. Refreshes the reminder state after a success.
+/// Export the database zip and share it. Shows a SnackBar on failure or when
+/// the user dismisses the share sheet. The last-backup time is recorded only
+/// after the user actually shares (or the platform can't tell), so a cancelled
+/// share never marks the data as backed up.
 Future<void> runBackupNow(WidgetRef ref, BuildContext context) async {
   try {
     final dir = await getApplicationDocumentsDirectory();
     final file = await BackupService(dbDir: dir)
         .exportZip(database: ref.read(databaseProvider));
-    await SharePlus.instance.share(
+    final result = await SharePlus.instance.share(
       ShareParams(files: [XFile(file.path)]),
     );
+
+    if (!shouldRecordBackup(result.status)) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Backup dibatalkan')),
+        );
+      }
+      return;
+    }
+
+    await BackupService.recordBackup(DateTime.now());
     ref.invalidate(lastBackupTimeProvider);
   } catch (e) {
     if (context.mounted) {
