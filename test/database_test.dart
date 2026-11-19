@@ -27,7 +27,7 @@ void main() {
     expect(rows.single.archived, false);
   });
 
-  test('inserts and reads an expense (schema v3)', () async {
+  test('inserts and reads an expense', () async {
     await db.into(db.expenses).insert(ExpensesCompanion.insert(
           id: 'e1',
           amount: 25000,
@@ -39,7 +39,7 @@ void main() {
     expect(rows.single.amount, 25000);
     expect(rows.single.category, isNull);
     expect(rows.single.note, isNull);
-    expect(db.schemaVersion, 4);
+    expect(db.schemaVersion, 1);
   });
 
   test('receipt counter increments atomically', () async {

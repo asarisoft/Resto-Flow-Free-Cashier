@@ -1,7 +1,7 @@
 # Database — Resto Flow Free
 
 Engine: **Drift (SQLite)** lokal, file `kasir_resto.sqlite`.
-Schema version: **3**.
+Schema version: **1** (riwayat dev di-reset sebelum rilis pertama, 2026-11-19).
 
 ## Aturan Global
 
@@ -110,6 +110,19 @@ karena nama `Expense` dipakai model domain di `lib/models/expense.dart`.
 
 ---
 
+### `Categories`
+
+| Kolom       | Tipe     | Constraint                 | Catatan                          |
+|-------------|----------|----------------------------|----------------------------------|
+| `id`        | TEXT     | **PK**                     |                                  |
+| `type`      | TEXT     | NOT NULL                   | `'product'` \| `'expense'`      |
+| `name`      | TEXT     | NOT NULL, 1–60 char        | Unik per `type` (cek DAO: tanpa beda huruf besar/kecil) |
+| `createdAt` | DATETIME | NOT NULL                   |                                  |
+
+Unique key: `(type, name)`. Produk/Pengeluaran menyimpan **nama** kategori (teks),
+bukan FK; rename kategori ikut mengubah teks di item. Kategori yang dipakai tidak bisa dihapus.
+Data class Drift: **`CategoryRow`**.
+
 ## Relasi
 
 ```
@@ -124,8 +137,8 @@ Counters ──(receipt number)──► Transactions.number
 
 ## Migrasi
 
-- **v1 → v2**: Drop tabel `Expenses` (kalau ada), create tabel `Users`.
-- Guard: `if (from < 2) { dropIfExists('expenses'); createTable(users); }`
-- **v2 → v3**: Create tabel `Expenses` (fitur pengeluaran kembali, tetap offline).
-- Guard: `if (from < 3) { createTable(expenses); }`
+- **v1** = skema rilis pertama (semua tabel termasuk `Users`, `Expenses`, `Categories`). Riwayat v1–v4 masa dev dihapus karena belum pernah rilis.
+- Ubah skema: `schemaVersion++` + satu blok `if (from < N) { ... }` di `onUpgrade`. Jangan ubah blok lama.
 - Migrasi forward-only: jangan pernah turunkan `schemaVersion` atau drop data user.
+- Detail aturan & rencana: `docs/superpowers/plans/2026-11-19-migration-distribution.md` §2.
+

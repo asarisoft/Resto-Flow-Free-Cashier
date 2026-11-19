@@ -139,56 +139,19 @@ class AppDatabase extends _$AppDatabase {
   /// Database backed by a specific file (used by backup/restore & migration tests).
   AppDatabase.forFile(File file) : super(NativeDatabase.createInBackground(file));
 
+  /// Rilis pertama = v1 (riwayat dev di-reset sebelum rilis).
+  /// Ubah skema: schemaVersion++ dan tambah satu blok `if (from < N)` di
+  /// onUpgrade. Jangan ubah blok lama, jangan drop data user.
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 1;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
-        onUpgrade: (m, from, to) async {
-          if (from < 2) {
-            await m.deleteTable('expenses');
-            await m.createTable(users);
-          }
-          if (from < 3) {
-            await m.createTable(expenses);
-          }
-          if (from < 4) {
-            await m.createTable(categories);
-            await _seedCategoriesFromItems();
-          }
-        },
+        onUpgrade: (m, from, to) async {},
         beforeOpen: (details) async {
           await customStatement('PRAGMA foreign_keys = ON');
         },
       );
-
-  /// v3 → v4: isi daftar kategori dari teks kategori yang sudah dipakai
-  /// (trim, tanpa beda huruf besar/kecil, ejaan pertama dipakai).
-  Future<void> _seedCategoriesFromItems() async {
-    Future<void> seed(String type, String table) async {
-      final rows = await customSelect(
-        'SELECT category FROM $table WHERE category IS NOT NULL ORDER BY rowid',
-      ).get();
-      final seen = <String, String>{};
-      for (final r in rows) {
-        final c = (r.read<String>('category')).trim();
-        final name = c.length > 60 ? c.substring(0, 60) : c;
-        if (name.isNotEmpty) seen.putIfAbsent(name.toLowerCase(), () => name);
-      }
-      var i = 0;
-      for (final name in seen.values) {
-        await into(categories).insert(CategoriesCompanion.insert(
-          id: '${DateTime.now().microsecondsSinceEpoch}_${type}_${i++}',
-          type: type,
-          name: name,
-          createdAt: DateTime.now(),
-        ));
-      }
-    }
-
-    await seed('product', 'products');
-    await seed('expense', 'expenses');
-  }
 
   /// Atomically increments and returns the receipt number.
   Future<int> getNextReceiptNumber() async {

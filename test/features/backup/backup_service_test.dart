@@ -58,7 +58,7 @@ void main() {
       utf8.decode(archive.firstWhere((e) => e.name == 'manifest.json').content
           as List<int>),
     ) as Map<String, dynamic>;
-    expect(manifest['schemaVersion'], 4);
+    expect(manifest['schemaVersion'], 1);
 
     final snapshot =
         archive.firstWhere((e) => e.name == 'database.db').content as List<int>;

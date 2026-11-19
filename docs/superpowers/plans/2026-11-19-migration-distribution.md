@@ -15,7 +15,7 @@
 | Signing release | `android/app/build.gradle*` → `signingConfig = debug` | **Kritis.** Debug keystore beda per laptop. APK dari laptop lain = signature beda → Android menolak install timpa → user harus uninstall → **data hilang**. Play Store juga menolak debug key. |
 | applicationId | `id.aisense.freecashier` | Tidak boleh berubah selamanya (beda ID = app lain, data tidak terbawa). |
 | Versi | `pubspec.yaml` `1.0.0+1` | `versionCode` (+N) harus naik tiap rilis, kalau tidak Android menolak update. |
-| Skema DB | Drift `schemaVersion = 4`, `onUpgrade` bertahap `if (from < N)` | Bagus. Tapi `from < 2` **menghapus tabel expenses** (destruktif) — aman hanya karena v1 belum pernah dirilis. |
+| Skema DB | **Di-reset ke `schemaVersion = 1`** (2026-11-19, app belum pernah rilis); `onUpgrade` kosong, siap untuk v2 | Bagus. Device test lama (DB v4) wajib uninstall/clear data sekali. |
 | Downgrade DB | Tidak ditangani | Restore backup dari app lebih baru / install APK lebih lama → Drift buka DB skema lebih tinggi tanpa error jelas → crash/data rusak. |
 | Backup manifest | Ada `schemaVersion` & `appVersion` | **Tidak dicek saat restore.** |
 | `user_version` di backup | `VACUUM INTO` ikut menyalin `PRAGMA user_version` (dicek manual sqlite3: v4 → v4) | Bagus: backup lama otomatis dimigrasi Drift saat DB dibuka. |

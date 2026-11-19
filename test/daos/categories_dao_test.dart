@@ -1,11 +1,8 @@
-import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir_resto/core/services/daos/categories_dao.dart';
 import 'package:drift/drift.dart' show Value;
 import 'package:kasir_resto/core/services/database.dart' show AppDatabase, ExpensesCompanion, ProductsCompanion;
-import 'package:path/path.dart' as p;
-import 'package:sqlite3/sqlite3.dart' as sql;
 
 void main() {
   late AppDatabase db;
@@ -104,64 +101,5 @@ void main() {
     final next = dao.watch(CategoryType.product).skip(1).first;
     await dao.add(CategoryType.product, 'Baru');
     expect((await next).single.name, 'Baru');
-  });
-
-  test('migration v3 -> v4 seeds categories from existing product/expense text', () async {
-    final dir = Directory.systemTemp.createTempSync('cat_mig');
-    addTearDown(() => dir.deleteSync(recursive: true));
-    final file = File(p.join(dir.path, 'v3.sqlite'));
-    final raw = sql.sqlite3.open(file.path);
-    raw.execute('CREATE TABLE products (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, category TEXT, price INTEGER NOT NULL, hpp INTEGER NOT NULL DEFAULT 0, ready INTEGER NOT NULL DEFAULT 1, archived INTEGER NOT NULL DEFAULT 0, image_path TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)');
-    raw.execute('CREATE TABLE expenses (id TEXT NOT NULL PRIMARY KEY, category TEXT, note TEXT, amount INTEGER NOT NULL, date INTEGER NOT NULL, created_at INTEGER NOT NULL)');
-    raw.execute("INSERT INTO products (id,name,category,price,created_at,updated_at) VALUES ('1','A','Minuman',1,0,0),('2','B','minuman ',1,0,0),('3','C','Makanan',1,0,0),('4','D',NULL,1,0,0),('5','E','  ',1,0,0)");
-    raw.execute("INSERT INTO expenses (id,category,amount,date,created_at) VALUES ('1','Listrik',1,0,0),('2','listrik',1,0,0),('3',NULL,1,0,0)");
-    raw.execute('PRAGMA user_version = 3');
-    raw.dispose();
-
-    final migrated = AppDatabase.forFile(file);
-    addTearDown(migrated.close);
-    final d = CategoriesDao(migrated);
-    expect((await d.list(CategoryType.product)).map((c) => c.name), ['Makanan', 'Minuman']);
-    expect((await d.list(CategoryType.expense)).map((c) => c.name), ['Listrik']);
-    expect((await d.list(CategoryType.product)).firstWhere((c) => c.name == 'Minuman').usage, 2);
-  });
-
-  test('after migrating v3 -> v4 the write path works (add, duplicate of seeded, rename, delete)', () async {
-    final dir = Directory.systemTemp.createTempSync('cat_mig2');
-    addTearDown(() => dir.deleteSync(recursive: true));
-    final file = File(p.join(dir.path, 'v3.sqlite'));
-    final raw = sql.sqlite3.open(file.path);
-    raw.execute('CREATE TABLE products (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, category TEXT, price INTEGER NOT NULL, hpp INTEGER NOT NULL DEFAULT 0, ready INTEGER NOT NULL DEFAULT 1, archived INTEGER NOT NULL DEFAULT 0, image_path TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)');
-    raw.execute('CREATE TABLE expenses (id TEXT NOT NULL PRIMARY KEY, category TEXT, note TEXT, amount INTEGER NOT NULL, date INTEGER NOT NULL, created_at INTEGER NOT NULL)');
-    raw.execute("INSERT INTO products (id,name,category,price,created_at,updated_at) VALUES ('1','A','Minuman',1,0,0)");
-    raw.execute('PRAGMA user_version = 3');
-    raw.dispose();
-
-    final migrated = AppDatabase.forFile(file);
-    addTearDown(migrated.close);
-    final d = CategoriesDao(migrated);
-    final newId = await d.add(CategoryType.product, 'Makanan');
-    expect(() => d.add(CategoryType.product, 'minuman'), throwsStateError, reason: 'seeded name already exists');
-    await d.rename(newId, 'Food');
-    expect((await d.list(CategoryType.product)).map((c) => c.name), ['Food', 'Minuman']);
-    await d.delete(newId);
-    expect((await d.list(CategoryType.product)).map((c) => c.name), ['Minuman']);
-  });
-
-  test('migration v3 -> v4 survives long names that collide after cutting to 60 chars', () async {
-    final dir = Directory.systemTemp.createTempSync('cat_mig_long');
-    addTearDown(() => dir.deleteSync(recursive: true));
-    final file = File(p.join(dir.path, 'v3.sqlite'));
-    final raw = sql.sqlite3.open(file.path);
-    raw.execute('CREATE TABLE products (id TEXT NOT NULL PRIMARY KEY, name TEXT NOT NULL, category TEXT, price INTEGER NOT NULL, hpp INTEGER NOT NULL DEFAULT 0, ready INTEGER NOT NULL DEFAULT 1, archived INTEGER NOT NULL DEFAULT 0, image_path TEXT, created_at INTEGER NOT NULL, updated_at INTEGER NOT NULL)');
-    raw.execute('CREATE TABLE expenses (id TEXT NOT NULL PRIMARY KEY, category TEXT, note TEXT, amount INTEGER NOT NULL, date INTEGER NOT NULL, created_at INTEGER NOT NULL)');
-    final base = 'K' * 60;
-    raw.execute("INSERT INTO products (id,name,category,price,created_at,updated_at) VALUES ('1','A','${base}AAAA',1,0,0),('2','B','${base}BBBB',1,0,0)");
-    raw.execute('PRAGMA user_version = 3');
-    raw.dispose();
-
-    final migrated = AppDatabase.forFile(file);
-    addTearDown(migrated.close);
-    expect((await CategoriesDao(migrated).list(CategoryType.product)).map((c) => c.name), [base]);
   });
 }
