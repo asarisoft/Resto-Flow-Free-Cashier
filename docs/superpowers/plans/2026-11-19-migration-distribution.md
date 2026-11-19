@@ -117,9 +117,9 @@
 ## Tasks
 
 ### Task 1: Release signing (paling mendesak)
-- [ ] Buat keystore upload + `key.properties` (gitignore)
+- [ ] Agent buat keystore upload (`keytool`, password acak kuat) di luar repo + `android/key.properties` (gitignore) — user tidak perlu menjalankan apa pun
 - [ ] `build.gradle` → `signingConfigs.release`, buildTypes.release pakai itu
-- [ ] Simpan keystore & password di 2 tempat aman
+- [ ] Agent beri tahu lokasi file keystore + `key.properties`; user cukup salin keduanya ke 1 tempat aman tambahan (satu-satunya langkah manual, wajib)
 - [ ] Build release, install di device, cek install timpa versi berikutnya berhasil
 - [ ] Catat di `docs/SPEC.md` (bagian Distribusi)
 
@@ -162,7 +162,9 @@
 
 ## Keputusan user (2026-11-19)
 
-1. Keystore release: **belum ada** → dibuat di Task 1; pemegang & lokasi simpan ditentukan saat itu.
+1. Keystore release: **belum ada** → dibuat agent di Task 1; pemegang & lokasi simpan ditentukan saat itu.
+5. **Eksekusi oleh agent semua** (user tidak ingin mengerjakan langkah teknis). Langkah yang memang butuh manusia (salin keystore ke tempat aman, Play Console) dibuat sesingkat mungkin dan ditandai jelas.
+6. **Status: plan saja dulu** — jangan dikerjakan sampai user bilang "ok".
 2. `allowBackup=false`: **setuju** (backup hanya lewat ZIP).
 3. User APK debug: **belum ada** → tidak perlu sesi install ulang; cukup pastikan APK pertama yang dibagikan sudah release-signed.
 4. Play Store: **key sendiri** ("Use existing app signing key").
