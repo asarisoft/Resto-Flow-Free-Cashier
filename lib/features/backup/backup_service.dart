@@ -4,6 +4,7 @@ import 'dart:io';
 import 'package:archive/archive.dart';
 import 'package:intl/intl.dart';
 import 'package:path/path.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/services/database.dart';
 
@@ -12,6 +13,13 @@ class BackupFormatException implements Exception {
   BackupFormatException(this.message);
   @override
   String toString() => 'BackupFormatException: $message';
+}
+
+/// True when there has never been a backup, or the last one is more than
+/// 7 days before [now].
+bool isBackupDue(DateTime? last, DateTime now) {
+  if (last == null) return true;
+  return now.difference(last).inDays > 7;
 }
 
 /// Creates and restores local backup zips.
@@ -26,6 +34,8 @@ class BackupFormatException implements Exception {
 /// the zip is fully validated and staged first, then [closeDatabase] is
 /// awaited, and only then are the sqlite files swapped.
 class BackupService {
+  static const _lastBackupKey = 'last_backup_at';
+
   final Directory dbDir;
   final String dbName;
   final String imagesDirName;
@@ -40,6 +50,18 @@ class BackupService {
 
   File get _dbFile => File(p.join(dbDir.path, dbName));
   Directory get _imagesDir => Directory(p.join(dbDir.path, imagesDirName));
+
+  /// When the last backup succeeded, or null if never.
+  static Future<DateTime?> lastBackupTime() async {
+    final prefs = await SharedPreferences.getInstance();
+    final ms = prefs.getInt(_lastBackupKey);
+    return ms == null ? null : DateTime.fromMillisecondsSinceEpoch(ms);
+  }
+
+  static Future<void> _recordBackup(DateTime time) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_lastBackupKey, time.millisecondsSinceEpoch);
+  }
 
   /// Snapshots [database] with `VACUUM INTO` and zips it with the manifest
   /// and the `images/` directory.
@@ -87,6 +109,7 @@ class BackupService {
       final out =
           File(p.join(Directory.systemTemp.path, '${DateFormat('ddMMMyy HH.mm').format(DateTime.now())}.zip'));
       await out.writeAsBytes(zipBytes, flush: true);
+      await _recordBackup(DateTime.now());
       return out;
     } finally {
       if (await tempDir.exists()) await tempDir.delete(recursive: true);

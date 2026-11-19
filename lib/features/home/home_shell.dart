@@ -11,6 +11,7 @@ import '../settings/settings_page.dart';
 import '../users/user_list_page.dart';
 import '../users/users_providers.dart';
 import '../expenses/expense_list_page.dart';
+import '../backup/backup_reminder.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/tap_area.dart';
 enum HomeTab { pos, products, expenses, reports, settings, users }
@@ -197,9 +198,16 @@ class _MainShellState extends ConsumerState<_MainShell> {
                 ),
                 // Main Content
                 Expanded(
-                  child: IndexedStack(
-                    index: current,
-                    children: pages,
+                  child: Column(
+                    children: [
+                      const BackupReminderBanner(),
+                      Expanded(
+                        child: IndexedStack(
+                          index: current,
+                          children: pages,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
@@ -208,9 +216,16 @@ class _MainShellState extends ConsumerState<_MainShell> {
         }
 
         return Scaffold(
-          body: IndexedStack(
-            index: current,
-            children: pages,
+          body: Column(
+            children: [
+              const BackupReminderBanner(),
+              Expanded(
+                child: IndexedStack(
+                  index: current,
+                  children: pages,
+                ),
+              ),
+            ],
           ),
           bottomNavigationBar: NavigationBar(
             selectedIndex: current,

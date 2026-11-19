@@ -9,11 +9,13 @@ import 'package:kasir_resto/features/auth/auth_controller.dart';
 import 'package:kasir_resto/features/settings/settings_page.dart';
 import 'package:kasir_resto/models/app_user.dart';
 import 'package:kasir_resto/models/resto_profile.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   late AppDatabase db;
 
   setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     db = AppDatabase.forTest();
     await ProfileDao(db).save(RestoProfile(
       name: 'Warung A',

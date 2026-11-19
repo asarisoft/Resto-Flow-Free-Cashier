@@ -57,8 +57,8 @@
 - [x] Tes perhitungan selisih (int)
 
 ### 5. #14 Pengingat backup
-- [ ] Simpan tanggal backup terakhir; banner di Pengaturan/Home kalau > 7 hari
-- [ ] Tes logika tanggal
+- [x] Simpan tanggal backup terakhir; banner di Pengaturan/Home kalau > 7 hari
+- [x] Tes logika tanggal
 
 ### 6. #9 Logo di struk
 - [ ] Upload logo di profil (path relatif, ikut backup)

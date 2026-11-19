@@ -1,8 +1,8 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:share_plus/share_plus.dart';
 import '../../core/services/database_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -10,6 +10,7 @@ import '../../core/widgets/app_card.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../models/resto_profile.dart';
 import '../../features/auth/auth_controller.dart';
+import '../../features/backup/backup_reminder.dart';
 import '../../features/backup/backup_service.dart';
 import '../../features/users/users_providers.dart';
 import 'settings_providers.dart';
@@ -29,6 +30,7 @@ class SettingsPage extends ConsumerWidget {
     final profileAsync = ref.watch(profileProvider);
     final canBackup = ref.watch(canSeeBackupProvider);
     final printer = ref.watch(printerServiceProvider);
+    final lastBackup = ref.watch(lastBackupTimeProvider).valueOrNull;
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -124,11 +126,20 @@ class SettingsPage extends ConsumerWidget {
                         style: textTheme.bodyMedium
                             ?.copyWith(color: AppColors.textSecondary),
                       ),
+                      const SizedBox(height: 8),
+                      Text(
+                        lastBackup == null
+                            ? 'Backup terakhir: belum pernah'
+                            : 'Backup terakhir: '
+                                '${DateFormat('dd/MM/yyyy HH:mm').format(lastBackup)}',
+                        style: textTheme.bodyMedium
+                            ?.copyWith(color: AppColors.textSecondary),
+                      ),
                       const SizedBox(height: 12),
                       SecondaryButton(
                         label: 'Backup Sekarang',
                         icon: AppIcons.restore,
-                        onPressed: () => _exportBackup(context, ref),
+                        onPressed: () => runBackupNow(ref, context),
                       ),
                       const SizedBox(height: 8),
                       SecondaryButton(
@@ -211,22 +222,6 @@ class SettingsPage extends ConsumerWidget {
       MaterialPageRoute(
           builder: (_) => const PrinterPairingPage()),
     );
-  }
-
-  Future<void> _exportBackup(BuildContext context, WidgetRef ref) async {
-    try {
-      final dir = await getApplicationDocumentsDirectory();
-      final file = await BackupService(dbDir: dir)
-          .exportZip(database: ref.read(databaseProvider));
-      await SharePlus.instance.share(
-        ShareParams(files: [XFile(file.path)]),
-      );
-    } catch (e) {
-      if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Backup gagal: $e')),
-      );
-    }
   }
 
   Future<void> _restoreBackup(BuildContext context, WidgetRef ref) async {

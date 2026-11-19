@@ -6,8 +6,10 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir_resto/core/services/database.dart';
 import 'package:kasir_resto/features/backup/backup_service.dart';
 import 'package:path/path.dart' as p;
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   late Directory temp;
   late Directory dbDir;
   late File dbFile;
@@ -15,6 +17,7 @@ void main() {
   late BackupService service;
 
   setUp(() async {
+    SharedPreferences.setMockInitialValues({});
     temp = await Directory.systemTemp.createTemp('kasir_backup_test_');
     dbDir = Directory(p.join(temp.path, 'data'));
     await dbDir.create(recursive: true);
@@ -150,5 +153,45 @@ void main() {
     expect(closed, isFalse);
     expect(await dbFile.readAsBytes(), before);
     expect((await db.select(db.products).get()).single.id, 'p1');
+  });
+
+  group('isBackupDue', () {
+    final now = DateTime(2026, 11, 19, 12);
+
+    test('true when there has never been a backup', () {
+      expect(isBackupDue(null, now), isTrue);
+    });
+
+    test('false 6 days after the last backup', () {
+      expect(isBackupDue(now.subtract(const Duration(days: 6)), now), isFalse);
+    });
+
+    test('false exactly 7 days after the last backup', () {
+      expect(isBackupDue(now.subtract(const Duration(days: 7)), now), isFalse);
+    });
+
+    test('true 8 days after the last backup', () {
+      expect(isBackupDue(now.subtract(const Duration(days: 8)), now), isTrue);
+    });
+  });
+
+  test('exportZip records the last backup time on success', () async {
+    await seed();
+    expect(await BackupService.lastBackupTime(), isNull);
+
+    await service.exportZip(database: db);
+
+    final last = await BackupService.lastBackupTime();
+    expect(last, isNotNull);
+    expect(DateTime.now().difference(last!).inMinutes, lessThan(1));
+  });
+
+  test('exportZip does not record a backup time on failure', () async {
+    await seed();
+    await db.close();
+
+    await expectLater(service.exportZip(database: db), throwsA(anything));
+
+    expect(await BackupService.lastBackupTime(), isNull);
   });
 }

@@ -154,7 +154,8 @@ lib/
 │   │   ├── user_form_dialog.dart
 │   │   └── users_providers.dart
 │   ├── backup/
-│   │   └── backup_service.dart
+│   │   ├── backup_service.dart
+│   │   └── backup_reminder.dart
 │   └── settings/
 │       ├── settings_page.dart
 │       ├── settings_providers.dart
@@ -380,6 +381,11 @@ Kembali                 9.000
 4. Tutup DB → ekstrak ke temp → swap atomik (DB + images) → buka ulang → kembali ke login
 
 **Penting:** ZIP invalid/corrupt → pesan error jelas, data existing tidak tersentuh.
+
+### Pengingat backup
+- Setelah backup sukses, simpan `last_backup_at` (epoch ms) di `shared_preferences` (gagal = tidak tersimpan; restore tidak mengubah tanggal ini).
+- `isBackupDue(last, now)` → true bila belum pernah backup atau > 7 hari.
+- Banner kecil (Owner only, tanpa dialog) di Home shell & Pengaturan bila due, dengan tombol "Backup sekarang"; "Backup terakhir: <tanggal>" tampil di Pengaturan.
 
 ---
 
