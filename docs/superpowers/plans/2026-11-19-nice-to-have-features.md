@@ -75,6 +75,9 @@
 - [x] Status `open` (belum bayar); daftar pesanan terbuka di POS
 - [x] Lanjutkan → bayar; hapus pesanan terbuka
 - [x] Laporan hanya hitung yang `paid`; tes
+- [x] Review fix: hapus pesanan yang sedang dilanjutkan → keranjang kosong & resumed null
+- [x] Review fix: keranjang jadi kosong saat melanjutkan → resumed null (pesanan lama tetap open)
+- [x] Review fix: bayar gagal (pesanan tidak ditemukan) → pesan jelas + jadi transaksi baru
 
 ### 9. #10 Grafik omzet ⚠️
 - [ ] Update SPEC Non-Goals

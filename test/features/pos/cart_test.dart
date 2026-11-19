@@ -60,4 +60,19 @@ void main() {
     expect(items[0].note, 'tanpa sambal');
     expect(items[1].note, isNull);
   });
+
+  test('keranjang kosong saat melanjutkan pesanan → resumed dilepas', () {
+    // Skenario kasir: lanjutkan pesanan, lalu kurangi qty item terakhir ke 0.
+    c.read(resumedOrderProvider.notifier).state = (id: 't1', label: 'Meja 2');
+    cart().addItem(product('a', 10000));
+    cart().updateQty(0, 0);
+    expect(c.read(cartProvider), isEmpty);
+    expect(c.read(resumedOrderProvider), isNull);
+
+    // clear() (setelah simpan/bayar) juga melepas resumed.
+    c.read(resumedOrderProvider.notifier).state = (id: 't2', label: 'Meja 3');
+    cart().addItem(product('a', 10000));
+    cart().clear();
+    expect(c.read(resumedOrderProvider), isNull);
+  });
 }

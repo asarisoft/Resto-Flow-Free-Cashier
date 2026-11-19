@@ -8,6 +8,7 @@ import 'package:kasir_resto/core/services/daos/sales_dao.dart';
 import 'package:kasir_resto/core/theme/app_theme.dart';
 import 'package:kasir_resto/features/pos/cart_provider.dart';
 import 'package:kasir_resto/features/pos/open_order_dialogs.dart';
+import 'package:kasir_resto/features/pos/pos_page.dart' show CheckoutDialog;
 import 'package:kasir_resto/models/transaction.dart';
 import 'package:kasir_resto/models/transaction_item.dart';
 import 'package:kasir_resto/main.dart' show clampTextScale;
@@ -157,5 +158,70 @@ void main() {
 
     expect(find.text('Tidak ada pesanan terbuka'), findsOneWidget);
     expect(await sales.watchOpen().first, isEmpty);
+  });
+
+  testWidgets('Hapus pesanan yang sedang dilanjutkan → keranjang & resumed reset',
+      (tester) async {
+    detachAfterTest(tester);
+    final id = await saveOpen('Meja 2');
+    await pumpDialog(tester, const OpenOrdersDialog());
+
+    // Lanjutkan dulu: keranjang terisi, resumed menunjuk pesanan ini.
+    await tester.tap(find.text('Meja 2'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(container.read(resumedOrderProvider)!.id, id);
+    expect(container.read(cartProvider), isNotEmpty);
+
+    // Hapus pesanan yang sama dari daftar.
+    await pumpDialog(tester, const OpenOrdersDialog());
+    await tester.tap(find.byTooltip('Hapus pesanan Meja 2'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.text('Hapus'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 400));
+
+    expect(await sales.watchOpen().first, isEmpty);
+    expect(container.read(cartProvider), isEmpty);
+    expect(container.read(resumedOrderProvider), isNull);
+  });
+
+  testWidgets(
+      'Bayar pesanan lanjutan yang sudah tidak ada → pesan jelas, lanjut jadi transaksi baru',
+      (tester) async {
+    detachAfterTest(tester);
+    // Keranjang melanjutkan pesanan yang barisnya sudah terhapus dari DB
+    // (mis. dihapus dari perangkat lain).
+    container.read(cartProvider.notifier).setItems([nasi]);
+    container.read(resumedOrderProvider.notifier).state =
+        (id: 'gone', label: 'Meja 9');
+    await pumpDialog(tester, const CheckoutDialog());
+
+    await tester.tap(find.text('Uang pas'));
+    await tester.pump(const Duration(milliseconds: 200));
+    await tester.tap(find.text('Simpan & Cetak'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 400));
+
+    // Pesan jelas + resumed dilepas; keranjang masih ada agar bisa dicoba lagi.
+    expect(
+      find.textContaining('Pesanan tidak ditemukan. Tekan "Simpan & Cetak" lagi'),
+      findsOneWidget,
+    );
+    expect(container.read(resumedOrderProvider), isNull);
+    expect(container.read(cartProvider), isNotEmpty);
+
+    // Coba bayar lagi: keranjang tersimpan sebagai transaksi baru.
+    await tester.tap(find.text('Simpan & Cetak'));
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pump(const Duration(milliseconds: 400));
+
+    // Snackbar sukses antre di belakang snackbar error (4 dtk) — cek
+    // kondisi akhir, bukan teks snackbar.
+    expect(container.read(cartProvider), isEmpty);
+    expect(container.read(resumedOrderProvider), isNull);
+    final paid = await sales.watchRecent().first;
+    expect(paid.single.status, 'paid');
+    expect(paid.single.number, isNotNull);
   });
 }

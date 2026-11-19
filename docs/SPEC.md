@@ -269,6 +269,10 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
   diganti sesuai keranjang terakhir, nomor struk baru, `createdAt` = waktu bayar. Simpan
   ulang pesanan yang dilanjutkan juga update baris yang sama.
 - Hapus pesanan terbuka: kasir & owner, dengan konfirmasi; hanya status `open` yang boleh.
+- Pengaman status lanjutan: menghapus pesanan yang sedang dilanjutkan mengosongkan keranjang;
+  keranjang yang jadi kosong (semua item dihapus) otomatis melepas status lanjutan
+  (pesanan lama tetap `open` di DB); saat bayar, pesanan yang sudah tidak ditemukan
+  (mis. dihapus dari perangkat lain) → pesan jelas + keranjang jadi pesanan baru (tekan bayar lagi).
 - Pesanan `open` tidak dapat nomor dan tidak tampil di Laporan (daftar & rekap hanya `paid`).
 
 ### 7.5 Produk Page
@@ -419,7 +423,8 @@ Kembali                 9.000
 - Riverpod provider (in-memory `List<TransactionItem>`)
 - Reset setelah transaksi tersimpan
 - Pesanan terbuka yang dilanjutkan: id + label diingat di `resumedOrderProvider`
-  (null = pesanan baru); bayar/simpan ulang meng-update baris pesanan itu
+  (null = pesanan baru); bayar/simpan ulang meng-update baris pesanan itu;
+  otomatis null saat keranjang kosong atau pesanannya terhapus
 - Tidak persist (cukup in-memory)
 
 ### 10.3 Role Guard

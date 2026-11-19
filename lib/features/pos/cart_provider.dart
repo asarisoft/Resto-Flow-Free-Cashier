@@ -50,12 +50,23 @@ class CartNotifier extends Notifier<List<TransactionItem>> {
 
   void removeAt(int index) {
     state = [...state.take(index), ...state.skip(index + 1)];
+    _dropResumedIfEmpty();
   }
 
   /// Ganti seluruh isi keranjang (dipakai saat melanjutkan pesanan terbuka).
   void setItems(List<TransactionItem> items) => state = List.of(items);
 
-  void clear() => state = [];
+  void clear() {
+    state = [];
+    _dropResumedIfEmpty();
+  }
+
+  /// Keranjang jadi kosong saat melanjutkan pesanan → lepas resumed,
+  /// agar isi keranjang berikutnya tidak tersimpan ke baris pesanan lama
+  /// (pesanan lama tetap `open` di DB).
+  void _dropResumedIfEmpty() {
+    if (state.isEmpty) ref.read(resumedOrderProvider.notifier).state = null;
+  }
 }
 
 /// Id + label pesanan terbuka yang sedang dilanjutkan di keranjang

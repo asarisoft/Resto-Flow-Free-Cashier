@@ -240,6 +240,14 @@ class _OpenOrderTile extends ConsumerWidget {
     if (ok != true) return;
     try {
       await ref.read(transactionRepositoryProvider).deleteOpen(order.id!);
+      // Pesanan yang sedang dilanjutkan di keranjang ikut terhapus:
+      // kosongkan keranjang & lepas resumed agar Bayar tidak menunjuk
+      // baris yang sudah tidak ada.
+      final resumed = ref.read(resumedOrderProvider);
+      if (resumed != null && resumed.id == order.id) {
+        ref.read(cartProvider.notifier).clear();
+        ref.read(resumedOrderProvider.notifier).state = null;
+      }
     } catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context)

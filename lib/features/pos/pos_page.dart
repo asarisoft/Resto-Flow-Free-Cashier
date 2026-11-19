@@ -811,7 +811,23 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
         number = await txnRepo.getNextNumber();
         await txnRepo.save(txn.copyWith(number: number));
       } else {
-        number = await txnRepo.payOpen(id: resumed.id, txn: txn);
+        try {
+          number = await txnRepo.payOpen(id: resumed.id, txn: txn);
+        } on StateError catch (e) {
+          // Pesanan lama sudah tidak ada (mis. dihapus dari perangkat lain):
+          // lepas resumed agar kasir tidak macet — tekan tombol bayar lagi
+          // dan keranjang tersimpan sebagai transaksi baru.
+          ref.read(resumedOrderProvider.notifier).state = null;
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content:
+                    Text('${e.message}. Tekan "Simpan & Cetak" lagi untuk transaksi baru.'),
+              ),
+            );
+          }
+          return;
+        }
       }
 
       final profile = profileAsync.valueOrNull;
