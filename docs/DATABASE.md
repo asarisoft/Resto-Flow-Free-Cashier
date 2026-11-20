@@ -163,6 +163,25 @@ Aturan:
   Pengeluaran (`Expenses`) tidak punya metode bayar → **semua dianggap tunai**.
   Pengeluaran dihitung berdasarkan `createdAt` (waktu dicatat = uang keluar laci),
   bukan `date` (tanggal yang dipilih di date picker).
+
+### `ActivityLogs`
+Data class Drift: **`ActivityLogRow`**. Jejak aksi penting, hanya dibaca Owner.
+
+| Kolom       | Tipe     | Constraint | Catatan                                              |
+|-------------|----------|------------|------------------------------------------------------|
+| `id`        | TEXT     | **PK**     | `<microsecondsSinceEpoch>-<counter>`                 |
+| `createdAt` | DATETIME | NOT NULL   | Waktu aksi                                           |
+| `username`  | TEXT     | NOT NULL   | Pelaku (snapshot, bukan FK)                          |
+| `action`    | TEXT     | NOT NULL   | Kode tetap: `product.add/update/ready`, `transaction.void`, `user.add/activate/deactivate/password_reset/password_change`, `backup.restore`, `shift.close` |
+| `target`    | TEXT     | NOT NULL   | Nama produk / no struk / username                    |
+| `detail`    | TEXT     | nullable   | Ringkas (alasan void, selisih shift, dsb)            |
+
+Aturan:
+- **Tidak pernah** menyimpan password/hash di kolom mana pun.
+- Ditulis lewat `recordActivity` / `logActivity` **setelah** aksi utama sukses; gagal tulis
+  hanya `debugPrint`, tidak menggagalkan aksi.
+- `backup.restore` ditulis ke DB hasil restore (username diambil sebelum DB diganti).
+- Belum ada aksi `product.delete`: tidak ada tombol hapus produk di UI saat ini.
   Selisih = `countedCash` − kas seharusnya (int, bisa minus).
 - Transaksi tetap bisa dicatat tanpa shift terbuka (shift tidak memblokir kasir).
 Data class Drift: **`ShiftRow`**.

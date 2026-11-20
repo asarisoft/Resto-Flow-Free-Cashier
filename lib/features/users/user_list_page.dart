@@ -10,6 +10,7 @@ import '../auth/auth_controller.dart' show currentUserProvider;
 import 'password_dialogs.dart';
 import 'user_form_dialog.dart';
 import 'users_providers.dart';
+import '../activity_log/activity_log_providers.dart';
 
 class UserListPage extends ConsumerWidget {
   const UserListPage({super.key});
@@ -135,6 +136,8 @@ class _ActiveSwitch extends ConsumerWidget {
         onChanged: (v) async {
           try {
             await ref.read(usersDaoProvider).setActive(user.id, v);
+            await logActivity(
+                ref, v ? 'user.activate' : 'user.deactivate', user.username);
           } on StateError catch (e) {
             if (context.mounted) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));

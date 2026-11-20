@@ -17,6 +17,8 @@ import '../../features/backup/backup_reminder.dart';
 import '../../features/backup/backup_service.dart';
 import '../../features/users/users_providers.dart';
 import '../../features/users/password_dialogs.dart';
+import '../activity_log/activity_log_page.dart';
+import '../activity_log/activity_log_providers.dart';
 import 'settings_providers.dart';
 
 import 'printer_pairing_page.dart';
@@ -120,6 +122,20 @@ class SettingsPage extends ConsumerWidget {
                   ],
                 ),
               ),
+              ],
+              if (canManageSettings) ...[
+                const SizedBox(height: 12),
+                AppCard(
+                  child: ListTile(
+                    contentPadding: EdgeInsets.zero,
+                    leading: const Icon(AppIcons.receipt, color: AppColors.textPrimary),
+                    title: Text('Log aktivitas', style: textTheme.bodyLarge),
+                    trailing: const Icon(AppIcons.arrowRight, color: AppColors.textSecondary),
+                    onTap: () => Navigator.of(context).push(
+                      MaterialPageRoute(builder: (_) => const ActivityLogPage()),
+                    ),
+                  ),
+                ),
               ],
               if (canBackup) ...[
                 const SizedBox(height: 12),
@@ -283,9 +299,13 @@ class SettingsPage extends ConsumerWidget {
       final db = ref.read(databaseProvider);
       // Restore contract: DB must be closed before files are swapped, then
       // the provider is invalidated so the next read opens the restored DB.
+      // Username diambil sebelum DB diganti; log ditulis ke DB hasil restore.
+      final actor = ref.read(currentUserProvider).valueOrNull?.username ?? '-';
       await BackupService(dbDir: dir)
           .restoreFromZip(path, closeDatabase: db.close);
       ref.invalidate(databaseProvider);
+      await logActivity(ref, 'backup.restore', 'dari berkas zip',
+          username: actor);
       await ref.read(loginProvider).logout();
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(

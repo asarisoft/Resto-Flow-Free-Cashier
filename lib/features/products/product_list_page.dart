@@ -10,6 +10,7 @@ import 'product_card.dart';
 import '../categories/category_page.dart';
 import '../../core/services/daos/categories_dao.dart';
 import '../users/users_providers.dart';
+import '../activity_log/activity_log_providers.dart';
 
 class ProductListPage extends ConsumerWidget {
   const ProductListPage({super.key});
@@ -105,6 +106,8 @@ class _ProductGrid extends ConsumerWidget {
   void _toggle(Product product) async {
     final repo = ref.read(productRepositoryProvider);
     await repo.toggleReady(product.id!, !product.ready);
+    await logActivity(ref, 'product.ready', product.name,
+        detail: !product.ready ? 'jadi ready' : 'jadi habis');
   }
 }
 

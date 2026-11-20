@@ -27,6 +27,7 @@ import 'report_export.dart';
 import '../auth/auth_controller.dart';
 import '../pos/pos_providers.dart';
 import '../users/users_providers.dart';
+import '../activity_log/activity_log_providers.dart';
 
 class ReportPage extends ConsumerStatefulWidget {
   const ReportPage({super.key});
@@ -489,6 +490,8 @@ class _VoidDialogState extends ConsumerState<_VoidDialog> {
             username: user?.username ?? '',
             reason: _reasonCtrl.text,
           );
+      await logActivity(ref, 'transaction.void', '#${widget.txn.number ?? '-'}',
+          detail: _reasonCtrl.text.trim());
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Transaksi #${widget.txn.number ?? '-'} dibatalkan')),

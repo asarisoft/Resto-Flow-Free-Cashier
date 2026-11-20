@@ -146,6 +146,21 @@ class Shifts extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// Log aktivitas penting (Owner-only di UI). `username` = snapshot.
+/// Jangan pernah simpan password/hash di kolom mana pun.
+@DataClassName('ActivityLogRow')
+class ActivityLogs extends Table {
+  TextColumn get id => text()();
+  DateTimeColumn get createdAt => dateTime()();
+  TextColumn get username => text()();
+  TextColumn get action => text()();
+  TextColumn get target => text()();
+  TextColumn get detail => text().nullable()();
+
+  @override
+  Set<Column> get primaryKey => {id};
+}
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -156,7 +171,7 @@ LazyDatabase _openConnection() {
 
 @DriftDatabase(
     tables: [Products, Transactions, TransactionItems, Users,
-             RestoProfiles, Counters, Expenses, Categories, Shifts])
+             RestoProfiles, Counters, Expenses, Categories, Shifts, ActivityLogs])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
 

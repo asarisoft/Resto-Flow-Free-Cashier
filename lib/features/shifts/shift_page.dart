@@ -16,6 +16,7 @@ import '../auth/auth_controller.dart';
 import '../reports/report_providers.dart';
 import '../settings/settings_providers.dart';
 import 'shift_calc.dart';
+import '../activity_log/activity_log_providers.dart';
 import 'shift_providers.dart';
 
 /// Nominal kas (modal awal / uang di laci): int >= 0.
@@ -292,6 +293,8 @@ class _CloseShiftDialogState extends ConsumerState<_CloseShiftDialog> {
             countedCash: counted,
             expectedCash: recap.expectedCash,
           );
+      await logActivity(ref, 'shift.close', 'oleh $username',
+          detail: 'selisih ${recap.difference}');
       if (!mounted) return;
       Navigator.of(context).pop();
       await showDialog(

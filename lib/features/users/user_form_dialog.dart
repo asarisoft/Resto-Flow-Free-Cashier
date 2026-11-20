@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../users/users_providers.dart';
 import '../../core/widgets/app_form_dialog.dart';
+import '../activity_log/activity_log_providers.dart';
 
 class UserFormDialog extends ConsumerStatefulWidget {
   const UserFormDialog({super.key});
@@ -54,6 +55,7 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
     });
     try {
       await ref.read(usersDaoProvider).add(username: _username.text, password: _password.text, role: _role);
+      await logActivity(ref, 'user.add', _username.text.trim(), detail: 'role $_role');
       if (mounted) Navigator.pop(context);
     } on ArgumentError catch (e) {
       if (mounted) setState(() => _error = '${e.message}');

@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/widgets/app_form_dialog.dart';
 import '../../core/widgets/password_field.dart';
 import '../../models/app_user.dart';
+import '../activity_log/activity_log_providers.dart';
+import '../auth/auth_controller.dart' show currentUserProvider;
 import 'users_providers.dart';
 
 /// Dialog "Ganti password" untuk user yang sedang login (semua role).
@@ -67,6 +69,8 @@ class _ChangePasswordDialogState extends ConsumerState<ChangePasswordDialog> {
             oldPassword: _old.text,
             newPassword: _new.text,
           );
+      await logActivity(ref, 'user.password_change',
+          ref.read(currentUserProvider).valueOrNull?.username ?? '-');
       if (mounted) Navigator.pop(context);
     } on ArgumentError catch (e) {
       if (mounted) setState(() => _error = '${e.message}');
@@ -138,6 +142,7 @@ class _ResetPasswordDialogState extends ConsumerState<ResetPasswordDialog> {
             targetId: widget.target.id,
             newPassword: _new.text,
           );
+      await logActivity(ref, 'user.password_reset', widget.target.username);
       if (mounted) Navigator.pop(context);
     } on ArgumentError catch (e) {
       if (mounted) setState(() => _error = '${e.message}');

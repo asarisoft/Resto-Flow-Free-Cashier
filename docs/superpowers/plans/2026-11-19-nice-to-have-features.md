@@ -90,9 +90,9 @@
 - [x] Tes DAO (ganti/reset) — `/security-review` menyusul (reviewer)
 
 ### 11. #16 Log aktivitas
-- [ ] Tabel `activity_log` (user, aksi, target, waktu) — migrasi
-- [ ] Catat: hapus/ubah produk, void transaksi, ubah user, restore backup
-- [ ] Halaman log (Owner only), filter tanggal
+- [x] Tabel `activity_log` (user, aksi, target, waktu) — migrasi
+- [x] Catat: hapus/ubah produk, void transaksi, ubah user, restore backup
+- [x] Halaman log (Owner only), filter tanggal
 
 ### 12. #17 Kunci otomatis
 - [ ] Idle N menit (atur di Pengaturan) → kembali ke login / layar kunci

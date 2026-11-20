@@ -35,6 +35,7 @@
 - Laporan: omzet, laba kotor/bersih per hari & bulan
 - Grafik omzet: batang harian (bulan berjalan) & bulanan (tahun berjalan), offline
 - Cetak struk via Bluetooth thermal printer (58mm / 80mm, ESC/POS)
+- Log aktivitas (Owner): jejak aksi penting (ubah produk, void, pengguna, password, restore, tutup kasir)
 - Shift kasir harian: buka (modal awal) & tutup laci (rekap omzet, pengeluaran, selisih) + cetak rekap
 - User lokal + role (Owner/Kasir). Login pilih user + password teks
 - Backup/restore lokal (file ZIP: DB + foto)
@@ -345,6 +346,14 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
   Pengeluaran dihitung berdasarkan `createdAt` (waktu dicatat), bukan `date` (tanggal dipilih di date picker).
 - Cetak rekap lewat `ReceiptBuilder.buildShiftRecapText` (lebar 58/80 sesuai setting).
 - Transaksi tetap bisa dicatat tanpa shift terbuka (tidak memblokir kasir).
+
+### 7.11 Log Aktivitas (Owner)
+- Akses: Pengaturan → "Log aktivitas" (hanya Owner; digate `canManageSettingsProvider`).
+- Daftar terbaru dulu (maks 300): label aksi (Indonesia), target, detail, pelaku, waktu.
+- Filter rentang tanggal (date range picker) + tombol Reset.
+- Dicatat: tambah/ubah produk, ubah status ready, void transaksi, tambah/(non)aktifkan pengguna,
+  reset/ganti password (hanya nama user, bukan password), restore backup, tutup shift.
+- Gagal menulis log tidak menggagalkan aksi utama.
 
 ---
 
