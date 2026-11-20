@@ -99,6 +99,15 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     type: DriftSqlType.string,
     requiredDuringInsert: false,
   );
+  static const VerificationMeta _stockMeta = const VerificationMeta('stock');
+  @override
+  late final GeneratedColumn<int> stock = GeneratedColumn<int>(
+    'stock',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -131,6 +140,7 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
     ready,
     archived,
     imagePath,
+    stock,
     createdAt,
     updatedAt,
   ];
@@ -197,6 +207,12 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         imagePath.isAcceptableOrUnknown(data['image_path']!, _imagePathMeta),
       );
     }
+    if (data.containsKey('stock')) {
+      context.handle(
+        _stockMeta,
+        stock.isAcceptableOrUnknown(data['stock']!, _stockMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -254,6 +270,10 @@ class $ProductsTable extends Products with TableInfo<$ProductsTable, Product> {
         DriftSqlType.string,
         data['${effectivePrefix}image_path'],
       ),
+      stock: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}stock'],
+      ),
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -280,6 +300,7 @@ class Product extends DataClass implements Insertable<Product> {
   final bool ready;
   final bool archived;
   final String? imagePath;
+  final int? stock;
   final DateTime createdAt;
   final DateTime updatedAt;
   const Product({
@@ -291,6 +312,7 @@ class Product extends DataClass implements Insertable<Product> {
     required this.ready,
     required this.archived,
     this.imagePath,
+    this.stock,
     required this.createdAt,
     required this.updatedAt,
   });
@@ -308,6 +330,9 @@ class Product extends DataClass implements Insertable<Product> {
     map['archived'] = Variable<bool>(archived);
     if (!nullToAbsent || imagePath != null) {
       map['image_path'] = Variable<String>(imagePath);
+    }
+    if (!nullToAbsent || stock != null) {
+      map['stock'] = Variable<int>(stock);
     }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -328,6 +353,9 @@ class Product extends DataClass implements Insertable<Product> {
       imagePath: imagePath == null && nullToAbsent
           ? const Value.absent()
           : Value(imagePath),
+      stock: stock == null && nullToAbsent
+          ? const Value.absent()
+          : Value(stock),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -347,6 +375,7 @@ class Product extends DataClass implements Insertable<Product> {
       ready: serializer.fromJson<bool>(json['ready']),
       archived: serializer.fromJson<bool>(json['archived']),
       imagePath: serializer.fromJson<String?>(json['imagePath']),
+      stock: serializer.fromJson<int?>(json['stock']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -363,6 +392,7 @@ class Product extends DataClass implements Insertable<Product> {
       'ready': serializer.toJson<bool>(ready),
       'archived': serializer.toJson<bool>(archived),
       'imagePath': serializer.toJson<String?>(imagePath),
+      'stock': serializer.toJson<int?>(stock),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -377,6 +407,7 @@ class Product extends DataClass implements Insertable<Product> {
     bool? ready,
     bool? archived,
     Value<String?> imagePath = const Value.absent(),
+    Value<int?> stock = const Value.absent(),
     DateTime? createdAt,
     DateTime? updatedAt,
   }) => Product(
@@ -388,6 +419,7 @@ class Product extends DataClass implements Insertable<Product> {
     ready: ready ?? this.ready,
     archived: archived ?? this.archived,
     imagePath: imagePath.present ? imagePath.value : this.imagePath,
+    stock: stock.present ? stock.value : this.stock,
     createdAt: createdAt ?? this.createdAt,
     updatedAt: updatedAt ?? this.updatedAt,
   );
@@ -401,6 +433,7 @@ class Product extends DataClass implements Insertable<Product> {
       ready: data.ready.present ? data.ready.value : this.ready,
       archived: data.archived.present ? data.archived.value : this.archived,
       imagePath: data.imagePath.present ? data.imagePath.value : this.imagePath,
+      stock: data.stock.present ? data.stock.value : this.stock,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -417,6 +450,7 @@ class Product extends DataClass implements Insertable<Product> {
           ..write('ready: $ready, ')
           ..write('archived: $archived, ')
           ..write('imagePath: $imagePath, ')
+          ..write('stock: $stock, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -433,6 +467,7 @@ class Product extends DataClass implements Insertable<Product> {
     ready,
     archived,
     imagePath,
+    stock,
     createdAt,
     updatedAt,
   );
@@ -448,6 +483,7 @@ class Product extends DataClass implements Insertable<Product> {
           other.ready == this.ready &&
           other.archived == this.archived &&
           other.imagePath == this.imagePath &&
+          other.stock == this.stock &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -461,6 +497,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
   final Value<bool> ready;
   final Value<bool> archived;
   final Value<String?> imagePath;
+  final Value<int?> stock;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   final Value<int> rowid;
@@ -473,6 +510,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.ready = const Value.absent(),
     this.archived = const Value.absent(),
     this.imagePath = const Value.absent(),
+    this.stock = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
     this.rowid = const Value.absent(),
@@ -486,6 +524,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     this.ready = const Value.absent(),
     this.archived = const Value.absent(),
     this.imagePath = const Value.absent(),
+    this.stock = const Value.absent(),
     required DateTime createdAt,
     required DateTime updatedAt,
     this.rowid = const Value.absent(),
@@ -503,6 +542,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Expression<bool>? ready,
     Expression<bool>? archived,
     Expression<String>? imagePath,
+    Expression<int>? stock,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
     Expression<int>? rowid,
@@ -516,6 +556,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       if (ready != null) 'ready': ready,
       if (archived != null) 'archived': archived,
       if (imagePath != null) 'image_path': imagePath,
+      if (stock != null) 'stock': stock,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
       if (rowid != null) 'rowid': rowid,
@@ -531,6 +572,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     Value<bool>? ready,
     Value<bool>? archived,
     Value<String?>? imagePath,
+    Value<int?>? stock,
     Value<DateTime>? createdAt,
     Value<DateTime>? updatedAt,
     Value<int>? rowid,
@@ -544,6 +586,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
       ready: ready ?? this.ready,
       archived: archived ?? this.archived,
       imagePath: imagePath ?? this.imagePath,
+      stock: stock ?? this.stock,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
       rowid: rowid ?? this.rowid,
@@ -577,6 +620,9 @@ class ProductsCompanion extends UpdateCompanion<Product> {
     if (imagePath.present) {
       map['image_path'] = Variable<String>(imagePath.value);
     }
+    if (stock.present) {
+      map['stock'] = Variable<int>(stock.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -600,6 +646,7 @@ class ProductsCompanion extends UpdateCompanion<Product> {
           ..write('ready: $ready, ')
           ..write('archived: $archived, ')
           ..write('imagePath: $imagePath, ')
+          ..write('stock: $stock, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt, ')
           ..write('rowid: $rowid')
@@ -5015,6 +5062,7 @@ typedef $$ProductsTableCreateCompanionBuilder =
       Value<bool> ready,
       Value<bool> archived,
       Value<String?> imagePath,
+      Value<int?> stock,
       required DateTime createdAt,
       required DateTime updatedAt,
       Value<int> rowid,
@@ -5029,6 +5077,7 @@ typedef $$ProductsTableUpdateCompanionBuilder =
       Value<bool> ready,
       Value<bool> archived,
       Value<String?> imagePath,
+      Value<int?> stock,
       Value<DateTime> createdAt,
       Value<DateTime> updatedAt,
       Value<int> rowid,
@@ -5080,6 +5129,11 @@ class $$ProductsTableFilterComposer
 
   ColumnFilters<String> get imagePath => $composableBuilder(
     column: $table.imagePath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get stock => $composableBuilder(
+    column: $table.stock,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5143,6 +5197,11 @@ class $$ProductsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<int> get stock => $composableBuilder(
+    column: $table.stock,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -5187,6 +5246,9 @@ class $$ProductsTableAnnotationComposer
   GeneratedColumn<String> get imagePath =>
       $composableBuilder(column: $table.imagePath, builder: (column) => column);
 
+  GeneratedColumn<int> get stock =>
+      $composableBuilder(column: $table.stock, builder: (column) => column);
+
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
 
@@ -5230,6 +5292,7 @@ class $$ProductsTableTableManager
                 Value<bool> ready = const Value.absent(),
                 Value<bool> archived = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
+                Value<int?> stock = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
                 Value<DateTime> updatedAt = const Value.absent(),
                 Value<int> rowid = const Value.absent(),
@@ -5242,6 +5305,7 @@ class $$ProductsTableTableManager
                 ready: ready,
                 archived: archived,
                 imagePath: imagePath,
+                stock: stock,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,
@@ -5256,6 +5320,7 @@ class $$ProductsTableTableManager
                 Value<bool> ready = const Value.absent(),
                 Value<bool> archived = const Value.absent(),
                 Value<String?> imagePath = const Value.absent(),
+                Value<int?> stock = const Value.absent(),
                 required DateTime createdAt,
                 required DateTime updatedAt,
                 Value<int> rowid = const Value.absent(),
@@ -5268,6 +5333,7 @@ class $$ProductsTableTableManager
                 ready: ready,
                 archived: archived,
                 imagePath: imagePath,
+                stock: stock,
                 createdAt: createdAt,
                 updatedAt: updatedAt,
                 rowid: rowid,

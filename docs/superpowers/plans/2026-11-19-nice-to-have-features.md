@@ -108,9 +108,9 @@
 - [x] Tes pembulatan
 
 ### 15. #20 Stok sederhana ⚠️
-- [ ] Update SPEC; `products.stock` nullable (null = tidak dilacak) — migrasi
-- [ ] Kurangi saat bayar, kembalikan saat void; 0 → otomatis tidak ready
-- [ ] Tes
+- [x] Update SPEC; `products.stock` nullable (null = tidak dilacak) — migrasi
+- [x] Kurangi saat bayar, kembalikan saat void; 0 → otomatis tidak ready
+- [x] Tes
 
 ### 16. #22 Kirim struk WhatsApp ⚠️
 - [ ] Update SPEC; tombol "Bagikan" di struk → share teks dari `ReceiptBuilder.buildText`

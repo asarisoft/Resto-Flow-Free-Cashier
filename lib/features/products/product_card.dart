@@ -112,12 +112,12 @@ class ProductCard extends StatelessWidget {
                         ),
                       ),
                       onToggleReady == null
-                          ? ReadyChip(ready: product.ready)
+                          ? ReadyChip(ready: product.ready, stock: product.stock)
                           : TapArea(
                               label: 'Ubah status ${product.name}',
                               borderRadius: BorderRadius.circular(8),
                               onTap: onToggleReady,
-                              child: ReadyChip(ready: product.ready),
+                              child: ReadyChip(ready: product.ready, stock: product.stock),
                             ),
                     ],
                   ),

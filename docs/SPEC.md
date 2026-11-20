@@ -31,7 +31,7 @@
 ### 1.1 Goals
 - Catat penjualan (POS): keranjang, diskon per-item & total (total: Rp atau %), bayar, kembalian, metode bayar
 - Catat pengeluaran operasional (kategori, catatan, nominal, tanggal)
-- Produk/menu: nama, kategori, harga, HPP, foto lokal, status ready
+- Produk/menu: nama, kategori, harga, HPP, foto lokal, status ready, stok porsi (opsional)
 - Laporan: omzet, laba kotor/bersih per hari & bulan
 - Grafik omzet: batang harian (bulan berjalan) & bulanan (tahun berjalan), offline
 - Menu terlaris (top 5, urut terjual/omzet) & jam ramai (omzet + jumlah transaksi per jam), mengikuti filter periode Laporan
@@ -47,7 +47,7 @@
 - Manajemen meja / table
 - Promo & diskon kompleks (cuma diskon manual per item/total)
 - Pelanggan / member
-- Stok bahan baku & resep (HPP manual cukup)
+- Stok bahan baku & resep (HPP manual cukup). Yang dilacak hanya **stok porsi per menu**, opsional (lihat 7.14)
 - Export PDF / Excel
 - Pajak / service charge
 - Dark mode
@@ -356,16 +356,6 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
   reset/ganti password (hanya nama user, bukan password), restore backup, tutup shift.
 - Gagal menulis log tidak menggagalkan aksi utama.
 
-### 7.13 Menu Terlaris & Jam Ramai (Owner, di Laporan)
-- Dua kartu di bawah Grafik Omzet, mengikuti filter **periode** Laporan (filter metode bayar/pencarian
-  tidak memengaruhi).
-- **Menu Terlaris**: top 5 produk; toggle urut Terjual (qty) / Omzet. Omzet item = (harga − diskon item) × qty;
-  diskon tingkat transaksi tidak dibagi ke item. Produk digabung per `product_id` (ganti nama → nama terbaru
-  dipakai); produk tanpa id (sudah dihapus) digabung per nama.
-- **Jam Ramai**: grafik batang omzet per jam (0–23, zona waktu lokal) + teks "Paling ramai: jam HH.00
-  (N transaksi)" berdasarkan jumlah transaksi (seri → jam lebih awal).
-- Hanya transaksi `paid` (void & pesanan open tidak dihitung). Data berupa stream: ikut diperbarui otomatis.
-
 ### 7.12 Kunci Otomatis
 - Pengaturan (Owner) → "Kunci otomatis": Nonaktif (default) / 1 / 5 / 10 / 15 / 30 menit. Disimpan di
   `shared_preferences` (`auto_lock_minutes`), per perangkat.
@@ -376,6 +366,34 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
   terbuka tetap utuh. Buka kunci = password user yang sedang login (`UsersDao.verify`).
 - 5 kali salah berturut-turut → jeda 30 detik. "Ganti pengguna (logout)" tersedia di layar kunci;
   keranjang tidak dikosongkan oleh logout.
+
+### 7.13 Menu Terlaris & Jam Ramai (Owner, di Laporan)
+- Dua kartu di bawah Grafik Omzet, mengikuti filter **periode** Laporan (filter metode bayar/pencarian
+  tidak memengaruhi).
+- **Menu Terlaris**: top 5 produk; toggle urut Terjual (qty) / Omzet. Omzet item = (harga − diskon item) × qty;
+  diskon tingkat transaksi tidak dibagi ke item. Produk digabung per `product_id` (ganti nama → nama terbaru
+  dipakai); produk tanpa id (sudah dihapus) digabung per nama.
+- **Jam Ramai**: grafik batang omzet per jam (0–23, zona waktu lokal) + teks "Paling ramai: jam HH.00
+  (N transaksi)" berdasarkan jumlah transaksi (seri → jam lebih awal).
+- Hanya transaksi `paid` (void & pesanan open tidak dihitung). Data berupa stream: ikut diperbarui otomatis.
+
+### 7.14 Stok Porsi (opsional per menu)
+- Kolom `products.stock` (int, **null = tidak dilacak**: jual terus selama ready). Diisi di form produk
+  ("Stok (porsi)", hanya angka; kosong = tidak dilacak).
+- **Bayar** mengurangi stok semua item yang dilacak, dalam satu transaksi DB dengan penjualannya.
+  Qty per produk dijumlahkan lintas baris. Stok jadi 0 → produk otomatis **tidak ready** ("Habis").
+- **Stok tidak cukup** → penjualan ditolak seluruhnya (tidak ada yang terpotong sebagian), pesan
+  "Stok X tidak cukup (sisa N)", dialog bayar tetap terbuka & keranjang utuh. Pengecekan dilakukan sebelum
+  nomor struk diambil (tidak ada nomor terbuang).
+- **Void** transaksi lunas mengembalikan stok; dari 0 → produk otomatis ready lagi. Hanya transaksi `paid`
+  yang bisa di-void (pesanan `open` tidak).
+- **Pesanan open** tidak memesan stok; stok baru dikurangi (dan dicek) saat pesanan dibayar.
+- POS: ketuk produk tidak menambah melebihi sisa ("Stok X tinggal N"). Chip kartu produk: "Sisa N".
+- Produk stok habis tidak bisa dijadikan ready lewat chip sebelum stoknya ditambah; mengubah stok jadi 0 di
+  form otomatis menonaktifkan ready.
+- Batasan: stok diedit manual lewat form (belum ada riwayat/penyesuaian stok); void sesudah stok diedit manual
+  tetap menambah qty transaksi itu apa adanya.
+
 
 ---
 

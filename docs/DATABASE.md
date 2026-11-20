@@ -26,6 +26,7 @@ Schema version: **1** (riwayat dev di-reset sebelum rilis pertama, 2026-11-19).
 | `ready`     | BOOLEAN    | NOT NULL, default true      | Status tersedia       |
 | `archived`  | BOOLEAN    | NOT NULL, default false     | Soft delete           |
 | `imagePath` | TEXT       | nullable                    | Relative path foto    |
+| `stock`     | INTEGER    | nullable                    | Sisa porsi; null = tidak dilacak. Berkurang saat bayar, kembali saat void; ≤ 0 → `ready` = false |
 | `createdAt` | DATETIME   | NOT NULL                    |                       |
 | `updatedAt` | DATETIME   | NOT NULL                    |                       |
 

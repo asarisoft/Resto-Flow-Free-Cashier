@@ -4,9 +4,80 @@ import '../database.dart' as drift_db;
 import '../../../models/transaction.dart';
 import '../../../models/transaction_item.dart';
 
+/// Penjualan ditolak karena stok produk (yang dilacak) tidak cukup.
+class InsufficientStockException implements Exception {
+  final String productName;
+  final int available;
+  const InsufficientStockException(this.productName, this.available);
+
+  String get message => 'Stok $productName tidak cukup (sisa $available)';
+
+  @override
+  String toString() => message;
+}
+
 class SalesDao {
   final AppDatabase db;
   SalesDao(this.db);
+
+  /// Kurangi ([restore] = false) atau kembalikan ([restore] = true) stok produk
+  /// yang dilacak (`stock` tidak null) sesuai [qtyById]. Harus dipanggil di
+  /// dalam transaksi DB yang sama dengan penjualan/void-nya.
+  ///
+  /// - Kurangi: stok tidak cukup → [InsufficientStockException] (seluruh
+  ///   penjualan batal). Stok jadi 0 → produk otomatis tidak ready.
+  /// - Kembalikan: dari 0 → produk otomatis ready lagi.
+  /// - Produk tidak dilacak / sudah tidak ada: dilewati.
+  Future<void> _applyStock(Map<String, int> qtyById, {required bool restore}) async {
+    for (final e in qtyById.entries) {
+      final row = await (db.select(db.products)..where((p) => p.id.equals(e.key)))
+          .getSingleOrNull();
+      if (row == null || row.stock == null) continue;
+      final before = row.stock!;
+      if (!restore && before < e.value) {
+        throw InsufficientStockException(row.name, before < 0 ? 0 : before);
+      }
+      final after = restore ? before + e.value : before - e.value;
+      var ready = row.ready;
+      if (after <= 0) {
+        ready = false;
+      } else if (restore && before <= 0) {
+        ready = true;
+      }
+      await (db.update(db.products)..where((p) => p.id.equals(e.key))).write(
+            ProductsCompanion(
+              stock: Value(after),
+              ready: Value(ready),
+              updatedAt: Value(DateTime.now()),
+            ),
+          );
+    }
+  }
+
+  /// Cek stok tanpa mengubah data: lempar [InsufficientStockException] bila
+  /// ada produk yang dilacak dan stoknya kurang. Dipanggil sebelum nomor struk
+  /// diambil agar penjualan yang ditolak tidak membuang nomor.
+  Future<void> assertStock(Iterable<TransactionItem> items) async {
+    final qtyById = _qtyByProduct(items.map((i) => (i.productId, i.qty)));
+    for (final e in qtyById.entries) {
+      final row = await (db.select(db.products)..where((p) => p.id.equals(e.key)))
+          .getSingleOrNull();
+      if (row == null || row.stock == null) continue;
+      if (row.stock! < e.value) {
+        throw InsufficientStockException(row.name, row.stock! < 0 ? 0 : row.stock!);
+      }
+    }
+  }
+
+  /// Total qty per produk (item tanpa id produk dilewati).
+  static Map<String, int> _qtyByProduct(Iterable<(String?, int)> items) {
+    final out = <String, int>{};
+    for (final (id, qty) in items) {
+      if (id == null || id.isEmpty) continue;
+      out[id] = (out[id] ?? 0) + qty;
+    }
+    return out;
+  }
 
   /// Label pesanan terbuka wajib (nama pelanggan / no meja), maks 30 karakter.
   void _validateLabel(String? label) {
@@ -43,6 +114,12 @@ class SalesDao {
             createdAt: txn.createdAt,
           ));
       await _insertItems(id, txn.items);
+      // Pesanan 'open' belum memesan stok; stok dikurangi saat dibayar.
+      if (txn.status == 'paid') {
+        await _applyStock(
+            _qtyByProduct(txn.items.map((i) => (i.productId, i.qty))),
+            restore: false);
+      }
     });
     return id;
   }
@@ -170,6 +247,9 @@ class SalesDao {
             ),
           );
       await _replaceItems(id, txn.items);
+      await _applyStock(
+          _qtyByProduct(txn.items.map((i) => (i.productId, i.qty))),
+          restore: false);
     });
     return number;
   }
@@ -223,14 +303,27 @@ class SalesDao {
     if (existing.status == 'void') {
       throw StateError('Transaksi sudah dibatalkan');
     }
-    await (db.update(db.transactions)..where((t) => t.id.equals(id))).write(
-          TransactionsCompanion(
-            status: const Value('void'),
-            voidReason: Value(trimmed),
-            voidedBy: Value(username),
-            voidedAt: Value(DateTime.now()),
-          ),
-        );
+    if (existing.status != 'paid') {
+      // Pesanan 'open' belum mengurangi stok & belum dihitung: tidak dibatalkan
+      // lewat void (hapus saja).
+      throw StateError('Hanya transaksi lunas yang bisa dibatalkan');
+    }
+    await db.transaction(() async {
+      final items = await (db.select(db.transactionItems)
+            ..where((i) => i.transactionId.equals(id)))
+          .get();
+      await (db.update(db.transactions)..where((t) => t.id.equals(id))).write(
+            TransactionsCompanion(
+              status: const Value('void'),
+              voidReason: Value(trimmed),
+              voidedBy: Value(username),
+              voidedAt: Value(DateTime.now()),
+            ),
+          );
+      await _applyStock(
+          _qtyByProduct(items.map((i) => (i.productId, i.qty))),
+          restore: true);
+    });
   }
 
   Future<void> markPrinted(String id) async {

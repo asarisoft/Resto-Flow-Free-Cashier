@@ -13,6 +13,7 @@ import '../../printer/receipt_builder.dart';
 import '../../features/products/product_providers.dart';
 import '../pos/cart_provider.dart';
 import '../../core/widgets/choice_segment.dart';
+import '../../core/services/daos/sales_dao.dart' show InsufficientStockException;
 import 'checkout_calc.dart';
 import '../settings/settings_providers.dart';
 import 'open_order_dialogs.dart';
@@ -309,7 +310,19 @@ class _ProductGrid extends ConsumerWidget {
           product: product,
           cartQty: cartItem?.qty ?? 0,
           onTap: product.ready
-              ? () => ref.read(cartProvider.notifier).addItem(product)
+              ? () {
+                  final stock = product.stock;
+                  // Stok dilacak: jangan tambah melebihi sisa. (Penjaga
+                  // terakhir ada di SalesDao saat bayar.)
+                  if (stock != null && (cartItem?.qty ?? 0) >= stock) {
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(SnackBar(
+                          content: Text('Stok ${product.name} tinggal $stock')));
+                    return;
+                  }
+                  ref.read(cartProvider.notifier).addItem(product);
+                }
               : null,
         );
       },
@@ -834,6 +847,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
       final profileAsync = ref.read(profileProvider);
       final resumed = ref.read(resumedOrderProvider);
 
+      // Stok dicek dulu (sebelum nomor struk diambil) agar tidak ada nomor terbuang.
+      await txnRepo.checkStock(items);
+
       final profit = _calc.profit;
 
       final txn = models.Transaction(
@@ -888,6 +904,13 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Transaksi berhasil disimpan!')),
+        );
+      }
+    } on InsufficientStockException catch (e) {
+      // Dialog tetap terbuka & keranjang utuh: kasir kurangi qty lalu bayar lagi.
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.message)),
         );
       }
     } catch (e) {

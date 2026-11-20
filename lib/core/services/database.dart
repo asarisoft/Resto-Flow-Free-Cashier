@@ -16,6 +16,8 @@ class Products extends Table {
   BoolColumn get ready => boolean().withDefault(const Constant(true))();
   BoolColumn get archived => boolean().withDefault(const Constant(false))();
   TextColumn get imagePath => text().nullable()();
+  // Sisa porsi/stok. null = tidak dilacak (jual terus selama ready).
+  IntColumn get stock => integer().nullable()();
   DateTimeColumn get createdAt => dateTime()();
   DateTimeColumn get updatedAt => dateTime()();
 

@@ -1,11 +1,15 @@
 import '../../core/services/daos/sales_dao.dart';
 import '../../models/transaction.dart' as models;
+import '../../models/transaction_item.dart';
 
 class TransactionRepository {
   final SalesDao _dao;
   TransactionRepository(this._dao);
 
   Future<int> getNextNumber() => _dao.getNextNumber();
+
+  /// Lempar [InsufficientStockException] bila stok produk yang dilacak kurang.
+  Future<void> checkStock(List<TransactionItem> items) => _dao.assertStock(items);
   Future<String> save(models.Transaction txn) => _dao.save(txn);
   Future<models.Transaction?> get(String id) => _dao.get(id);
   Future<void> markPrinted(String id) => _dao.markPrinted(id);

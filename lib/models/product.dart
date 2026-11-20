@@ -7,6 +7,9 @@ class Product {
   final bool ready;
   final bool archived;
   final String? imagePath;
+
+  /// Sisa porsi/stok. null = tidak dilacak.
+  final int? stock;
   final DateTime createdAt;
   final DateTime updatedAt;
 
@@ -19,9 +22,15 @@ class Product {
     this.ready = true,
     this.archived = false,
     this.imagePath,
+    this.stock,
     required this.createdAt,
     required this.updatedAt,
   });
+
+  /// Stok dilacak dan sudah habis (≤ 0).
+  bool get outOfStock => stock != null && stock! <= 0;
+
+  static const _unset = Object();
 
   Product copyWith({
     String? id,
@@ -32,6 +41,7 @@ class Product {
     bool? ready,
     bool? archived,
     String? imagePath,
+    Object? stock = _unset,
     DateTime? createdAt,
     DateTime? updatedAt,
   }) =>
@@ -44,6 +54,7 @@ class Product {
         ready: ready ?? this.ready,
         archived: archived ?? this.archived,
         imagePath: imagePath ?? this.imagePath,
+        stock: identical(stock, _unset) ? this.stock : stock as int?,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? DateTime.now(),
       );

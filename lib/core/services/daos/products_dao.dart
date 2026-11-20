@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart';
 import '../database.dart' hide Product, Transaction, TransactionItem, RestoProfile, Users, User;
+import '../database.dart' as drift_db;
 import '../../../models/product.dart';
 
 class ProductsDao {
@@ -11,41 +12,29 @@ class ProductsDao {
           ..where((p) => p.archived.equals(false))
           ..orderBy([(p) => OrderingTerm.asc(p.name)]))
         .get();
-    return rows
-        .map((r) => Product(
-              id: r.id,
-              name: r.name,
-              category: r.category,
-              price: r.price,
-              hpp: r.hpp,
-              ready: r.ready,
-              archived: r.archived,
-              imagePath: r.imagePath,
-              createdAt: r.createdAt,
-              updatedAt: r.updatedAt,
-            ))
-        .toList();
+    return rows.map(_toModel).toList();
   }
+
+  Product _toModel(drift_db.Product r) => Product(
+        id: r.id,
+        name: r.name,
+        category: r.category,
+        price: r.price,
+        hpp: r.hpp,
+        ready: r.ready,
+        archived: r.archived,
+        imagePath: r.imagePath,
+        stock: r.stock,
+        createdAt: r.createdAt,
+        updatedAt: r.updatedAt,
+      );
 
   Stream<List<Product>> watchAll() {
     return (db.select(db.products)
           ..where((p) => p.archived.equals(false))
           ..orderBy([(p) => OrderingTerm.asc(p.name)]))
         .watch()
-        .map((rows) => rows
-            .map((r) => Product(
-                  id: r.id,
-                  name: r.name,
-                  category: r.category,
-                  price: r.price,
-                  hpp: r.hpp,
-                  ready: r.ready,
-                  archived: r.archived,
-                  imagePath: r.imagePath,
-                  createdAt: r.createdAt,
-                  updatedAt: r.updatedAt,
-                ))
-            .toList());
+        .map((rows) => rows.map(_toModel).toList());
   }
 
   Future<String> add(Product p) async {
@@ -56,9 +45,11 @@ class ProductsDao {
           category: Value(p.category),
           price: p.price,
           hpp: Value(p.hpp),
-          ready: Value(p.ready),
+          // Stok dilacak & ≤ 0 → otomatis tidak ready.
+          ready: Value(p.outOfStock ? false : p.ready),
           archived: Value(p.archived),
           imagePath: Value(p.imagePath),
+          stock: Value(p.stock),
           createdAt: p.createdAt,
           updatedAt: p.updatedAt,
         ));
@@ -72,9 +63,10 @@ class ProductsDao {
             category: Value(p.category),
             price: Value(p.price),
             hpp: Value(p.hpp),
-            ready: Value(p.ready),
+            ready: Value(p.outOfStock ? false : p.ready),
             archived: Value(p.archived),
             imagePath: Value(p.imagePath),
+            stock: Value(p.stock),
             updatedAt: Value(p.updatedAt),
           ),
         );
@@ -86,7 +78,16 @@ class ProductsDao {
         );
   }
 
+  /// Ubah status ready. Produk yang stoknya dilacak dan habis tidak bisa
+  /// dijadikan ready sebelum stoknya ditambah.
   Future<void> toggleReady(String id, bool ready) async {
+    if (ready) {
+      final row = await (db.select(db.products)..where((t) => t.id.equals(id)))
+          .getSingleOrNull();
+      if (row != null && row.stock != null && row.stock! <= 0) {
+        throw StateError('Stok ${row.name} habis. Tambah stok dulu.');
+      }
+    }
     await (db.update(db.products)..where((t) => t.id.equals(id))).write(
           ProductsCompanion(ready: Value(ready)),
         );

@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_colors.dart';
@@ -28,6 +29,7 @@ class _ProductFormDialogState extends ConsumerState<ProductFormDialog> {
   final _categoryCtrl = TextEditingController();
   final _priceCtrl = TextEditingController();
   final _hppCtrl = TextEditingController();
+  final _stockCtrl = TextEditingController();
   String? _imagePath;
   bool _ready = true;
   bool _saving = false;
@@ -44,6 +46,7 @@ class _ProductFormDialogState extends ConsumerState<ProductFormDialog> {
     _categoryCtrl.text = p?.category ?? '';
     _priceCtrl.text = p != null ? p.price.toString() : '';
     _hppCtrl.text = p != null ? p.hpp.toString() : '';
+    _stockCtrl.text = p?.stock?.toString() ?? '';
     _imagePath = p?.imagePath;
     _ready = p?.ready ?? true;
   }
@@ -54,6 +57,7 @@ class _ProductFormDialogState extends ConsumerState<ProductFormDialog> {
     _categoryCtrl.dispose();
     _priceCtrl.dispose();
     _hppCtrl.dispose();
+    _stockCtrl.dispose();
     super.dispose();
   }
 
@@ -132,6 +136,16 @@ class _ProductFormDialogState extends ConsumerState<ProductFormDialog> {
           decoration: const InputDecoration(labelText: 'HPP (Rp)', hintText: '0', prefixText: 'Rp '),
           keyboardType: TextInputType.number,
         ),
+        TextFormField(
+          controller: _stockCtrl,
+          decoration: const InputDecoration(
+            labelText: 'Stok (porsi)',
+            hintText: 'Kosong = tidak dilacak',
+            helperText: 'Berkurang otomatis saat bayar; 0 = otomatis habis',
+          ),
+          keyboardType: TextInputType.number,
+          inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+        ),
         SwitchListTile(
           contentPadding: EdgeInsets.zero,
           title: Text('Status Ready', style: textTheme.bodyLarge),
@@ -169,6 +183,7 @@ class _ProductFormDialogState extends ConsumerState<ProductFormDialog> {
         ready: _ready,
         archived: widget.product?.archived ?? false,
         imagePath: imagePath,
+        stock: _stockCtrl.text.trim().isEmpty ? null : int.parse(_stockCtrl.text.trim()),
         createdAt: widget.product?.createdAt ?? now,
         updatedAt: now,
       );

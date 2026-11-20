@@ -91,7 +91,7 @@ class _ProductGrid extends ConsumerWidget {
             itemBuilder: (_, i) => ProductCard(
               product: products[i],
               onTap: canManage ? () => _edit(context, products[i]) : null,
-              onToggleReady: canManage ? () => _toggle(products[i]) : null,
+              onToggleReady: canManage ? () => _toggle(context, products[i]) : null,
             ),
           ),
         );
@@ -103,9 +103,17 @@ class _ProductGrid extends ConsumerWidget {
     showDialog(context: context, builder: (_) => ProductFormDialog(product: product));
   }
 
-  void _toggle(Product product) async {
+  void _toggle(BuildContext context, Product product) async {
     final repo = ref.read(productRepositoryProvider);
-    await repo.toggleReady(product.id!, !product.ready);
+    try {
+      await repo.toggleReady(product.id!, !product.ready);
+    } on StateError catch (e) {
+      // mis. stok habis: tidak bisa dijadikan ready sebelum stok ditambah.
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.message)));
+      }
+      return;
+    }
     await logActivity(ref, 'product.ready', product.name,
         detail: !product.ready ? 'jadi ready' : 'jadi habis');
   }

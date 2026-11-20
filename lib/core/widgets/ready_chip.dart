@@ -5,7 +5,10 @@ import '../theme/app_typography.dart';
 class ReadyChip extends StatelessWidget {
   final bool ready;
 
-  const ReadyChip({super.key, required this.ready});
+  /// Sisa stok bila dilacak (null = tidak dilacak): chip menampilkan "Sisa N".
+  final int? stock;
+
+  const ReadyChip({super.key, required this.ready, this.stock});
 
   @override
   Widget build(BuildContext context) {
@@ -18,7 +21,7 @@ class ReadyChip extends StatelessWidget {
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
-        ready ? 'Ready' : 'Habis',
+        !ready ? 'Habis' : (stock != null ? 'Sisa $stock' : 'Ready'),
         style: AppTypography.textTheme.labelSmall?.copyWith(
           color: ready ? AppColors.success : AppColors.error,
           fontWeight: FontWeight.w600,
