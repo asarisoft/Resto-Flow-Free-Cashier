@@ -36,7 +36,9 @@ Schema version: **1** (riwayat dev di-reset sebelum rilis pertama, 2026-11-19).
 | `id`            | TEXT       | **PK**                      | UUID                      |
 | `number`        | INTEGER    | nullable, **UNIQUE**        | Nomor struk; NULL untuk status `open` (nomor baru diambil saat dibayar agar urutan rapat) |
 | `subtotal`      | INTEGER    | NOT NULL                    | Sum item sebelum diskon   |
-| `discount`      | INTEGER    | NOT NULL, default 0         | Diskon total (rupiah)     |
+| `discount`      | INTEGER    | NOT NULL, default 0         | Diskon total (rupiah, hasil akhir yang dipotong) |
+| `discountType`  | TEXT       | NOT NULL, default `'nominal'` | `nominal` \| `percent` (tampilan saja) |
+| `discountPercent`| INTEGER   | nullable                    | Persen (0–100) bila `percent`; null bila nominal |
 | `total`         | INTEGER    | NOT NULL                    | subtotal − discount       |
 | `paid`          | INTEGER    | NOT NULL                    | Uang dibayar              |
 | `change`        | INTEGER    | NOT NULL, default 0         | Kembalian                 |

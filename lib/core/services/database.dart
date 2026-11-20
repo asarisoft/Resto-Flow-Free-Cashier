@@ -31,6 +31,9 @@ class Transactions extends Table {
   IntColumn get number => integer().nullable().unique()();
   IntColumn get subtotal => integer()();
   IntColumn get discount => integer().withDefault(const Constant(0))();
+  TextColumn get discountType =>
+      text().withDefault(const Constant('nominal'))();
+  IntColumn get discountPercent => integer().nullable()();
   IntColumn get total => integer()();
   IntColumn get paid => integer()();
   IntColumn get change => integer().withDefault(const Constant(0))();

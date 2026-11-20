@@ -29,7 +29,7 @@
 ## 1. Tujuan & Scope
 
 ### 1.1 Goals
-- Catat penjualan (POS): keranjang, diskon per-item & total, bayar, kembalian, metode bayar
+- Catat penjualan (POS): keranjang, diskon per-item & total (total: Rp atau %), bayar, kembalian, metode bayar
 - Catat pengeluaran operasional (kategori, catatan, nominal, tanggal)
 - Produk/menu: nama, kategori, harga, HPP, foto lokal, status ready
 - Laporan: omzet, laba kotor/bersih per hari & bulan
@@ -481,10 +481,16 @@ Kembali                 9.000
 - Kasus: item "Nasi Goreng" dikasih diskon Rp 2.000 karena promo
 
 ### Total transaksi
-- Field `discount` (rupiah) di `Transaction`
-- `total = sum(item.subtotal) − txnDiscount`
-
-MVP hanya diskon rupiah. Kalau nanti butuh %, bisa tambah `discountType`.
+- Field `discount` (rupiah, int) di `Transaction` = **yang benar-benar dipotong** (efektif).
+- `total = sum(item.subtotal) − discount`
+- Input di dialog bayar: toggle **Rp / %** (`discountType` = `nominal` | `percent`).
+  - Persen: bilangan bulat 0–100 (dijepit), dihitung `(subtotal × persen + 50) ÷ 100` (bulat ke atas pada .5)
+    lalu disimpan sebagai rupiah int di `discount`; `discountPercent` menyimpan persennya (untuk tampil
+    "Diskon (10%)" di struk & rincian).
+  - Nominal: dijepit 0..subtotal. Kolom hanya menerima angka. Ganti mode mengosongkan kolom.
+  - Diskon 0 → disimpan sebagai `nominal`, `discountPercent` null.
+- Semua perhitungan uang (total, laba, laporan) memakai `discount` rupiah; tipe/persen hanya untuk tampilan.
+- Diskon persen per item belum ada (diskon per item tetap rupiah; belum ada UI untuk mengisinya).
 
 ---
 

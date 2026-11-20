@@ -656,6 +656,29 @@ class $TransactionsTable extends Transactions
     requiredDuringInsert: false,
     defaultValue: const Constant(0),
   );
+  static const VerificationMeta _discountTypeMeta = const VerificationMeta(
+    'discountType',
+  );
+  @override
+  late final GeneratedColumn<String> discountType = GeneratedColumn<String>(
+    'discount_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('nominal'),
+  );
+  static const VerificationMeta _discountPercentMeta = const VerificationMeta(
+    'discountPercent',
+  );
+  @override
+  late final GeneratedColumn<int> discountPercent = GeneratedColumn<int>(
+    'discount_percent',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
   static const VerificationMeta _totalMeta = const VerificationMeta('total');
   @override
   late final GeneratedColumn<int> total = GeneratedColumn<int>(
@@ -785,6 +808,8 @@ class $TransactionsTable extends Transactions
     number,
     subtotal,
     discount,
+    discountType,
+    discountPercent,
     total,
     paid,
     change,
@@ -833,6 +858,24 @@ class $TransactionsTable extends Transactions
       context.handle(
         _discountMeta,
         discount.isAcceptableOrUnknown(data['discount']!, _discountMeta),
+      );
+    }
+    if (data.containsKey('discount_type')) {
+      context.handle(
+        _discountTypeMeta,
+        discountType.isAcceptableOrUnknown(
+          data['discount_type']!,
+          _discountTypeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('discount_percent')) {
+      context.handle(
+        _discountPercentMeta,
+        discountPercent.isAcceptableOrUnknown(
+          data['discount_percent']!,
+          _discountPercentMeta,
+        ),
       );
     }
     if (data.containsKey('total')) {
@@ -943,6 +986,14 @@ class $TransactionsTable extends Transactions
         DriftSqlType.int,
         data['${effectivePrefix}discount'],
       )!,
+      discountType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}discount_type'],
+      )!,
+      discountPercent: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}discount_percent'],
+      ),
       total: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
         data['${effectivePrefix}total'],
@@ -1005,6 +1056,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final int? number;
   final int subtotal;
   final int discount;
+  final String discountType;
+  final int? discountPercent;
   final int total;
   final int paid;
   final int change;
@@ -1022,6 +1075,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     this.number,
     required this.subtotal,
     required this.discount,
+    required this.discountType,
+    this.discountPercent,
     required this.total,
     required this.paid,
     required this.change,
@@ -1044,6 +1099,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     }
     map['subtotal'] = Variable<int>(subtotal);
     map['discount'] = Variable<int>(discount);
+    map['discount_type'] = Variable<String>(discountType);
+    if (!nullToAbsent || discountPercent != null) {
+      map['discount_percent'] = Variable<int>(discountPercent);
+    }
     map['total'] = Variable<int>(total);
     map['paid'] = Variable<int>(paid);
     map['change'] = Variable<int>(change);
@@ -1077,6 +1136,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           : Value(number),
       subtotal: Value(subtotal),
       discount: Value(discount),
+      discountType: Value(discountType),
+      discountPercent: discountPercent == null && nullToAbsent
+          ? const Value.absent()
+          : Value(discountPercent),
       total: Value(total),
       paid: Value(paid),
       change: Value(change),
@@ -1112,6 +1175,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       number: serializer.fromJson<int?>(json['number']),
       subtotal: serializer.fromJson<int>(json['subtotal']),
       discount: serializer.fromJson<int>(json['discount']),
+      discountType: serializer.fromJson<String>(json['discountType']),
+      discountPercent: serializer.fromJson<int?>(json['discountPercent']),
       total: serializer.fromJson<int>(json['total']),
       paid: serializer.fromJson<int>(json['paid']),
       change: serializer.fromJson<int>(json['change']),
@@ -1134,6 +1199,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'number': serializer.toJson<int?>(number),
       'subtotal': serializer.toJson<int>(subtotal),
       'discount': serializer.toJson<int>(discount),
+      'discountType': serializer.toJson<String>(discountType),
+      'discountPercent': serializer.toJson<int?>(discountPercent),
       'total': serializer.toJson<int>(total),
       'paid': serializer.toJson<int>(paid),
       'change': serializer.toJson<int>(change),
@@ -1154,6 +1221,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     Value<int?> number = const Value.absent(),
     int? subtotal,
     int? discount,
+    String? discountType,
+    Value<int?> discountPercent = const Value.absent(),
     int? total,
     int? paid,
     int? change,
@@ -1171,6 +1240,10 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     number: number.present ? number.value : this.number,
     subtotal: subtotal ?? this.subtotal,
     discount: discount ?? this.discount,
+    discountType: discountType ?? this.discountType,
+    discountPercent: discountPercent.present
+        ? discountPercent.value
+        : this.discountPercent,
     total: total ?? this.total,
     paid: paid ?? this.paid,
     change: change ?? this.change,
@@ -1190,6 +1263,12 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       number: data.number.present ? data.number.value : this.number,
       subtotal: data.subtotal.present ? data.subtotal.value : this.subtotal,
       discount: data.discount.present ? data.discount.value : this.discount,
+      discountType: data.discountType.present
+          ? data.discountType.value
+          : this.discountType,
+      discountPercent: data.discountPercent.present
+          ? data.discountPercent.value
+          : this.discountPercent,
       total: data.total.present ? data.total.value : this.total,
       paid: data.paid.present ? data.paid.value : this.paid,
       change: data.change.present ? data.change.value : this.change,
@@ -1216,6 +1295,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('number: $number, ')
           ..write('subtotal: $subtotal, ')
           ..write('discount: $discount, ')
+          ..write('discountType: $discountType, ')
+          ..write('discountPercent: $discountPercent, ')
           ..write('total: $total, ')
           ..write('paid: $paid, ')
           ..write('change: $change, ')
@@ -1238,6 +1319,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     number,
     subtotal,
     discount,
+    discountType,
+    discountPercent,
     total,
     paid,
     change,
@@ -1259,6 +1342,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.number == this.number &&
           other.subtotal == this.subtotal &&
           other.discount == this.discount &&
+          other.discountType == this.discountType &&
+          other.discountPercent == this.discountPercent &&
           other.total == this.total &&
           other.paid == this.paid &&
           other.change == this.change &&
@@ -1278,6 +1363,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<int?> number;
   final Value<int> subtotal;
   final Value<int> discount;
+  final Value<String> discountType;
+  final Value<int?> discountPercent;
   final Value<int> total;
   final Value<int> paid;
   final Value<int> change;
@@ -1296,6 +1383,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.number = const Value.absent(),
     this.subtotal = const Value.absent(),
     this.discount = const Value.absent(),
+    this.discountType = const Value.absent(),
+    this.discountPercent = const Value.absent(),
     this.total = const Value.absent(),
     this.paid = const Value.absent(),
     this.change = const Value.absent(),
@@ -1315,6 +1404,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.number = const Value.absent(),
     required int subtotal,
     this.discount = const Value.absent(),
+    this.discountType = const Value.absent(),
+    this.discountPercent = const Value.absent(),
     required int total,
     required int paid,
     this.change = const Value.absent(),
@@ -1339,6 +1430,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<int>? number,
     Expression<int>? subtotal,
     Expression<int>? discount,
+    Expression<String>? discountType,
+    Expression<int>? discountPercent,
     Expression<int>? total,
     Expression<int>? paid,
     Expression<int>? change,
@@ -1358,6 +1451,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (number != null) 'number': number,
       if (subtotal != null) 'subtotal': subtotal,
       if (discount != null) 'discount': discount,
+      if (discountType != null) 'discount_type': discountType,
+      if (discountPercent != null) 'discount_percent': discountPercent,
       if (total != null) 'total': total,
       if (paid != null) 'paid': paid,
       if (change != null) 'change': change,
@@ -1379,6 +1474,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Value<int?>? number,
     Value<int>? subtotal,
     Value<int>? discount,
+    Value<String>? discountType,
+    Value<int?>? discountPercent,
     Value<int>? total,
     Value<int>? paid,
     Value<int>? change,
@@ -1398,6 +1495,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       number: number ?? this.number,
       subtotal: subtotal ?? this.subtotal,
       discount: discount ?? this.discount,
+      discountType: discountType ?? this.discountType,
+      discountPercent: discountPercent ?? this.discountPercent,
       total: total ?? this.total,
       paid: paid ?? this.paid,
       change: change ?? this.change,
@@ -1428,6 +1527,12 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     }
     if (discount.present) {
       map['discount'] = Variable<int>(discount.value);
+    }
+    if (discountType.present) {
+      map['discount_type'] = Variable<String>(discountType.value);
+    }
+    if (discountPercent.present) {
+      map['discount_percent'] = Variable<int>(discountPercent.value);
     }
     if (total.present) {
       map['total'] = Variable<int>(total.value);
@@ -1478,6 +1583,8 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('number: $number, ')
           ..write('subtotal: $subtotal, ')
           ..write('discount: $discount, ')
+          ..write('discountType: $discountType, ')
+          ..write('discountPercent: $discountPercent, ')
           ..write('total: $total, ')
           ..write('paid: $paid, ')
           ..write('change: $change, ')
@@ -5193,6 +5300,8 @@ typedef $$TransactionsTableCreateCompanionBuilder =
       Value<int?> number,
       required int subtotal,
       Value<int> discount,
+      Value<String> discountType,
+      Value<int?> discountPercent,
       required int total,
       required int paid,
       Value<int> change,
@@ -5213,6 +5322,8 @@ typedef $$TransactionsTableUpdateCompanionBuilder =
       Value<int?> number,
       Value<int> subtotal,
       Value<int> discount,
+      Value<String> discountType,
+      Value<int?> discountPercent,
       Value<int> total,
       Value<int> paid,
       Value<int> change,
@@ -5279,6 +5390,16 @@ class $$TransactionsTableFilterComposer
 
   ColumnFilters<int> get discount => $composableBuilder(
     column: $table.discount,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get discountType => $composableBuilder(
+    column: $table.discountType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get discountPercent => $composableBuilder(
+    column: $table.discountPercent,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -5397,6 +5518,16 @@ class $$TransactionsTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<String> get discountType => $composableBuilder(
+    column: $table.discountType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get discountPercent => $composableBuilder(
+    column: $table.discountPercent,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<int> get total => $composableBuilder(
     column: $table.total,
     builder: (column) => ColumnOrderings(column),
@@ -5478,6 +5609,16 @@ class $$TransactionsTableAnnotationComposer
 
   GeneratedColumn<int> get discount =>
       $composableBuilder(column: $table.discount, builder: (column) => column);
+
+  GeneratedColumn<String> get discountType => $composableBuilder(
+    column: $table.discountType,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get discountPercent => $composableBuilder(
+    column: $table.discountPercent,
+    builder: (column) => column,
+  );
 
   GeneratedColumn<int> get total =>
       $composableBuilder(column: $table.total, builder: (column) => column);
@@ -5577,6 +5718,8 @@ class $$TransactionsTableTableManager
                 Value<int?> number = const Value.absent(),
                 Value<int> subtotal = const Value.absent(),
                 Value<int> discount = const Value.absent(),
+                Value<String> discountType = const Value.absent(),
+                Value<int?> discountPercent = const Value.absent(),
                 Value<int> total = const Value.absent(),
                 Value<int> paid = const Value.absent(),
                 Value<int> change = const Value.absent(),
@@ -5595,6 +5738,8 @@ class $$TransactionsTableTableManager
                 number: number,
                 subtotal: subtotal,
                 discount: discount,
+                discountType: discountType,
+                discountPercent: discountPercent,
                 total: total,
                 paid: paid,
                 change: change,
@@ -5615,6 +5760,8 @@ class $$TransactionsTableTableManager
                 Value<int?> number = const Value.absent(),
                 required int subtotal,
                 Value<int> discount = const Value.absent(),
+                Value<String> discountType = const Value.absent(),
+                Value<int?> discountPercent = const Value.absent(),
                 required int total,
                 required int paid,
                 Value<int> change = const Value.absent(),
@@ -5633,6 +5780,8 @@ class $$TransactionsTableTableManager
                 number: number,
                 subtotal: subtotal,
                 discount: discount,
+                discountType: discountType,
+                discountPercent: discountPercent,
                 total: total,
                 paid: paid,
                 change: change,

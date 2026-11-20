@@ -175,7 +175,7 @@ class ReceiptBuilder {
     divider();
     line('Subtotal', _fmt.format(txn.subtotal));
     if (txn.discount > 0) {
-      line('Diskon', '-${_fmt.format(txn.discount)}');
+      line(txn.discountLabel, '-${_fmt.format(txn.discount)}');
     }
     line('TOTAL', _fmt.format(txn.total));
     line('Tunai', _fmt.format(txn.paid));

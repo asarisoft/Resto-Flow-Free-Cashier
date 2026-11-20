@@ -6,6 +6,11 @@ class Transaction {
   final List<TransactionItem> items;
   final int subtotal;
   final int discount;
+
+  /// 'nominal' | 'percent'. [discount] selalu rupiah (int) hasil akhir;
+  /// [discountPercent] hanya terisi bila tipe 'percent' (untuk tampil/edit).
+  final String discountType;
+  final int? discountPercent;
   final int total;
   final int paid;
   final int change;
@@ -25,6 +30,8 @@ class Transaction {
     required this.items,
     required this.subtotal,
     this.discount = 0,
+    this.discountType = 'nominal',
+    this.discountPercent,
     required this.total,
     required this.paid,
     this.change = 0,
@@ -38,6 +45,11 @@ class Transaction {
     this.printedAt,
     required this.createdAt,
   });
+
+  /// "Diskon" atau "Diskon (10%)" untuk struk & rincian.
+  String get discountLabel => discountType == 'percent' && discountPercent != null
+      ? 'Diskon ($discountPercent%)'
+      : 'Diskon';
 
   bool get hasDiscount => discount > 0 || items.any((i) => i.discount > 0);
 
@@ -57,6 +69,8 @@ class Transaction {
         items: items,
         subtotal: subtotal,
         discount: discount,
+        discountType: discountType,
+        discountPercent: discountPercent,
         total: total,
         paid: paid,
         change: change,

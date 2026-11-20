@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -11,6 +12,7 @@ import '../../printer/printer_service.dart';
 import '../../printer/receipt_builder.dart';
 import '../../features/products/product_providers.dart';
 import '../pos/cart_provider.dart';
+import '../../core/widgets/choice_segment.dart';
 import 'checkout_calc.dart';
 import '../settings/settings_providers.dart';
 import 'open_order_dialogs.dart';
@@ -633,13 +635,21 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
     super.dispose();
   }
 
+  /// Mode input diskon: false = Rp, true = persen.
+  bool _percentMode = false;
+
+  int get _discInput => int.tryParse(_discCtrl.text) ?? 0;
+
   CheckoutCalc get _calc => CheckoutCalc(
         items: ref.read(cartProvider),
-        discount: int.tryParse(_discCtrl.text) ?? 0,
+        discount: _discInput,
+        percent: _percentMode ? _discInput : null,
         paid: int.tryParse(_paidCtrl.text) ?? 0,
       );
   int get _subtotal => _calc.subtotal;
-  int get _discount => int.tryParse(_discCtrl.text) ?? 0;
+
+  /// Rupiah yang benar-benar dipotong (sama dengan yang dipakai total & laba).
+  int get _discount => _calc.effectiveDiscount;
   int get _total => _calc.total;
   int get _paid => int.tryParse(_paidCtrl.text) ?? 0;
   int get _change => _calc.change;
@@ -658,16 +668,50 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _row('Subtotal', _subtotal, textTheme),
-              TextField(
-                controller: _discCtrl,
-                decoration: const InputDecoration(
-                  labelText: 'Diskon (Rp)',
-                  prefixText: 'Rp ',
-                  hintText: '0',
-                ),
-                keyboardType: TextInputType.number,
-                onChanged: (_) => setState(() {}),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _discCtrl,
+                      decoration: InputDecoration(
+                        labelText: _percentMode ? 'Diskon (%)' : 'Diskon (Rp)',
+                        prefixText: _percentMode ? null : 'Rp ',
+                        suffixText: _percentMode ? '%' : null,
+                        hintText: '0',
+                      ),
+                      keyboardType: TextInputType.number,
+                      inputFormatters: [
+                        FilteringTextInputFormatter.digitsOnly,
+                        if (_percentMode) LengthLimitingTextInputFormatter(3),
+                      ],
+                      onChanged: (_) => setState(() {}),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: ChoiceSegment<bool>(
+                      value: _percentMode,
+                      options: const [(false, 'Rp'), (true, '%')],
+                      onChanged: (v) => setState(() {
+                        _percentMode = v;
+                        // Angka lama beda arti di mode lain (mis. 10000 ≠ 10000%).
+                        _discCtrl.clear();
+                      }),
+                    ),
+                  ),
+                ],
               ),
+              if (_percentMode && _discount > 0)
+                Padding(
+                  padding: const EdgeInsets.only(top: 4),
+                  child: Text(
+                    'Potongan ${formatRupiah(_discount)}',
+                    style: textTheme.bodySmall
+                        ?.copyWith(color: AppColors.textSecondary),
+                  ),
+                ),
               const Divider(height: 24),
               _row('Total', _total, textTheme, bold: true),
               const SizedBox(height: 16),
@@ -796,6 +840,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
         items: items,
         subtotal: _subtotal,
         discount: _discount,
+        discountType: _discount > 0 && _percentMode ? 'percent' : 'nominal',
+        discountPercent:
+            _discount > 0 && _percentMode ? _discInput.clamp(0, 100) : null,
         total: _total,
         paid: _paid,
         change: _change,

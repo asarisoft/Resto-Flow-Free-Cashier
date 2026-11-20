@@ -104,8 +104,8 @@
 - [x] Omzet per jam (0–23)
 
 ### 14. #19 Diskon persen ⚠️
-- [ ] Update SPEC; `discountType` (nominal/persen), hasil dibulatkan ke rupiah int
-- [ ] Tes pembulatan
+- [x] Update SPEC; `discountType` (nominal/persen), hasil dibulatkan ke rupiah int
+- [x] Tes pembulatan
 
 ### 15. #20 Stok sederhana ⚠️
 - [ ] Update SPEC; `products.stock` nullable (null = tidak dilacak) — migrasi

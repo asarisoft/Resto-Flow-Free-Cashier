@@ -123,7 +123,7 @@ class TransactionDetailDialog extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               line('Subtotal', txn.subtotal),
-              if (txn.discount > 0) line('Diskon', -txn.discount, color: AppColors.error),
+              if (txn.discount > 0) line(txn.discountLabel, -txn.discount, color: AppColors.error),
               line('Total', txn.total, bold: true),
               line('Dibayar', txn.paid),
               if (txn.change > 0) line('Kembali', txn.change),

@@ -1,28 +1,50 @@
 import '../../models/transaction_item.dart';
 
+/// Diskon persen → rupiah int, dibulatkan ke atas pada .5 (half-up).
+/// Persen dijepit 0..100. Contoh: 10% dari 12.345 = 1.235.
+int percentDiscount(int base, int percent) {
+  if (base <= 0) return 0;
+  final p = percent.clamp(0, 100);
+  return (base * p + 50) ~/ 100;
+}
+
 /// Perhitungan bayar (int rupiah). Satu sumber untuk dialog bayar & penyimpanan.
 class CheckoutCalc {
-  const CheckoutCalc({required this.items, required this.discount, required this.paid});
+  const CheckoutCalc({
+    required this.items,
+    this.discount = 0,
+    this.percent,
+    required this.paid,
+  });
 
   final List<TransactionItem> items;
+
+  /// Diskon nominal (Rp) yang diketik; diabaikan bila [percent] diisi.
   final int discount;
+
+  /// Diskon persen (0..100). Null = mode nominal.
+  final int? percent;
   final int paid;
 
   int get subtotal => items.fold(0, (s, i) => s + i.subtotal);
 
-  /// Tidak pernah < 0 dan tidak melebihi subtotal (diskon negatif diabaikan).
-  int get total {
+  /// Rupiah yang benar-benar dipotong: tidak pernah < 0 dan tidak melebihi
+  /// subtotal. Nilai inilah yang disimpan sebagai `discount` transaksi.
+  int get effectiveDiscount {
     final s = subtotal;
     if (s <= 0) return 0;
-    return (s - discount).clamp(0, s);
+    final d = percent != null ? percentDiscount(s, percent!) : discount;
+    return d.clamp(0, s);
   }
+
+  int get total => subtotal <= 0 ? 0 : subtotal - effectiveDiscount;
 
   bool get isPaidEnough => paid >= total;
 
   int get change => isPaidEnough ? paid - total : 0;
 
   /// Laba = laba item − diskon yang benar-benar dipotong dari subtotal.
-  int get profit => items.fold(0, (s, i) => s + i.totalProfit) - (subtotal - total);
+  int get profit => items.fold(0, (s, i) => s + i.totalProfit) - effectiveDiscount;
 }
 
 /// Nominal bulat di atas [total] untuk tombol uang cepat (int rupiah).

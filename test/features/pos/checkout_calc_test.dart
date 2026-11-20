@@ -102,4 +102,86 @@ void main() {
       }
     });
   });
+
+  group('percentDiscount (half-up ke rupiah int)', () {
+    test('pembulatan ke atas pada .5', () {
+      expect(percentDiscount(12345, 10), 1235); // 1234,5 → 1235
+      expect(percentDiscount(10, 15), 2); // 1,5 → 2
+      expect(percentDiscount(10, 14), 1); // 1,4 → 1
+    });
+
+    test('hasil pas tanpa pembulatan', () {
+      expect(percentDiscount(1000, 33), 330);
+      expect(percentDiscount(30000, 10), 3000);
+    });
+
+    test('batas: 0%, 100%, >100% dijepit, negatif jadi 0, basis 0', () {
+      expect(percentDiscount(25000, 0), 0);
+      expect(percentDiscount(25000, 100), 25000);
+      expect(percentDiscount(25000, 250), 25000);
+      expect(percentDiscount(25000, -10), 0);
+      expect(percentDiscount(0, 10), 0);
+    });
+
+    test('hasil selalu int', () {
+      expect(percentDiscount(37777, 7), isA<int>());
+    });
+  });
+
+  group('CheckoutCalc diskon persen', () {
+    test('mode persen: total, diskon efektif, laba', () {
+      final c = CheckoutCalc(
+          items: [item(15000, 6000, qty: 2)], percent: 10, paid: 0); // 30.000
+      expect(c.subtotal, 30000);
+      expect(c.effectiveDiscount, 3000);
+      expect(c.total, 27000);
+      expect(c.profit, 18000 - 3000);
+    });
+
+    test('mode persen mengabaikan diskon nominal', () {
+      final c = CheckoutCalc(
+          items: [item(10000, 4000)], discount: 9000, percent: 10, paid: 0);
+      expect(c.total, 9000);
+    });
+
+    test('persen > 100 dijepit: total 0, diskon = subtotal', () {
+      final c = CheckoutCalc(items: [item(10000, 4000)], percent: 500, paid: 0);
+      expect(c.effectiveDiscount, 10000);
+      expect(c.total, 0);
+    });
+
+    test('pembulatan: 10% dari 12.345 → diskon 1.235, total 11.110', () {
+      final c = CheckoutCalc(items: [item(12345, 0)], percent: 10, paid: 20000);
+      expect(c.effectiveDiscount, 1235);
+      expect(c.total, 11110);
+      expect(c.change, 8890);
+    });
+
+    test('uang selalu int', () {
+      final c = CheckoutCalc(items: [item(37777, 1000)], percent: 7, paid: 50000);
+      expect(c.effectiveDiscount, isA<int>());
+      expect(c.total, isA<int>());
+      expect(c.profit, isA<int>());
+    });
+  });
+
+  group('diskon efektif = nilai yang disimpan', () {
+    test('nominal > subtotal: efektif dijepit ke subtotal (bukan angka mentah)', () {
+      final c = CheckoutCalc(items: [item(10000, 4000)], discount: 99999, paid: 0);
+      expect(c.effectiveDiscount, 10000);
+      expect(c.subtotal - c.effectiveDiscount, c.total);
+    });
+
+    test('nominal negatif: efektif 0', () {
+      final c = CheckoutCalc(items: [item(10000, 4000)], discount: -500, paid: 0);
+      expect(c.effectiveDiscount, 0);
+      expect(c.total, 10000);
+    });
+
+    test('keranjang kosong: diskon 0', () {
+      final c = CheckoutCalc(items: const [], percent: 10, paid: 0);
+      expect(c.effectiveDiscount, 0);
+      expect(c.total, 0);
+    });
+  });
 }
