@@ -120,6 +120,13 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 - Kartu produk lebih pendek (`productGridDelegatePhone`, rasio 0,95). Banner backup satu baris.
 - Baris keranjang dua baris (nama/catatan, lalu qty + subtotal). Dijaga `pos_cart_overflow_test` di 5 ukuran.
 
+## Tablet (> 800 dp)
+
+- Sidebar 250 dp **setinggi layar** (Row `crossAxisAlignment.stretch`); konten di kanan.
+- Judul AppBar wajib berwarna eksplisit (`titleTextStyle` = `titleLarge` + `textPrimary`).
+- Kartu ringkasan Laporan mengisi lebar: 3 kolom (≥ 500 dp), 6 kolom (≥ 1100 dp).
+- Pengaturan: kolom maks 760 dp, rata kiri sejajar judul.
+
 ## Layout Login (split panel)
 
 - **Lebar ≥ 720 dp**: panel brand oranye (`primary`, teks `onPrimary` penuh, tanpa transparansi demi kontras)

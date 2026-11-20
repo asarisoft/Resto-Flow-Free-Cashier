@@ -365,7 +365,7 @@ class _ProductGrid extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     return GridView.builder(
       padding: EdgeInsets.only(
-        top: isWide ? 76 : 16,
+        top: 16,
         left: isWide ? 24 : 16,
         right: isWide ? 24 : 16,
         bottom: 24,

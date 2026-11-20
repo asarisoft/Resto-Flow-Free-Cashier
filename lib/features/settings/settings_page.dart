@@ -56,182 +56,237 @@ class SettingsPage extends ConsumerWidget {
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (profile) {
           if (profile == null) return const SizedBox.shrink();
-          return ListView(
-            padding: const EdgeInsets.all(16),
-            children: [
-              if (canManageSettings) ...[
-              AppCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Profil Resto', style: textTheme.titleMedium),
+          // Tablet: kolom terbaca (maks 760 dp), bukan kartu selebar layar.
+          // Rata kiri: sejajar dengan judul AppBar.
+          return Align(
+            alignment: Alignment.topLeft,
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 760),
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  if (canManageSettings) ...[
+                    AppCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Profil Resto', style: textTheme.titleMedium),
+                          const SizedBox(height: 12),
+                          _infoRow('Nama', profile.name, textTheme),
+                          if (profile.address != null)
+                            _infoRow('Alamat', profile.address!, textTheme),
+                          if (profile.phone != null)
+                            _infoRow('Telepon', profile.phone!, textTheme),
+                          _infoRow(
+                            'Kertas',
+                            '${profile.paperWidth} mm',
+                            textTheme,
+                          ),
+                          const SizedBox(height: 12),
+                          SecondaryButton(
+                            label: 'Edit Profil',
+                            icon: AppIcons.edit,
+                            onPressed: () => _editProfile(context, profile),
+                          ),
+                        ],
+                      ),
+                    ),
                     const SizedBox(height: 12),
-                    _infoRow('Nama', profile.name, textTheme),
-                    if (profile.address != null)
-                      _infoRow('Alamat', profile.address!, textTheme),
-                    if (profile.phone != null)
-                      _infoRow('Telepon', profile.phone!, textTheme),
-                    _infoRow(
-                        'Kertas', '${profile.paperWidth} mm', textTheme),
-                    const SizedBox(height: 12),
-                    SecondaryButton(
-                      label: 'Edit Profil',
-                      icon: AppIcons.edit,
-                      onPressed: () =>
-                          _editProfile(context, profile),
+                    AppCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Printer', style: textTheme.titleMedium),
+                          const SizedBox(height: 12),
+                          Row(
+                            children: [
+                              Icon(
+                                printer.isConnected
+                                    ? AppIcons.bluetoothConnected
+                                    : AppIcons.print,
+                                color: printer.isConnected
+                                    ? AppColors.success
+                                    : AppColors.primary,
+                              ),
+                              const SizedBox(width: 12),
+                              Expanded(
+                                child: Text(
+                                  printer.isConnected
+                                      ? 'Terhubung: ${printer.device?.name ?? printer.device?.address ?? '-'}'
+                                      : 'Bluetooth Thermal · Belum terhubung',
+                                  style: textTheme.bodyLarge?.copyWith(
+                                    color: printer.isConnected
+                                        ? AppColors.success
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 12),
+                          SecondaryButton(
+                            label: 'Pairing Printer',
+                            icon: AppIcons.bluetooth,
+                            onPressed: () => _pairPrinter(context),
+                          ),
+                          if (printer.isConnected) ...[
+                            const SizedBox(height: 8),
+                            SecondaryButton(
+                              label: 'Test Print',
+                              icon: AppIcons.print,
+                              onPressed: () => _testPrint(context, printer),
+                            ),
+                          ],
+                        ],
+                      ),
                     ),
                   ],
-                ),
-              ),
-              const SizedBox(height: 12),
-              AppCard(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text('Printer', style: textTheme.titleMedium),
+                  if (canManageSettings) ...[
                     const SizedBox(height: 12),
-                    Row(
-                      children: [
-                        Icon(
-                            printer.isConnected ? AppIcons.bluetoothConnected : AppIcons.print,
-                            color: printer.isConnected ? AppColors.success : AppColors.primary),
-                        const SizedBox(width: 12),
-                        Expanded(
-                          child: Text(
-                            printer.isConnected
-                                ? 'Terhubung: ${printer.device?.name ?? printer.device?.address ?? '-'}'
-                                : 'Bluetooth Thermal · Belum terhubung',
-                            style: textTheme.bodyLarge?.copyWith(
-                                color: printer.isConnected ? AppColors.success : null),
+                    AppCard(
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(
+                          AppIcons.receipt,
+                          color: AppColors.textPrimary,
+                        ),
+                        title: Text(
+                          'Log aktivitas',
+                          style: textTheme.bodyLarge,
+                        ),
+                        trailing: const Icon(
+                          AppIcons.arrowRight,
+                          color: AppColors.textSecondary,
+                        ),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const ActivityLogPage(),
                           ),
                         ),
-                      ],
+                      ),
                     ),
                     const SizedBox(height: 12),
-                    SecondaryButton(
-                      label: 'Pairing Printer',
-                      icon: AppIcons.bluetooth,
-                      onPressed: () => _pairPrinter(context),
-                    ),
-                    if (printer.isConnected) ...[
-                      const SizedBox(height: 8),
-                      SecondaryButton(
-                        label: 'Test Print',
-                        icon: AppIcons.print,
-                        onPressed: () => _testPrint(context, printer),
+                    const AppCard(child: _AutoLockTile()),
+                    // HP: tab Pengguna tidak ada di bar bawah (maks 5 tab).
+                    if (ref.watch(canManageUsersProvider) &&
+                        MediaQuery.sizeOf(context).width <= 800) ...[
+                      const SizedBox(height: 12),
+                      AppCard(
+                        child: ListTile(
+                          contentPadding: EdgeInsets.zero,
+                          leading: const Icon(
+                            AppIcons.users,
+                            color: AppColors.textPrimary,
+                          ),
+                          title: Text('Pengguna', style: textTheme.bodyLarge),
+                          trailing: const Icon(
+                            AppIcons.arrowRight,
+                            color: AppColors.textSecondary,
+                          ),
+                          onTap: () => Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder: (_) => const UserListPage(),
+                            ),
+                          ),
+                        ),
                       ),
                     ],
                   ],
-                ),
-              ),
-              ],
-              if (canManageSettings) ...[
-                const SizedBox(height: 12),
-                AppCard(
-                  child: ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    leading: const Icon(AppIcons.receipt, color: AppColors.textPrimary),
-                    title: Text('Log aktivitas', style: textTheme.bodyLarge),
-                    trailing: const Icon(AppIcons.arrowRight, color: AppColors.textSecondary),
-                    onTap: () => Navigator.of(context).push(
-                      MaterialPageRoute(builder: (_) => const ActivityLogPage()),
+                  if (canBackup) ...[
+                    const SizedBox(height: 12),
+                    AppCard(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Backup & Restore',
+                            style: textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Backup menyimpan database & foto ke file zip. '
+                            'Restore akan mengganti seluruh data dan logout.',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            lastBackup == null
+                                ? 'Backup terakhir: belum pernah'
+                                : 'Backup terakhir: '
+                                      '${DateFormat('dd/MM/yyyy HH:mm').format(lastBackup)}',
+                            style: textTheme.bodyMedium?.copyWith(
+                              color: AppColors.textSecondary,
+                            ),
+                          ),
+                          const SizedBox(height: 12),
+                          SecondaryButton(
+                            label: 'Backup Sekarang',
+                            icon: AppIcons.restore,
+                            onPressed: () => runBackupNow(ref, context),
+                          ),
+                          const SizedBox(height: 8),
+                          SecondaryButton(
+                            label: 'Restore dari File',
+                            icon: AppIcons.backup,
+                            onPressed: () => _restoreBackup(context, ref),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ),
-                const SizedBox(height: 12),
-                const AppCard(child: _AutoLockTile()),
-                // HP: tab Pengguna tidak ada di bar bawah (maks 5 tab).
-                if (ref.watch(canManageUsersProvider) &&
-                    MediaQuery.sizeOf(context).width <= 800) ...[
+                  ],
                   const SizedBox(height: 12),
                   AppCard(
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
-                      leading: const Icon(AppIcons.users, color: AppColors.textPrimary),
-                      title: Text('Pengguna', style: textTheme.bodyLarge),
-                      trailing: const Icon(AppIcons.arrowRight, color: AppColors.textSecondary),
-                      onTap: () => Navigator.of(context).push(
-                        MaterialPageRoute(builder: (_) => const UserListPage()),
+                      leading: const Icon(
+                        AppIcons.key,
+                        color: AppColors.textPrimary,
+                      ),
+                      title: Text('Ganti password', style: textTheme.bodyLarge),
+                      trailing: const Icon(
+                        AppIcons.arrowRight,
+                        color: AppColors.textSecondary,
+                      ),
+                      onTap: currentUser == null
+                          ? null
+                          : () => showDialog(
+                              context: context,
+                              builder: (_) =>
+                                  ChangePasswordDialog(userId: currentUser.id),
+                            ),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  AppCard(
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(
+                        'Logout',
+                        style: textTheme.bodyLarge?.copyWith(
+                          color: AppColors.error,
+                        ),
+                      ),
+                      trailing: const Icon(
+                        AppIcons.logout,
+                        color: AppColors.error,
+                      ),
+                      onTap: () => _logout(context, ref),
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  Center(
+                    child: Text(
+                      'Kasir Resto v1.0.0',
+                      style: textTheme.bodyMedium?.copyWith(
+                        color: AppColors.textSecondary,
                       ),
                     ),
                   ),
                 ],
-              ],
-              if (canBackup) ...[
-                const SizedBox(height: 12),
-                AppCard(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text('Backup & Restore', style: textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      Text(
-                        'Backup menyimpan database & foto ke file zip. '
-                        'Restore akan mengganti seluruh data dan logout.',
-                        style: textTheme.bodyMedium
-                            ?.copyWith(color: AppColors.textSecondary),
-                      ),
-                      const SizedBox(height: 8),
-                      Text(
-                        lastBackup == null
-                            ? 'Backup terakhir: belum pernah'
-                            : 'Backup terakhir: '
-                                '${DateFormat('dd/MM/yyyy HH:mm').format(lastBackup)}',
-                        style: textTheme.bodyMedium
-                            ?.copyWith(color: AppColors.textSecondary),
-                      ),
-                      const SizedBox(height: 12),
-                      SecondaryButton(
-                        label: 'Backup Sekarang',
-                        icon: AppIcons.restore,
-                        onPressed: () => runBackupNow(ref, context),
-                      ),
-                      const SizedBox(height: 8),
-                      SecondaryButton(
-                        label: 'Restore dari File',
-                        icon: AppIcons.backup,
-                        onPressed: () => _restoreBackup(context, ref),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-              const SizedBox(height: 12),
-              AppCard(
-                child: ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  leading: const Icon(AppIcons.key, color: AppColors.textPrimary),
-                  title: Text('Ganti password', style: textTheme.bodyLarge),
-                  trailing: const Icon(AppIcons.arrowRight, color: AppColors.textSecondary),
-                  onTap: currentUser == null
-                      ? null
-                      : () => showDialog(
-                            context: context,
-                            builder: (_) => ChangePasswordDialog(userId: currentUser.id),
-                          ),
-                ),
               ),
-              const SizedBox(height: 12),
-              AppCard(
-                child: ListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: Text('Logout',
-                      style: textTheme.bodyLarge
-                          ?.copyWith(color: AppColors.error)),
-                  trailing: const Icon(AppIcons.logout,
-                      color: AppColors.error),
-                  onTap: () => _logout(context, ref),
-                ),
-              ),
-              const SizedBox(height: 24),
-              Center(
-                child: Text(
-                  'Kasir Resto v1.0.0',
-                  style: textTheme.bodyMedium
-                      ?.copyWith(color: AppColors.textSecondary),
-                ),
-              ),
-            ],
+            ),
           );
         },
       ),
@@ -246,13 +301,17 @@ class SettingsPage extends ConsumerWidget {
         children: [
           Expanded(
             flex: 2,
-            child: Text(label,
-                style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+            child: Text(
+              label,
+              style: tt.bodyMedium?.copyWith(color: AppColors.textSecondary),
+            ),
           ),
           Expanded(
             flex: 3,
-            child: Text(value, 
-                style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
+            child: Text(
+              value,
+              style: tt.bodyMedium?.copyWith(fontWeight: FontWeight.w600),
+            ),
           ),
         ],
       ),
@@ -272,16 +331,18 @@ class SettingsPage extends ConsumerWidget {
       await printer.printTest();
     } catch (e) {
       messenger.showSnackBar(
-        SnackBar(content: Text('Test print gagal: $e'), backgroundColor: AppColors.error),
+        SnackBar(
+          content: Text('Test print gagal: $e'),
+          backgroundColor: AppColors.error,
+        ),
       );
     }
   }
 
   void _pairPrinter(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(
-          builder: (_) => const PrinterPairingPage()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const PrinterPairingPage()));
   }
 
   Future<void> _restoreBackup(BuildContext context, WidgetRef ref) async {
@@ -321,16 +382,21 @@ class SettingsPage extends ConsumerWidget {
       // the provider is invalidated so the next read opens the restored DB.
       // Username diambil sebelum DB diganti; log ditulis ke DB hasil restore.
       final actor = ref.read(currentUserProvider).valueOrNull?.username ?? '-';
-      await BackupService(dbDir: dir)
-          .restoreFromZip(path, closeDatabase: db.close);
+      await BackupService(
+        dbDir: dir,
+      ).restoreFromZip(path, closeDatabase: db.close);
       ref.invalidate(databaseProvider);
-      await logActivity(ref, 'backup.restore', 'dari berkas zip',
-          username: actor);
+      await logActivity(
+        ref,
+        'backup.restore',
+        'dari berkas zip',
+        username: actor,
+      );
       await ref.read(loginProvider).logout();
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Restore berhasil')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Restore berhasil')));
     } on BackupFormatException catch (e) {
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -338,9 +404,9 @@ class SettingsPage extends ConsumerWidget {
       );
     } catch (e) {
       if (!context.mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Restore gagal: $e')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Restore gagal: $e')));
     }
   }
 
@@ -374,12 +440,10 @@ class _EditProfileDialog extends ConsumerStatefulWidget {
   const _EditProfileDialog({required this.profile});
 
   @override
-  ConsumerState<_EditProfileDialog> createState() =>
-      _EditProfileDialogState();
+  ConsumerState<_EditProfileDialog> createState() => _EditProfileDialogState();
 }
 
-class _EditProfileDialogState
-    extends ConsumerState<_EditProfileDialog> {
+class _EditProfileDialogState extends ConsumerState<_EditProfileDialog> {
   late final TextEditingController _nameCtrl;
   late final TextEditingController _addrCtrl;
   late final TextEditingController _phoneCtrl;
@@ -395,14 +459,10 @@ class _EditProfileDialogState
   @override
   void initState() {
     super.initState();
-    _nameCtrl =
-        TextEditingController(text: widget.profile.name);
-    _addrCtrl =
-        TextEditingController(text: widget.profile.address ?? '');
-    _phoneCtrl =
-        TextEditingController(text: widget.profile.phone ?? '');
-    _footerCtrl =
-        TextEditingController(text: widget.profile.footerNote ?? '');
+    _nameCtrl = TextEditingController(text: widget.profile.name);
+    _addrCtrl = TextEditingController(text: widget.profile.address ?? '');
+    _phoneCtrl = TextEditingController(text: widget.profile.phone ?? '');
+    _footerCtrl = TextEditingController(text: widget.profile.footerNote ?? '');
     _paperWidth = widget.profile.paperWidth;
     _logoPath = widget.profile.logoPath;
   }
@@ -490,17 +550,26 @@ class _EditProfileDialogState
     final placeholder = Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        Icon(AppIcons.brokenImage,
-            size: AppIcons.xl, color: AppColors.textSecondary),
+        Icon(
+          AppIcons.brokenImage,
+          size: AppIcons.xl,
+          color: AppColors.textSecondary,
+        ),
         const SizedBox(height: 4),
-        Text('Belum ada logo',
-            style: AppTypography.textTheme.labelSmall
-                ?.copyWith(color: AppColors.textSecondary)),
+        Text(
+          'Belum ada logo',
+          style: AppTypography.textTheme.labelSmall?.copyWith(
+            color: AppColors.textSecondary,
+          ),
+        ),
       ],
     );
     if (_pickedLogo != null) {
-      return Image.file(File(_pickedLogo!.path),
-          fit: BoxFit.contain, errorBuilder: (_, __, ___) => placeholder);
+      return Image.file(
+        File(_pickedLogo!.path),
+        fit: BoxFit.contain,
+        errorBuilder: (_, __, ___) => placeholder,
+      );
     }
     final path = _removeLogo ? null : _logoPath;
     if (path == null) return placeholder;
@@ -509,8 +578,11 @@ class _EditProfileDialogState
       builder: (context, snap) {
         final abs = snap.data;
         if (abs == null) return placeholder;
-        return Image.file(File(abs),
-            fit: BoxFit.contain, errorBuilder: (_, __, ___) => placeholder);
+        return Image.file(
+          File(abs),
+          fit: BoxFit.contain,
+          errorBuilder: (_, __, ___) => placeholder,
+        );
       },
     );
   }
@@ -535,7 +607,8 @@ class _EditProfileDialogState
   /// cache [FileImage] path itu supaya preview tidak menampilkan gambar lama.
   Future<void> _evictLogoPreviewCache() async {
     final abs = await LogoImageService.resolvePath(
-        '${LogoImageService.logoDirName}/${LogoImageService.logoFileName}');
+      '${LogoImageService.logoDirName}/${LogoImageService.logoFileName}',
+    );
     await FileImage(File(abs)).evict();
   }
 
@@ -560,12 +633,8 @@ class _EditProfileDialogState
       // "keep old value", so cleared fields would never be saved.
       final updated = RestoProfile(
         name: _nameCtrl.text.trim(),
-        address: _addrCtrl.text.trim().isEmpty
-            ? null
-            : _addrCtrl.text.trim(),
-        phone: _phoneCtrl.text.trim().isEmpty
-            ? null
-            : _phoneCtrl.text.trim(),
+        address: _addrCtrl.text.trim().isEmpty ? null : _addrCtrl.text.trim(),
+        phone: _phoneCtrl.text.trim().isEmpty ? null : _phoneCtrl.text.trim(),
         footerNote: _footerCtrl.text.trim().isEmpty
             ? null
             : _footerCtrl.text.trim(),
@@ -607,7 +676,9 @@ class _AutoLockTile extends ConsumerWidget {
         items: [
           for (final m in autoLockChoices)
             DropdownMenuItem(
-                value: m, child: Text(m == 0 ? 'Nonaktif' : '$m menit')),
+              value: m,
+              child: Text(m == 0 ? 'Nonaktif' : '$m menit'),
+            ),
         ],
         onChanged: (v) {
           if (v != null) ref.read(autoLockMinutesProvider.notifier).set(v);

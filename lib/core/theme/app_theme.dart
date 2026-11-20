@@ -30,7 +30,8 @@ class AppTheme {
         elevation: 0,
         scrolledUnderElevation: 0,
         centerTitle: false,
-        titleTextStyle: textTheme.titleLarge,
+        // Warna eksplisit: titleLarge tanpa warna membuat judul AppBar tak terlihat.
+        titleTextStyle: textTheme.titleLarge?.copyWith(color: AppColors.textPrimary),
       ),
       cardTheme: CardThemeData(
         color: AppColors.surface,

@@ -325,10 +325,13 @@ class _SummaryCards extends StatelessWidget {
     final textTheme = AppTypography.textTheme;
     return LayoutBuilder(
       builder: (_, constraints) {
-        // HP: 2 kolom; lebar: kartu 220 dp.
-        final width = constraints.maxWidth >= 500
-            ? 220.0
-            : (constraints.maxWidth - 12) / 2;
+        // Kartu mengisi lebar penuh: HP 2 kolom, tablet 3, layar lebar 6.
+        final cols = constraints.maxWidth >= 1100
+            ? 6
+            : constraints.maxWidth >= 500
+                ? 3
+                : 2;
+        final width = (constraints.maxWidth - 12 * (cols - 1)) / cols;
         return Wrap(
           spacing: 12,
           runSpacing: 12,

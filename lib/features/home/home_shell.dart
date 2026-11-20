@@ -171,6 +171,8 @@ class _MainShellState extends ConsumerState<_MainShell> {
           return Scaffold(
             backgroundColor: AppColors.background,
             body: Row(
+              // Sidebar setinggi layar (bukan kotak mengambang di tengah).
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 // Sidebar
                 Container(
