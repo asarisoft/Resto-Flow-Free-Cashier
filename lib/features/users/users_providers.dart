@@ -14,7 +14,10 @@ bool _isOwner(Ref ref) => ref.watch(currentRoleProvider) == Role.owner;
 
 final canManageUsersProvider = Provider<bool>((ref) => _isOwner(ref));
 final canSeeReportsProvider = Provider<bool>((ref) => _isOwner(ref));
-final canSeeSettingsProvider = Provider<bool>((ref) => _isOwner(ref));
+/// Pengaturan terbuka untuk semua role (ada "Ganti password" untuk kasir),
+/// tapi bagian Profil Resto & Printer hanya Owner (lihat [canManageSettingsProvider]).
+final canSeeSettingsProvider = Provider<bool>((ref) => true);
+final canManageSettingsProvider = Provider<bool>((ref) => _isOwner(ref));
 final canSeeBackupProvider = Provider<bool>((ref) => _isOwner(ref));
 final canSeeExpensesProvider = Provider<bool>((ref) => _isOwner(ref));
 

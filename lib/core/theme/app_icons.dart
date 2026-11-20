@@ -41,6 +41,7 @@ class AppIcons {
   static const IconData logout = LucideIcons300.logOut;
   static const IconData visible = LucideIcons300.eye;
   static const IconData hidden = LucideIcons300.eyeOff;
+  static const IconData key = LucideIcons300.keyRound;
 
   // Data / berkas
   static const IconData backup = LucideIcons300.download;

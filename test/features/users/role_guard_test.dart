@@ -22,10 +22,20 @@ void main() {
     expect(container.read(canManageUsersProvider), true);
   });
 
+  test('canSeeSettingsProvider is true for a kasir session (ganti password)', () async {
+    final container = ProviderContainer(overrides: [
+      currentUserProvider.overrideWith((ref) async =>
+          AppUser(id: 'k1', username: 'kasir1', role: 'kasir', active: true)),
+    ]);
+    await container.read(currentUserProvider.future);
+    expect(container.read(canSeeSettingsProvider), true);
+    expect(container.read(canManageSettingsProvider), false);
+  });
+
   final guards = {
     'users': canManageUsersProvider,
     'reports': canSeeReportsProvider,
-    'settings': canSeeSettingsProvider,
+    'settings': canManageSettingsProvider,
     'backup': canSeeBackupProvider,
     'expenses': canSeeExpensesProvider,
     'void': canVoidTransactionProvider,

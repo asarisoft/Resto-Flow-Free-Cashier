@@ -90,4 +90,94 @@ void main() {
       expect((await dao.getById(id))!.active, isFalse);
     });
   });
+
+  group('changeOwnPassword', () {
+    test('changes password: old fails, new works, salt changes', () async {
+      await dao.seedDefaultOwnerIfEmpty();
+      final oldSalt = (await dao.getById('admin'))!.salt;
+      await dao.changeOwnPassword(
+          userId: 'admin', oldPassword: 'P@ssw0rd123', newPassword: 'newpass123');
+      expect(await dao.verify('admin', 'newpass123'), isNotNull);
+      expect(await dao.verify('admin', 'P@ssw0rd123'), isNull);
+      expect((await dao.getById('admin'))!.salt, isNot(oldSalt));
+    });
+    test('rejects wrong old password', () async {
+      await dao.seedDefaultOwnerIfEmpty();
+      expect(
+        () => dao.changeOwnPassword(
+            userId: 'admin', oldPassword: 'salah', newPassword: 'newpass123'),
+        throwsStateError,
+      );
+    });
+    test('rejects new password shorter than 8', () async {
+      await dao.seedDefaultOwnerIfEmpty();
+      expect(
+        () => dao.changeOwnPassword(
+            userId: 'admin', oldPassword: 'P@ssw0rd123', newPassword: 'short'),
+        throwsArgumentError,
+      );
+    });
+    test('rejects new password same as old', () async {
+      await dao.seedDefaultOwnerIfEmpty();
+      expect(
+        () => dao.changeOwnPassword(
+            userId: 'admin', oldPassword: 'P@ssw0rd123', newPassword: 'P@ssw0rd123'),
+        throwsArgumentError,
+      );
+    });
+    test('rejects change for inactive user', () async {
+      final id = await dao.add(username: 'kasir1', password: 'pass12345', role: 'kasir');
+      await dao.setActive(id, false);
+      expect(
+        () => dao.changeOwnPassword(
+            userId: id, oldPassword: 'pass12345', newPassword: 'newpass123'),
+        throwsStateError,
+      );
+    });
+  });
+
+  group('resetPassword', () {
+    test('kasir cannot reset', () async {
+      await dao.seedDefaultOwnerIfEmpty();
+      final id = await dao.add(username: 'kasir1', password: 'pass12345', role: 'kasir');
+      expect(
+        () => dao.resetPassword(
+            actorRole: 'kasir', actorId: id, targetId: 'admin', newPassword: 'newpass123'),
+        throwsStateError,
+      );
+    });
+    test('owner cannot reset own password', () async {
+      await dao.seedDefaultOwnerIfEmpty();
+      expect(
+        () => dao.resetPassword(
+            actorRole: 'owner', actorId: 'admin', targetId: 'admin', newPassword: 'newpass123'),
+        throwsStateError,
+      );
+    });
+    test('owner resets target; target logs in with new password', () async {
+      await dao.seedDefaultOwnerIfEmpty();
+      final id = await dao.add(username: 'kasir1', password: 'pass12345', role: 'kasir');
+      await dao.resetPassword(
+          actorRole: 'owner', actorId: 'admin', targetId: id, newPassword: 'newpass123');
+      expect(await dao.verify('kasir1', 'newpass123'), isNotNull);
+      expect(await dao.verify('kasir1', 'pass12345'), isNull);
+    });
+    test('reset rejects missing target', () async {
+      await dao.seedDefaultOwnerIfEmpty();
+      expect(
+        () => dao.resetPassword(
+            actorRole: 'owner', actorId: 'admin', targetId: 'ghost', newPassword: 'newpass123'),
+        throwsStateError,
+      );
+    });
+    test('reset rejects short password', () async {
+      await dao.seedDefaultOwnerIfEmpty();
+      final id = await dao.add(username: 'kasir1', password: 'pass12345', role: 'kasir');
+      expect(
+        () => dao.resetPassword(
+            actorRole: 'owner', actorId: 'admin', targetId: id, newPassword: 'short'),
+        throwsArgumentError,
+      );
+    });
+  });
 }

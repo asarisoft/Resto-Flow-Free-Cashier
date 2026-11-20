@@ -16,6 +16,7 @@ import '../../features/auth/auth_controller.dart';
 import '../../features/backup/backup_reminder.dart';
 import '../../features/backup/backup_service.dart';
 import '../../features/users/users_providers.dart';
+import '../../features/users/password_dialogs.dart';
 import 'settings_providers.dart';
 
 import 'printer_pairing_page.dart';
@@ -33,6 +34,8 @@ class SettingsPage extends ConsumerWidget {
     final textTheme = AppTypography.textTheme;
     final profileAsync = ref.watch(profileProvider);
     final canBackup = ref.watch(canSeeBackupProvider);
+    final canManageSettings = ref.watch(canManageSettingsProvider);
+    final currentUser = ref.watch(currentUserProvider).valueOrNull;
     final printer = ref.watch(printerServiceProvider);
     final lastBackup = ref.watch(lastBackupTimeProvider).valueOrNull;
 
@@ -52,6 +55,7 @@ class SettingsPage extends ConsumerWidget {
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              if (canManageSettings) ...[
               AppCard(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,6 +120,7 @@ class SettingsPage extends ConsumerWidget {
                   ],
                 ),
               ),
+              ],
               if (canBackup) ...[
                 const SizedBox(height: 12),
                 AppCard(
@@ -155,6 +160,21 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
               ],
+              const SizedBox(height: 12),
+              AppCard(
+                child: ListTile(
+                  contentPadding: EdgeInsets.zero,
+                  leading: const Icon(AppIcons.key, color: AppColors.textPrimary),
+                  title: Text('Ganti password', style: textTheme.bodyLarge),
+                  trailing: const Icon(AppIcons.arrowRight, color: AppColors.textSecondary),
+                  onTap: currentUser == null
+                      ? null
+                      : () => showDialog(
+                            context: context,
+                            builder: (_) => ChangePasswordDialog(userId: currentUser.id),
+                          ),
+                ),
+              ),
               const SizedBox(height: 12),
               AppCard(
                 child: ListTile(

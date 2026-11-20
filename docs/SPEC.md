@@ -200,6 +200,11 @@ Ringkasan tabel: `Products`, `Transactions`, `TransactionItems`, `Users`, `Resto
 - User `active=false` → ditolak walau password benar
 - Berhasil → simpan `userId` di `shared_preferences` (key: `session_user_id`)
 
+### Ganti & Reset Password
+- **Ganti password sendiri** (semua role, di Pengaturan): wajib verifikasi password lama (`PasswordHasher.verify`, user harus aktif); password baru minimal 8 karakter & tidak sama dengan lama; salt baru + hash baru. Gagal → pesan "Password lama salah" (tanpa membocorkan detail)
+- **Reset password** (Owner saja, dari daftar user): target harus ada; password baru minimal 8 karakter; salt baru. Owner tidak bisa reset diri sendiri (harus lewat Ganti password)
+- Aturan panjang password satu sumber (`UsersDao.minPasswordLength`), dipakai `add`/`changeOwnPassword`/`resetPassword`
+
 ### Session
 - Sesi persist lintas restart app — tetap login sampai logout manual
 - Router redirect: cek `currentUserProvider` → null = ke `/login`, ada = ke `/home`
@@ -307,16 +312,18 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 - Logika filter murni & teruji: `applyExpenseFilter`, `expenseCategories`, `totalExpenses`
 
 ### 7.7 Kelola User Page (Owner only)
-- Tabel `AppDataTable`: Username (avatar inisial) | Role (pill) | Status | Aktif (switch)
+- Tabel `AppDataTable`: Username (avatar inisial) | Role (pill) | Status | Aktif (switch) | Aksi
 - Owner aktif terakhir tidak bisa dinonaktifkan (SnackBar)
 - FAB "Tambah pengguna" → dialog form `AppFormDialog` (username, password, role)
+- Aksi "Reset password" (ikon kunci) per baris → dialog password baru + konfirmasi; hanya Owner
 
-### 7.8 Settings Page (Owner only)
-- Edit profil resto (nama, alamat, telp, footer, logo)
-- Printer pairing → `PrinterPairingPage` (scan BLE, connect)
+### 7.8 Settings Page (semua role; Profil Resto & Printer hanya Owner)
+- Profil Resto (Owner): edit profil resto (nama, alamat, telp, footer, logo)
+- Printer (Owner): pairing → `PrinterPairingPage` (scan BLE, connect)
 - Kartu Printer: status "Terhubung: <nama>" (hijau) / "Belum terhubung"; tombol "Test Print" (cetak `Resto Flow`) muncul hanya saat terhubung
 - Ukuran kertas (58/80)
-- Backup & Restore (lihat §9)
+- Backup & Restore (lihat §9) — Owner
+- Ganti password (semua role) → dialog `AppFormDialog` (password lama, baru, konfirmasi)
 - Logout
 - About / versi
 
@@ -429,7 +436,8 @@ Kembali                 9.000
 
 ### 10.3 Role Guard
 - `currentRoleProvider` derived dari `currentUserProvider`
-- `canSeeReportsProvider`, `canManageUsersProvider`, `canSeeSettingsProvider`, `canSeeBackupProvider` = `role == owner`
+- `canSeeReportsProvider`, `canManageUsersProvider`, `canSeeBackupProvider`, `canManageSettingsProvider` = `role == owner`
+- `canSeeSettingsProvider` = `true` (semua role, untuk "Ganti password"); bagian Owner di dalamnya di-guard `canManageSettingsProvider`
 - Guard di level provider DAN di sidebar — navigasi langsung juga ditolak
 
 ---

@@ -85,9 +85,9 @@
 - [x] Review fix: grafik jadi stream (StreamProvider) agar ter-update setelah bayar/void di IndexedStack
 
 ### 10. #15 Password
-- [ ] Ganti password sendiri (password lama wajib)
-- [ ] Owner reset password user lain
-- [ ] `/security-review` + tes
+- [x] Ganti password sendiri (password lama wajib)
+- [x] Owner reset password user lain
+- [x] Tes DAO (ganti/reset) — `/security-review` menyusul (reviewer)
 
 ### 11. #16 Log aktivitas
 - [ ] Tabel `activity_log` (user, aksi, target, waktu) — migrasi

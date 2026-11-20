@@ -6,6 +6,16 @@ class UsersDao {
   final AppDatabase db;
   UsersDao(this.db);
 
+  /// Aturan panjang password dipakai `add`, `changeOwnPassword`, dan
+  /// `resetPassword` — satu sumber kebenaran, jangan diduplikasi.
+  static const int minPasswordLength = 8;
+
+  static void _validatePasswordLength(String password) {
+    if (password.length < minPasswordLength) {
+      throw ArgumentError('password minimal 8 karakter');
+    }
+  }
+
   Future<void> seedDefaultOwnerIfEmpty() async {
     final count = await db.select(db.users).get();
     if (count.isNotEmpty) return;
@@ -42,7 +52,7 @@ class UsersDao {
   Future<String> add({required String username, required String password, required String role}) async {
     username = username.trim();
     if (username.isEmpty) throw ArgumentError('username wajib diisi');
-    if (password.length < 8) throw ArgumentError('password minimal 8 karakter');
+    _validatePasswordLength(password);
     if (role != 'owner' && role != 'kasir') throw ArgumentError('role tidak valid');
     final exists = await (db.select(db.users)..where((u) => u.username.equals(username))).getSingleOrNull();
     if (exists != null) throw StateError('username sudah dipakai');
@@ -74,5 +84,55 @@ class UsersDao {
 
   Future<User?> getById(String id) async {
     return (db.select(db.users)..where((u) => u.id.equals(id))).getSingleOrNull();
+  }
+
+  /// Ganti password user yang sedang login. Verifikasi password lama dulu
+  /// (user harus aktif), password baru minimal [minPasswordLength] karakter
+  /// dan tidak boleh sama dengan password lama. Salt baru + hash baru.
+  Future<void> changeOwnPassword({
+    required String userId,
+    required String oldPassword,
+    required String newPassword,
+  }) async {
+    final user = await getById(userId);
+    if (user == null ||
+        !user.active ||
+        !PasswordHasher.verify(oldPassword, user.salt, user.passwordHash)) {
+      throw StateError('Password lama salah');
+    }
+    _validatePasswordLength(newPassword);
+    if (newPassword == oldPassword) {
+      throw ArgumentError('Password baru tidak boleh sama dengan password lama');
+    }
+    final salt = PasswordHasher.generateSalt();
+    final hash = PasswordHasher.hash(newPassword, salt);
+    await (db.update(db.users)..where((u) => u.id.equals(userId))).write(
+          UsersCompanion(passwordHash: Value(hash), salt: Value(salt)),
+        );
+  }
+
+  /// Reset password user lain. Hanya Owner; target harus ada; password baru
+  /// minimal [minPasswordLength] karakter. Owner tidak boleh reset diri sendiri
+  /// (harus lewat [changeOwnPassword]).
+  Future<void> resetPassword({
+    required String actorRole,
+    required String actorId,
+    required String targetId,
+    required String newPassword,
+  }) async {
+    if (actorRole != 'owner') {
+      throw StateError('Hanya Owner yang bisa mereset password');
+    }
+    if (actorId == targetId) {
+      throw StateError('Tidak bisa mereset password sendiri');
+    }
+    final target = await getById(targetId);
+    if (target == null) throw StateError('Pengguna tidak ditemukan');
+    _validatePasswordLength(newPassword);
+    final salt = PasswordHasher.generateSalt();
+    final hash = PasswordHasher.hash(newPassword, salt);
+    await (db.update(db.users)..where((u) => u.id.equals(targetId))).write(
+          UsersCompanion(passwordHash: Value(hash), salt: Value(salt)),
+        );
   }
 }

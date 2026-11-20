@@ -6,6 +6,8 @@ import '../../core/theme/app_typography.dart';
 import '../../core/widgets/app_data_table.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../models/app_user.dart';
+import '../auth/auth_controller.dart' show currentUserProvider;
+import 'password_dialogs.dart';
 import 'user_form_dialog.dart';
 import 'users_providers.dart';
 
@@ -81,6 +83,12 @@ class UserListPage extends ConsumerWidget {
                       numeric: true,
                       cell: (u) => _ActiveSwitch(user: u),
                     ),
+                    AppColumn<AppUser>(
+                      label: 'Aksi',
+                      minWidth: 90,
+                      numeric: true,
+                      cell: (u) => _ResetPasswordAction(user: u),
+                    ),
                   ],
                 ),
               ],
@@ -135,6 +143,26 @@ class _ActiveSwitch extends ConsumerWidget {
           ref.invalidate(userListProvider);
         },
       ),
+    );
+  }
+}
+
+class _ResetPasswordAction extends ConsumerWidget {
+  final AppUser user;
+  const _ResetPasswordAction({required this.user});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final actor = ref.watch(currentUserProvider).valueOrNull;
+    return IconButton(
+      tooltip: 'Reset password ${user.username}',
+      icon: const Icon(AppIcons.key, size: AppIcons.md),
+      onPressed: actor == null
+          ? null
+          : () => showDialog(
+                context: context,
+                builder: (_) => ResetPasswordDialog(actor: actor, target: user),
+              ),
     );
   }
 }
