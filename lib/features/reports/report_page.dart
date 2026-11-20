@@ -325,7 +325,10 @@ class _SummaryCards extends StatelessWidget {
     final textTheme = AppTypography.textTheme;
     return LayoutBuilder(
       builder: (_, constraints) {
-        final isWide = constraints.maxWidth >= 500;
+        // HP: 2 kolom; lebar: kartu 220 dp.
+        final width = constraints.maxWidth >= 500
+            ? 220.0
+            : (constraints.maxWidth - 12) / 2;
         return Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -335,21 +338,21 @@ class _SummaryCards extends StatelessWidget {
               summary.totalRevenue,
               AppIcons.trendingUp,
               AppColors.success,
-              isWide, textTheme,
+              width, textTheme,
             ),
             _card(
               'Laba Kotor',
               summary.totalProfit,
               AppIcons.trendingUp,
               AppColors.success,
-              isWide, textTheme,
+              width, textTheme,
             ),
             _card(
               'Pengeluaran',
               summary.totalExpense,
               AppIcons.expense,
               AppColors.warning,
-              isWide, textTheme,
+              width, textTheme,
             ),
             _card(
               'Laba Bersih',
@@ -358,14 +361,14 @@ class _SummaryCards extends StatelessWidget {
               summary.netProfit >= 0
                   ? AppColors.success
                   : AppColors.error,
-              isWide, textTheme,
+              width, textTheme,
             ),
             _card(
               'Transaksi',
               summary.transactionCount,
               AppIcons.receipt,
               AppColors.primary,
-              isWide, textTheme,
+              width, textTheme,
               isCount: true,
             ),
             _card(
@@ -373,7 +376,7 @@ class _SummaryCards extends StatelessWidget {
               summary.averagePerTransaction,
               AppIcons.cart,
               AppColors.primary,
-              isWide, textTheme,
+              width, textTheme,
             ),
           ],
         );
@@ -382,10 +385,10 @@ class _SummaryCards extends StatelessWidget {
   }
 
   Widget _card(String label, int value, IconData icon, Color color,
-      bool isWide, TextTheme tt,
+      double width, TextTheme tt,
       {bool isCount = false}) {
     return SizedBox(
-      width: isWide ? 220 : double.infinity,
+      width: width,
       child: AppCard(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -404,15 +407,19 @@ class _SummaryCards extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 8),
-            isCount
-                ? Text('$value',
-                    style: tt.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.w700))
-                : AmountText(
-                    amount: value,
-                    style: tt.titleLarge
-                        ?.copyWith(fontWeight: FontWeight.w700),
-                  ),
+            FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerLeft,
+              child: isCount
+                  ? Text('$value',
+                      style: tt.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w700))
+                  : AmountText(
+                      amount: value,
+                      style: tt.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.w700),
+                    ),
+            ),
           ],
         ),
       ),

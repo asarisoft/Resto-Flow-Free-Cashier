@@ -86,7 +86,7 @@ class _ProductGrid extends ConsumerWidget {
           onRefresh: () async => ref.invalidate(productListProvider),
           child: GridView.builder(
             padding: const EdgeInsets.all(16),
-            gridDelegate: productGridDelegate,
+            gridDelegate: productGridDelegateFor(context),
             itemCount: products.length,
             itemBuilder: (_, i) => ProductCard(
               product: products[i],

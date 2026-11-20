@@ -13,7 +13,8 @@ import '../../printer/receipt_builder.dart';
 import '../../features/products/product_providers.dart';
 import '../pos/cart_provider.dart';
 import '../../core/widgets/choice_segment.dart';
-import '../../core/services/daos/sales_dao.dart' show InsufficientStockException;
+import '../../core/services/daos/sales_dao.dart'
+    show InsufficientStockException;
 import 'checkout_calc.dart';
 import '../settings/settings_providers.dart';
 import 'open_order_dialogs.dart';
@@ -38,21 +39,24 @@ class _PosPageState extends ConsumerState<PosPage> {
   Widget build(BuildContext context) {
     final productsAsync = ref.watch(productListProvider);
     final cart = ref.watch(cartProvider);
-    final isWide = MediaQuery.of(context).size.width >= 768; // Tablet breakpoint
+    final isWide =
+        MediaQuery.of(context).size.width >= 768; // Tablet breakpoint
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: isWide ? null : AppBar(
-        title: const Text('Kasir'),
-        actions: [
-          const _OpenOrdersButton(),
-          IconButton(
-            tooltip: 'Shift Kasir',
-            icon: const Icon(AppIcons.wallet),
-            onPressed: () => _openShiftPage(context),
-          ),
-        ],
-      ),
+      appBar: isWide
+          ? null
+          : AppBar(
+              title: const Text('Kasir'),
+              actions: [
+                const _OpenOrdersButton(),
+                IconButton(
+                  tooltip: 'Shift Kasir',
+                  icon: const Icon(AppIcons.wallet),
+                  onPressed: () => _openShiftPage(context),
+                ),
+              ],
+            ),
       body: productsAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -60,7 +64,9 @@ class _PosPageState extends ConsumerState<PosPage> {
           // Extract categories
           final categories = ['All Menu'];
           for (final p in products) {
-            if (p.category != null && p.category!.isNotEmpty && !categories.contains(p.category)) {
+            if (p.category != null &&
+                p.category!.isNotEmpty &&
+                !categories.contains(p.category)) {
               categories.add(p.category!);
             }
           }
@@ -81,12 +87,16 @@ class _PosPageState extends ConsumerState<PosPage> {
   }
 
   void _openShiftPage(BuildContext context) {
-    Navigator.of(context).push(
-      MaterialPageRoute(builder: (_) => const ShiftPage()),
-    );
+    Navigator.of(
+      context,
+    ).push(MaterialPageRoute(builder: (_) => const ShiftPage()));
   }
 
-  Widget _buildTabletLayout(List<String> categories, List<Product> products, List<TransactionItem> cart) {
+  Widget _buildTabletLayout(
+    List<String> categories,
+    List<Product> products,
+    List<TransactionItem> cart,
+  ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -99,7 +109,12 @@ class _PosPageState extends ConsumerState<PosPage> {
                 padding: const EdgeInsets.only(left: 24, top: 24, right: 24),
                 child: Row(
                   children: [
-                    Text('Menu', style: AppTypography.textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.bold)),
+                    Text(
+                      'Menu',
+                      style: AppTypography.textTheme.headlineSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
                     const Spacer(),
                     const _OpenOrdersButton(),
                     IconButton(
@@ -131,7 +146,11 @@ class _PosPageState extends ConsumerState<PosPage> {
               ),
               // Main Products
               Expanded(
-                child: _ProductGrid(products: products, cart: cart, isWide: true),
+                child: _ProductGrid(
+                  products: products,
+                  cart: cart,
+                  isWide: true,
+                ),
               ),
             ],
           ),
@@ -139,7 +158,10 @@ class _PosPageState extends ConsumerState<PosPage> {
         // Rincian pesanan: ~26% layar, dibatasi 300-340 dp.
         LayoutBuilder(
           builder: (context, _) {
-            final w = (MediaQuery.sizeOf(context).width * 0.26).clamp(300.0, 340.0);
+            final w = (MediaQuery.sizeOf(context).width * 0.26).clamp(
+              300.0,
+              340.0,
+            );
             return Container(
               key: const Key('cart_panel'),
               width: w,
@@ -152,7 +174,11 @@ class _PosPageState extends ConsumerState<PosPage> {
     );
   }
 
-  Widget _buildMobileLayout(List<String> categories, List<Product> products, List<TransactionItem> cart) {
+  Widget _buildMobileLayout(
+    List<String> categories,
+    List<Product> products,
+    List<TransactionItem> cart,
+  ) {
     return Column(
       children: [
         // Horizontal Categories
@@ -176,7 +202,9 @@ class _PosPageState extends ConsumerState<PosPage> {
             },
           ),
         ),
-        Expanded(child: _ProductGrid(products: products, cart: cart, isWide: false)),
+        Expanded(
+          child: _ProductGrid(products: products, cart: cart, isWide: false),
+        ),
         // Minimal Cart Summary at bottom
         if (cart.isNotEmpty)
           TapArea(
@@ -193,19 +221,27 @@ class _PosPageState extends ConsumerState<PosPage> {
                 children: [
                   const Icon(AppIcons.cart, color: AppColors.onPrimary),
                   const SizedBox(width: 12),
-                  Flexible(
-                    child: Text('${cart.fold(0, (s, i) => s + i.qty)} item',
-                        overflow: TextOverflow.ellipsis,
-                        style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.bold)),
+                  Text(
+                    '${cart.fold(0, (s, i) => s + i.qty)} item',
+                    style: AppTypography.textTheme.titleMedium?.copyWith(
+                      color: AppColors.onPrimary,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
+                    child: Align(
                       alignment: Alignment.centerRight,
-                      child: AmountText(
-                        amount: cart.fold(0, (s, i) => s + i.subtotal),
-                        style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.bold),
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: AmountText(
+                          amount: cart.fold(0, (s, i) => s + i.subtotal),
+                          style: AppTypography.textTheme.titleMedium?.copyWith(
+                            color: AppColors.onPrimary,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -240,7 +276,11 @@ class _CategoryCard extends StatelessWidget {
   final bool isSelected;
   final VoidCallback onTap;
 
-  const _CategoryCard({required this.label, required this.isSelected, required this.onTap});
+  const _CategoryCard({
+    required this.label,
+    required this.isSelected,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -299,7 +339,11 @@ class _ProductGrid extends ConsumerWidget {
   final List<TransactionItem> cart;
   final bool isWide;
 
-  const _ProductGrid({required this.products, required this.cart, required this.isWide});
+  const _ProductGrid({
+    required this.products,
+    required this.cart,
+    required this.isWide,
+  });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -310,11 +354,13 @@ class _ProductGrid extends ConsumerWidget {
         right: isWide ? 24 : 16,
         bottom: 24,
       ),
-      gridDelegate: productGridDelegate,
+      gridDelegate: productGridDelegateFor(context),
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];
-        final cartItem = cart.where((item) => item.productId == product.id).firstOrNull;
+        final cartItem = cart
+            .where((item) => item.productId == product.id)
+            .firstOrNull;
         return ProductCard(
           product: product,
           cartQty: cartItem?.qty ?? 0,
@@ -331,8 +377,11 @@ class _ProductGrid extends ConsumerWidget {
                   if (stock != null && inCart >= stock) {
                     ScaffoldMessenger.of(context)
                       ..hideCurrentSnackBar()
-                      ..showSnackBar(SnackBar(
-                          content: Text('Stok ${product.name} tinggal $stock')));
+                      ..showSnackBar(
+                        SnackBar(
+                          content: Text('Stok ${product.name} tinggal $stock'),
+                        ),
+                      );
                     return;
                   }
                   ref.read(cartProvider.notifier).addItem(product);
@@ -361,20 +410,28 @@ class _CartPanel extends ConsumerWidget {
         Padding(
           // Layar pendek (landscape HP): padding atas kecil agar panel muat.
           padding: EdgeInsets.only(
-              top: MediaQuery.sizeOf(context).height < 500 ? 12 : 48,
-              left: 24,
-              right: 24,
-              bottom: 16),
+            top: MediaQuery.sizeOf(context).height < 500 ? 12 : 48,
+            left: 24,
+            right: 24,
+            bottom: 16,
+          ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Rincian Pesanan', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
+              Text(
+                'Rincian Pesanan',
+                style: textTheme.titleLarge?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
               if (resumed != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
                     'Melanjutkan pesanan "${resumed.label}"',
-                    style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
             ],
@@ -383,11 +440,18 @@ class _CartPanel extends ConsumerWidget {
         Expanded(
           child: cart.isEmpty
               ? Center(
-                  child: Text('Keranjang kosong',
-                      style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                  child: Text(
+                    'Keranjang kosong',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
                 )
               : ListView.separated(
-                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 24,
+                    vertical: 8,
+                  ),
                   itemCount: cart.length,
                   separatorBuilder: (_, __) => const Divider(height: 32),
                   itemBuilder: (_, i) => _CartItemRow(
@@ -402,93 +466,137 @@ class _CartPanel extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
-            color: AppColors.surface,
-            boxShadow: [
-              BoxShadow(color: Color(0x1F0E0E0E), blurRadius: 10, offset: Offset(0, -4))
-            ],
+              color: AppColors.surface,
+              boxShadow: [
+                BoxShadow(
+                  color: Color(0x1F0E0E0E),
+                  blurRadius: 10,
+                  offset: Offset(0, -4),
+                ),
+              ],
+            ),
+            child: Column(
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Flexible(
+                      child: Text(
+                        'Jumlah item (${cart.fold(0, (s, i) => s + i.qty)})',
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    AmountText(
+                      amount: subtotal,
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Total',
+                      style: textTheme.titleLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: FittedBox(
+                        fit: BoxFit.scaleDown,
+                        alignment: Alignment.centerRight,
+                        child: AmountText(
+                          amount: subtotal,
+                          style: textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 24),
+                Row(
+                  children: [
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: cart.isEmpty
+                            ? null
+                            : () => _saveOpen(context, ref),
+                        style: OutlinedButton.styleFrom(
+                          backgroundColor: AppColors.surface,
+                          foregroundColor: AppColors.textPrimary,
+                          minimumSize: const Size(0, 56),
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          side: const BorderSide(color: AppColors.border),
+                          elevation: 0,
+                        ),
+                        child: Text(
+                          'Simpan',
+                          style: AppTypography.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: cart.isEmpty
+                            ? null
+                            : () => _checkout(context, ref),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.primary,
+                          foregroundColor: AppColors.onPrimary,
+                          minimumSize: const Size(double.infinity, 56),
+                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          elevation: 0,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Flexible(
+                              child: Text(
+                                'Bayar',
+                                overflow: TextOverflow.ellipsis,
+                                style: AppTypography.textTheme.titleMedium
+                                    ?.copyWith(
+                                      color: AppColors.onPrimary,
+                                      fontWeight: FontWeight.w700,
+                                    ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            const Icon(AppIcons.arrowRight, size: AppIcons.md),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+            ),
           ),
-          child: Column(
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Flexible(child: Text('Jumlah item (${cart.fold(0, (s, i) => s + i.qty)})', overflow: TextOverflow.ellipsis, style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary))),
-                  const SizedBox(width: 8),
-                  AmountText(amount: subtotal, style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text('Total', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(width: 8),
-                  Flexible(
-                    child: FittedBox(
-                      fit: BoxFit.scaleDown,
-                      alignment: Alignment.centerRight,
-                      child: AmountText(
-                        amount: subtotal,
-                        style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 24),
-              Row(
-                children: [
-                  Expanded(
-                    child: OutlinedButton(
-                      onPressed: cart.isEmpty ? null : () => _saveOpen(context, ref),
-                      style: OutlinedButton.styleFrom(
-                        backgroundColor: AppColors.surface,
-                        foregroundColor: AppColors.textPrimary,
-                        minimumSize: const Size(0, 56),
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        side: const BorderSide(color: AppColors.border),
-                        elevation: 0,
-                      ),
-                      child: Text('Simpan', style: AppTypography.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700)),
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: ElevatedButton(
-                      onPressed: cart.isEmpty ? null : () => _checkout(context, ref),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.primary,
-                        foregroundColor: AppColors.onPrimary,
-                        minimumSize: const Size(double.infinity, 56),
-                        padding: const EdgeInsets.symmetric(vertical: 20),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-                        elevation: 0,
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Flexible(child: Text('Bayar', overflow: TextOverflow.ellipsis, style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.w700))),
-                          const SizedBox(width: 8),
-                          const Icon(AppIcons.arrowRight, size: AppIcons.md),
-                        ],
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
       ],
     );
   }
 
   void _checkout(BuildContext context, WidgetRef ref) {
-    showDialog(
-      context: context,
-      builder: (_) => const CheckoutDialog(),
-    );
+    showDialog(context: context, builder: (_) => const CheckoutDialog());
   }
 
   /// Simpan keranjang sebagai pesanan terbuka (bayar nanti).
@@ -535,7 +643,9 @@ class _CartItemRow extends StatelessWidget {
                 children: [
                   Text(
                     item.name,
-                    style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -580,10 +690,14 @@ class _CartItemRow extends StatelessWidget {
                       ),
                     ),
                     if (item.discount > 0)
-                      Text('Disc: Rp ${item.discount}',
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: textTheme.labelSmall?.copyWith(color: AppColors.error)),
+                      Text(
+                        'Disc: Rp ${item.discount}',
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: AppColors.error,
+                        ),
+                      ),
                   ],
                 ),
               ),
@@ -616,8 +730,9 @@ class _NoteDialog extends StatefulWidget {
 }
 
 class _NoteDialogState extends State<_NoteDialog> {
-  late final TextEditingController _ctrl =
-      TextEditingController(text: widget.initial);
+  late final TextEditingController _ctrl = TextEditingController(
+    text: widget.initial,
+  );
 
   @override
   void dispose() {
@@ -680,11 +795,11 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
   int get _discInput => int.tryParse(_discCtrl.text) ?? 0;
 
   CheckoutCalc get _calc => CheckoutCalc(
-        items: ref.read(cartProvider),
-        discount: _discInput,
-        percent: _percentMode ? _discInput : null,
-        paid: int.tryParse(_paidCtrl.text) ?? 0,
-      );
+    items: ref.read(cartProvider),
+    discount: _discInput,
+    percent: _percentMode ? _discInput : null,
+    paid: int.tryParse(_paidCtrl.text) ?? 0,
+  );
   int get _subtotal => _calc.subtotal;
 
   /// Rupiah yang benar-benar dipotong (sama dengan yang dipakai total & laba).
@@ -747,8 +862,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                   padding: const EdgeInsets.only(top: 4),
                   child: Text(
                     'Potongan ${formatRupiah(_discount)}',
-                    style: textTheme.bodySmall
-                        ?.copyWith(color: AppColors.textSecondary),
+                    style: textTheme.bodySmall?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
                   ),
                 ),
               const Divider(height: 24),
@@ -816,21 +932,23 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
     );
   }
 
-  Widget _row(String label, int amount, TextTheme tt,
-      {bool bold = false}) {
+  Widget _row(String label, int amount, TextTheme tt, {bool bold = false}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(label,
-              style: bold
-                  ? tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)
-                  : tt.bodyLarge),
+          Text(
+            label,
+            style: bold
+                ? tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)
+                : tt.bodyLarge,
+          ),
           AmountText(
             amount: amount,
-            style: (bold ? tt.titleMedium : tt.bodyLarge)
-                ?.copyWith(fontWeight: bold ? FontWeight.w700 : null),
+            style: (bold ? tt.titleMedium : tt.bodyLarge)?.copyWith(
+              fontWeight: bold ? FontWeight.w700 : null,
+            ),
           ),
         ],
       ),
@@ -883,8 +1001,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
         subtotal: _subtotal,
         discount: _discount,
         discountType: _discount > 0 && _percentMode ? 'percent' : 'nominal',
-        discountPercent:
-            _discount > 0 && _percentMode ? _discInput.clamp(0, 100) : null,
+        discountPercent: _discount > 0 && _percentMode
+            ? _discInput.clamp(0, 100)
+            : null,
         total: _total,
         paid: _paid,
         change: _change,
@@ -910,8 +1029,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
           if (mounted) {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content:
-                    Text('${e.message}. Tekan "Simpan & Cetak" lagi untuk transaksi baru.'),
+                content: Text(
+                  '${e.message}. Tekan "Simpan & Cetak" lagi untuk transaksi baru.',
+                ),
               ),
             );
           }
@@ -935,23 +1055,22 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
     } on InsufficientStockException catch (e) {
       // Dialog tetap terbuka & keranjang utuh: kasir kurangi qty lalu bayar lagi.
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.message)),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text(e.message)));
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal: $e')));
       }
     } finally {
       if (mounted) setState(() => _saving = false);
     }
   }
 
-  Future<void> _tryPrint(
-      models.Transaction txn, RestoProfile profile) async {
+  Future<void> _tryPrint(models.Transaction txn, RestoProfile profile) async {
     try {
       final bytes = await ReceiptBuilder.buildReceipt(txn, profile);
       final printer = ref.read(printerServiceProvider);

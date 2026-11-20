@@ -64,9 +64,12 @@ class BackupReminderBanner extends ConsumerWidget {
       return const SizedBox.shrink();
     }
 
+    final phone = MediaQuery.sizeOf(context).width < 600;
     return Container(
-      margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      margin: phone
+          ? const EdgeInsets.fromLTRB(12, 6, 12, 2)
+          : const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      padding: EdgeInsets.symmetric(horizontal: 12, vertical: phone ? 2 : 8),
       decoration: BoxDecoration(
         color: AppColors.warning.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(12),
@@ -79,14 +82,16 @@ class BackupReminderBanner extends ConsumerWidget {
           const SizedBox(width: 8),
           Expanded(
             child: Text(
-              'Belum ada backup lebih dari 7 hari',
+              phone ? 'Belum backup > 7 hari' : 'Belum ada backup lebih dari 7 hari',
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
               style: AppTypography.textTheme.bodyMedium,
             ),
           ),
           const SizedBox(width: 8),
           TextButton(
             onPressed: () => runBackupNow(ref, context),
-            child: const Text('Backup sekarang'),
+            child: Text(phone ? 'Backup' : 'Backup sekarang'),
           ),
         ],
       ),

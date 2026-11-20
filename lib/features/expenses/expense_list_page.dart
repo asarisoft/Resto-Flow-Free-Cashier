@@ -200,47 +200,68 @@ class _Summary extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
-    return Wrap(
-      spacing: 12,
-      runSpacing: 12,
-      children: [
-        SizedBox(
-          width: 320,
-          child: AppCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Total pengeluaran · $periodLabel',
-                  style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-                ),
-                const SizedBox(height: 8),
-                AmountText(
-                  amount: total,
-                  style: textTheme.displayMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.price,
-                  ),
-                ),
-              ],
+    final totalCard = AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            'Total pengeluaran · $periodLabel',
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: 8),
+          FittedBox(
+            fit: BoxFit.scaleDown,
+            alignment: Alignment.centerLeft,
+            child: AmountText(
+              amount: total,
+              style: textTheme.displayMedium?.copyWith(
+                fontWeight: FontWeight.w700,
+                color: AppColors.price,
+              ),
             ),
           ),
-        ),
-        SizedBox(
-          width: 200,
-          child: AppCard(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+        ],
+      ),
+    );
+    final countCard = AppCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Jumlah catatan',
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: 8),
+          Text('$count', style: textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w700)),
+        ],
+      ),
+    );
+    return LayoutBuilder(
+      builder: (_, c) {
+        // HP: dua kartu sebaris dengan tinggi sama.
+        if (c.maxWidth < 600) {
+          return IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                Text('Jumlah catatan',
-                    style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
-                const SizedBox(height: 8),
-                Text('$count', style: textTheme.displayMedium?.copyWith(fontWeight: FontWeight.w700)),
+                Expanded(flex: 3, child: totalCard),
+                const SizedBox(width: 12),
+                Expanded(flex: 2, child: countCard),
               ],
             ),
-          ),
-        ),
-      ],
+          );
+        }
+        return Wrap(
+          spacing: 12,
+          runSpacing: 12,
+          children: [
+            SizedBox(width: 320, child: totalCard),
+            SizedBox(width: 200, child: countCard),
+          ],
+        );
+      },
     );
   }
 }

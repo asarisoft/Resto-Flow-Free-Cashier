@@ -65,6 +65,12 @@ class AppTheme {
           textStyle: textTheme.labelLarge,
         ),
       ),
+      // Bar bawah HP (5 tab di ±375 dp): label kecil agar "Pengeluaran" tidak patah.
+      navigationBarTheme: NavigationBarThemeData(
+        labelTextStyle: WidgetStatePropertyAll(
+          AppTypography.textTheme.labelSmall?.copyWith(letterSpacing: 0),
+        ),
+      ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
         backgroundColor: AppColors.primary,
         foregroundColor: AppColors.onPrimary,

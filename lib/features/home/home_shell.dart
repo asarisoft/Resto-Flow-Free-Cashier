@@ -236,24 +236,29 @@ class _MainShellState extends ConsumerState<_MainShell> {
           );
         }
 
+        // HP: maks 5 tab agar label tidak patah; Pengguna dibuka dari Pengaturan.
+        final navTabs = [for (final t in tabs) if (t != HomeTab.users) t];
+        final navCurrent = _tab < navTabs.length ? _tab : 0;
+        final navPages = [for (final t in navTabs) pages[tabs.indexOf(t)]];
+
         return Scaffold(
           body: Column(
             children: [
               const BackupReminderBanner(),
               Expanded(
                 child: IndexedStack(
-                  index: current,
-                  children: pages,
+                  index: navCurrent,
+                  children: navPages,
                 ),
               ),
             ],
           ),
           bottomNavigationBar: NavigationBar(
-            selectedIndex: current,
+            selectedIndex: navCurrent,
             onDestinationSelected: (i) => setState(() => _tab = i),
             backgroundColor: AppColors.surface,
             indicatorColor: AppColors.primary.withValues(alpha: 0.2),
-            destinations: [for (final tab in tabs) _navDestination(tab)],
+            destinations: [for (final tab in navTabs) _navDestination(tab)],
           ),
         );
       },

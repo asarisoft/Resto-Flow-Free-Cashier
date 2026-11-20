@@ -16,6 +16,17 @@ const productGridDelegate = SliverGridDelegateWithMaxCrossAxisExtent(
   childAspectRatio: 0.8,
 );
 
+/// HP (< 600 dp): kartu lebih pendek supaya lebih banyak menu terlihat.
+const productGridDelegatePhone = SliverGridDelegateWithMaxCrossAxisExtent(
+  maxCrossAxisExtent: 220,
+  mainAxisSpacing: 12,
+  crossAxisSpacing: 12,
+  childAspectRatio: 0.95,
+);
+
+SliverGridDelegate productGridDelegateFor(BuildContext context) =>
+    MediaQuery.sizeOf(context).width < 600 ? productGridDelegatePhone : productGridDelegate;
+
 /// Kartu produk: foto penuh lebar (cover), nama 1 baris, harga + chip status.
 /// [cartQty] > 0 menandai terpilih (POS). [onToggleReady] membuat chip bisa diketuk.
 class ProductCard extends StatelessWidget {

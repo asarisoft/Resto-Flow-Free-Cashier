@@ -19,6 +19,7 @@ import '../../features/users/users_providers.dart';
 import '../../features/users/password_dialogs.dart';
 import '../activity_log/activity_log_page.dart';
 import '../auth/auto_lock.dart';
+import '../users/user_list_page.dart';
 import '../activity_log/activity_log_providers.dart';
 import 'settings_providers.dart';
 
@@ -139,6 +140,22 @@ class SettingsPage extends ConsumerWidget {
                 ),
                 const SizedBox(height: 12),
                 const AppCard(child: _AutoLockTile()),
+                // HP: tab Pengguna tidak ada di bar bawah (maks 5 tab).
+                if (ref.watch(canManageUsersProvider) &&
+                    MediaQuery.sizeOf(context).width <= 800) ...[
+                  const SizedBox(height: 12),
+                  AppCard(
+                    child: ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      leading: const Icon(AppIcons.users, color: AppColors.textPrimary),
+                      title: Text('Pengguna', style: textTheme.bodyLarge),
+                      trailing: const Icon(AppIcons.arrowRight, color: AppColors.textSecondary),
+                      onTap: () => Navigator.of(context).push(
+                        MaterialPageRoute(builder: (_) => const UserListPage()),
+                      ),
+                    ),
+                  ),
+                ],
               ],
               if (canBackup) ...[
                 const SizedBox(height: 12),

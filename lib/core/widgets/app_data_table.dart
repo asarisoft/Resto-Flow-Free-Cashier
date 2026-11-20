@@ -19,8 +19,9 @@ class AppColumn<T> {
   });
 }
 
-/// Tabel data standar: header kolom, baris berpembatas, angka rata kanan,
-/// scroll horizontal di layar sempit, dan "Tampilkan lebih banyak" per [pageSize] baris.
+/// Tabel data standar: header kolom, baris berpembatas, angka rata kanan.
+/// Di layar sempit (< [cardBreakpoint]) tiap baris tampil sebagai kartu
+/// (kolom pertama = judul, kolom lain = "label … nilai"), dan "Tampilkan lebih banyak" per [pageSize] baris.
 class AppDataTable<T> extends StatefulWidget {
   final List<AppColumn<T>> columns;
   final List<T> rows;
@@ -28,6 +29,9 @@ class AppDataTable<T> extends StatefulWidget {
   final String Function(T row)? rowLabel;
   final int pageSize;
   final Widget? empty;
+
+  /// Lebar di bawah ini → mode kartu (HP).
+  static const cardBreakpoint = 600.0;
 
   const AppDataTable({
     super.key,
@@ -109,6 +113,69 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
       );
     }
 
+    // Mode kartu untuk HP: tanpa scroll horizontal, tidak ada kolom terpotong.
+    Widget cardFor(T r) {
+      final first = widget.columns.first;
+      final actions = widget.columns.skip(1).where((c) => c.label.isEmpty);
+      final fields = widget.columns.skip(1).where((c) => c.label.isNotEmpty);
+      final card = Container(
+        decoration: const BoxDecoration(
+          border: Border(top: BorderSide(color: AppColors.border)),
+        ),
+        padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                Expanded(
+                  child: DefaultTextStyle.merge(
+                    style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                    child: first.cell(r),
+                  ),
+                ),
+                for (final c in actions) c.cell(r),
+              ],
+            ),
+            for (final c in fields)
+              Padding(
+                padding: const EdgeInsets.only(top: 6, right: 8),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: Text(c.label,
+                          style: textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.textSecondary)),
+                    ),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      flex: 3,
+                      child: Align(alignment: Alignment.centerRight, child: c.cell(r)),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+        ),
+      );
+      if (widget.onRowTap == null) return card;
+      return TapArea(
+        label: widget.rowLabel?.call(r) ?? 'Baris data',
+        onTap: () => widget.onRowTap!(r),
+        child: card,
+      );
+    }
+
+    final cards = Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        for (final r in shown) cardFor(r),
+      ],
+    );
+
     final table = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -128,6 +195,7 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
         children: [
           LayoutBuilder(
             builder: (_, constraints) {
+              if (constraints.maxWidth < AppDataTable.cardBreakpoint) return cards;
               if (constraints.maxWidth >= _minWidth) return table;
               return SingleChildScrollView(
                 scrollDirection: Axis.horizontal,

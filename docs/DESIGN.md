@@ -109,6 +109,17 @@ Sebelumnya: Material `Icons.*` (diganti).
 Aturan: ikon tombol tanpa teks wajib `tooltip`; ikon dekoratif di samping teks tidak diberi label;
 satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 
+## Responsif HP (< 600 dp)
+
+- `AppDataTable` → mode kartu: kolom pertama jadi judul, kolom lain baris "label … nilai", kolom tanpa label
+  (aksi) di kanan judul. Tidak ada scroll horizontal.
+- `FilterPanel` → chip periode satu baris yang bisa digeser; field lain dilipat di "Filter lainnya"
+  (terbuka sendiri bila ada filter aktif).
+- Bar bawah maks 5 tab (label 11 sp). Pengguna dibuka dari Pengaturan di HP; sidebar tablet tetap 6.
+- Kartu ringkasan Laporan 2 kolom; Pengeluaran 2 kartu sebaris; angka besar `FittedBox` (menyusut, tidak terpotong).
+- Kartu produk lebih pendek (`productGridDelegatePhone`, rasio 0,95). Banner backup satu baris.
+- Baris keranjang dua baris (nama/catatan, lalu qty + subtotal). Dijaga `pos_cart_overflow_test` di 5 ukuran.
+
 ## Layout Login (split panel)
 
 - **Lebar ≥ 720 dp**: panel brand oranye (`primary`, teks `onPrimary` penuh, tanpa transparansi demi kontras)
