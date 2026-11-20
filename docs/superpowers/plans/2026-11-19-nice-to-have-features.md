@@ -97,7 +97,7 @@
 ### 12. #17 Kunci otomatis
 - [x] Idle N menit (atur di Pengaturan) → kembali ke login / layar kunci
 - [x] Keranjang tidak hilang saat terkunci
-- [ ] `/security-review` (ditunda ke reviewer Opus; catatan: kunci hanya pengaman layar, bukan enkripsi DB; hitungan salah-password + jeda 30 dtk ada di memori, menutup paksa app mengulangnya)
+- [ ] `/security-review` (ditunda ke reviewer Opus; catatan: kunci hanya pengaman layar, bukan enkripsi DB; hitungan salah-password + jeda 30 dtk kini disimpan di shared_preferences)
 
 ### 13. #11 Menu terlaris & jam ramai
 - [x] Top N produk per periode (qty & omzet)

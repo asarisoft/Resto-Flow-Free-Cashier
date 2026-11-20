@@ -70,6 +70,7 @@ class _ProductFormDialogState extends ConsumerState<ProductFormDialog> {
       saving: _saving,
       submitLabel: _editing ? 'Simpan Perubahan' : 'Tambah',
       onSubmit: _save,
+      onDelete: _editing ? _delete : null,
       fields: [
             Center(
               child: ConstrainedBox(
@@ -165,6 +166,42 @@ class _ProductFormDialogState extends ConsumerState<ProductFormDialog> {
       _pickedFile = file;
       _imagePath = null;
     });
+  }
+
+  /// Arsipkan produk (soft delete): hilang dari menu & POS, riwayat transaksi
+  /// tetap utuh karena item menyimpan salinan nama/harga.
+  Future<void> _delete() async {
+    final p = widget.product!;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Hapus produk?'),
+        content: Text('"${p.name}" dihapus dari menu. Riwayat transaksi tetap tersimpan.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text('Batal')),
+          FilledButton(
+            style: FilledButton.styleFrom(backgroundColor: AppColors.error),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Hapus'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    setState(() => _saving = true);
+    try {
+      await ref.read(productRepositoryProvider).delete(p.id!);
+      await logActivity(ref, 'product.delete', p.name);
+      ref.invalidate(productListProvider);
+      if (mounted) Navigator.of(context).pop();
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Gagal hapus: $e')));
+      }
+    } finally {
+      if (mounted) setState(() => _saving = false);
+    }
   }
 
   Future<void> _save() async {

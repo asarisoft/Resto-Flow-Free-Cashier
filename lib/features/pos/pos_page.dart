@@ -193,12 +193,21 @@ class _PosPageState extends ConsumerState<PosPage> {
                 children: [
                   const Icon(AppIcons.cart, color: AppColors.onPrimary),
                   const SizedBox(width: 12),
-                  Text('${cart.fold(0, (s, i) => s + i.qty)} item',
-                      style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.bold)),
-                  const Spacer(),
-                  AmountText(
-                    amount: cart.fold(0, (s, i) => s + i.subtotal),
-                    style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.bold),
+                  Flexible(
+                    child: Text('${cart.fold(0, (s, i) => s + i.qty)} item',
+                        overflow: TextOverflow.ellipsis,
+                        style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.bold)),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: AmountText(
+                        amount: cart.fold(0, (s, i) => s + i.subtotal),
+                        style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -350,7 +359,12 @@ class _CartPanel extends ConsumerWidget {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Padding(
-          padding: const EdgeInsets.only(top: 48, left: 24, right: 24, bottom: 16),
+          // Layar pendek (landscape HP): padding atas kecil agar panel muat.
+          padding: EdgeInsets.only(
+              top: MediaQuery.sizeOf(context).height < 500 ? 12 : 48,
+              left: 24,
+              right: 24,
+              bottom: 16),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
@@ -398,7 +412,8 @@ class _CartPanel extends ConsumerWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text('Jumlah item (${cart.fold(0, (s, i) => s + i.qty)})', style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+                  Flexible(child: Text('Jumlah item (${cart.fold(0, (s, i) => s + i.qty)})', overflow: TextOverflow.ellipsis, style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary))),
+                  const SizedBox(width: 8),
                   AmountText(amount: subtotal, style: textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
                 ],
               ),
@@ -407,9 +422,16 @@ class _CartPanel extends ConsumerWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Total', style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold)),
-                  AmountText(
-                    amount: subtotal,
-                    style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: AmountText(
+                        amount: subtotal,
+                        style: textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -444,9 +466,9 @@ class _CartPanel extends ConsumerWidget {
                         elevation: 0,
                       ),
                       child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
+                        mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text('Bayar', style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.w700)),
+                          Flexible(child: Text('Bayar', overflow: TextOverflow.ellipsis, style: AppTypography.textTheme.titleMedium?.copyWith(color: AppColors.onPrimary, fontWeight: FontWeight.w700))),
                           const SizedBox(width: 8),
                           const Icon(AppIcons.arrowRight, size: AppIcons.md),
                         ],
@@ -493,79 +515,78 @@ class _CartItemRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
+    // Dua baris supaya muat di panel sempit (HP & panel keranjang tablet):
+    // [nama + catatan]  /  [stepper qty ........ subtotal]
     return Padding(
       padding: const EdgeInsets.only(bottom: 16),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            width: 50,
-            height: 50,
-            decoration: BoxDecoration(
-              color: AppColors.primary.withValues(alpha: 0.1),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: const Icon(AppIcons.food, color: AppColors.primary),
-          ),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                TapArea(
-                  label: item.note == null || item.note!.isEmpty
-                      ? 'Tambah catatan ${item.name}'
-                      : 'Ubah catatan ${item.name}',
-                  onTap: () => _editNote(context),
-                  borderRadius: BorderRadius.circular(8),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 2),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          item.name,
-                          style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                        if (item.note != null && item.note!.isNotEmpty)
-                          Padding(
-                            padding: const EdgeInsets.only(top: 2),
-                            child: Text(
-                              item.note!,
-                              style: textTheme.labelSmall?.copyWith(
-                                color: AppColors.textSecondary,
-                                fontStyle: FontStyle.italic,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                      ],
-                    ),
+          TapArea(
+            label: item.note == null || item.note!.isEmpty
+                ? 'Tambah catatan ${item.name}'
+                : 'Ubah catatan ${item.name}',
+            onTap: () => _editNote(context),
+            borderRadius: BorderRadius.circular(8),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 2),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    item.name,
+                    style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.bold),
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                   ),
-                ),
-                const SizedBox(height: 8),
-                QtyStepper(
-                  value: item.qty,
-                  onChanged: (q) => notifier.updateQty(index, q),
-                ),
-              ],
+                  if (item.note != null && item.note!.isNotEmpty)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Text(
+                        item.note!,
+                        style: textTheme.labelSmall?.copyWith(
+                          color: AppColors.textSecondary,
+                          fontStyle: FontStyle.italic,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.end,
+          const SizedBox(height: 4),
+          Row(
             children: [
-              AmountText(
-                amount: item.subtotal,
-                style: textTheme.titleSmall?.copyWith(
-                  color: AppColors.price,
-                  fontWeight: FontWeight.bold,
+              QtyStepper(
+                value: item.qty,
+                onChanged: (q) => notifier.updateQty(index, q),
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    FittedBox(
+                      fit: BoxFit.scaleDown,
+                      alignment: Alignment.centerRight,
+                      child: AmountText(
+                        amount: item.subtotal,
+                        style: textTheme.titleSmall?.copyWith(
+                          color: AppColors.price,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    if (item.discount > 0)
+                      Text('Disc: Rp ${item.discount}',
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: textTheme.labelSmall?.copyWith(color: AppColors.error)),
+                  ],
                 ),
               ),
-              if (item.discount > 0)
-                Text('Disc: Rp ${item.discount}', style: textTheme.labelSmall?.copyWith(color: AppColors.error)),
             ],
           ),
         ],

@@ -213,6 +213,47 @@ class _LockBodyState extends ConsumerState<_LockBody> {
   String? _error;
   Timer? _cooldownTimer;
 
+  // Disimpan agar menutup paksa app tidak memberi percobaan baru.
+  static const _failKey = 'unlock_failed_count';
+  static const _untilKey = 'unlock_cooldown_until_ms';
+
+  @override
+  void initState() {
+    super.initState();
+    _restore();
+  }
+
+  Future<void> _restore() async {
+    final prefs = await SharedPreferences.getInstance();
+    final until = prefs.getInt(_untilKey);
+    final remaining = until == null
+        ? Duration.zero
+        : DateTime.fromMillisecondsSinceEpoch(until).difference(DateTime.now());
+    if (!mounted) return;
+    setState(() {
+      _failed = prefs.getInt(_failKey) ?? 0;
+      if (remaining > Duration.zero) {
+        _startCooldown(remaining > unlockCooldown ? unlockCooldown : remaining);
+        _error = 'Terlalu banyak percobaan. Coba lagi sebentar.';
+      }
+    });
+  }
+
+  void _startCooldown(Duration d) {
+    _coolingDown = true;
+    _cooldownTimer?.cancel();
+    _cooldownTimer = Timer(d, () {
+      SharedPreferences.getInstance().then((p) => p.remove(_untilKey));
+      if (mounted) setState(() => _coolingDown = false);
+    });
+  }
+
+  Future<void> _persist({DateTime? until}) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setInt(_failKey, _failed);
+    if (until != null) await prefs.setInt(_untilKey, until.millisecondsSinceEpoch);
+  }
+
   @override
   void dispose() {
     _cooldownTimer?.cancel();
@@ -230,18 +271,21 @@ class _LockBodyState extends ConsumerState<_LockBody> {
     final ok = await ref.read(unlockVerifierProvider)(user.username, _pw.text);
     if (!mounted) return;
     if (ok) {
+      _failed = 0;
+      await _persist();
       ref.read(lockedProvider.notifier).state = false;
       return;
     }
     _failed++;
     _pw.clear();
+    DateTime? until;
     if (_failed >= maxUnlockAttempts) {
       _failed = 0;
-      _coolingDown = true;
-      _cooldownTimer = Timer(unlockCooldown, () {
-        if (mounted) setState(() => _coolingDown = false);
-      });
+      until = DateTime.now().add(unlockCooldown);
+      _startCooldown(unlockCooldown);
     }
+    await _persist(until: until);
+    if (!mounted) return;
     setState(() {
       _checking = false;
       _error = _coolingDown

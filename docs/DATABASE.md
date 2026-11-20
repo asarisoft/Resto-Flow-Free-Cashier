@@ -184,7 +184,7 @@ Aturan:
 - Ditulis lewat `recordActivity` / `logActivity` **setelah** aksi utama sukses; gagal tulis
   hanya `debugPrint`, tidak menggagalkan aksi.
 - `backup.restore` ditulis ke DB hasil restore (username diambil sebelum DB diganti).
-- Belum ada aksi `product.delete`: tidak ada tombol hapus produk di UI saat ini.
+- `product.delete` = produk diarsipkan lewat tombol Hapus di form ubah produk (Owner); riwayat transaksi tetap.
   Selisih = `countedCash` − kas seharusnya (int, bisa minus).
 - Transaksi tetap bisa dicatat tanpa shift terbuka (shift tidak memblokir kasir).
 Data class Drift: **`ShiftRow`**.

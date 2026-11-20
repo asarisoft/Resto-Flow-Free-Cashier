@@ -367,7 +367,8 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
   dan sudah login.
 - Layar kunci menutup seluruh app termasuk dialog; tombol Back tidak menembus. Keranjang & pesanan
   terbuka tetap utuh. Buka kunci = password user yang sedang login (`UsersDao.verify`).
-- 5 kali salah berturut-turut → jeda 30 detik. "Ganti pengguna (logout)" tersedia di layar kunci;
+- 5 kali salah berturut-turut → jeda 30 detik. Hitungan & akhir jeda disimpan di `shared_preferences`
+  (menutup paksa app tidak memberi percobaan baru). "Ganti pengguna (logout)" tersedia di layar kunci;
   keranjang tidak dikosongkan oleh logout.
 
 ### 7.13 Menu Terlaris & Jam Ramai (Owner, di Laporan)

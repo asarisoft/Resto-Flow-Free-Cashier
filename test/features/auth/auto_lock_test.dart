@@ -318,4 +318,51 @@ void main() {
     addTearDown(c2.dispose);
     expect(await c2.read(autoLockMinutesProvider.future), 10);
   });
+
+  testWidgets('hitungan salah tersimpan: buka ulang app tidak memberi percobaan baru',
+      (tester) async {
+    final calls = <String>[];
+    await _pump(tester, minutes: 1, verifyCalls: calls);
+    await tester.pump(const Duration(minutes: 2));
+    await tester.pump();
+    for (var i = 0; i < 3; i++) {
+      await tester.enterText(find.byType(TextField), 'salah$i');
+      await tester.tap(find.text('Buka kunci'));
+      await tester.pump();
+      await tester.pump();
+    }
+
+    // "Tutup paksa": pohon widget dibuang, prefs tetap.
+    await tester.pumpWidget(const SizedBox());
+    await _pump(tester, minutes: 1, verifyCalls: calls, lockOnLaunch: true);
+    await tester.pump();
+    await tester.pump();
+    expect(_lockedText, findsOneWidget);
+    for (var i = 0; i < 2; i++) {
+      await tester.enterText(find.byType(TextField), 'lagi$i');
+      await tester.tap(find.text('Buka kunci'));
+      await tester.pump();
+      await tester.pump();
+    }
+    expect(calls.length, 5);
+    expect(find.textContaining('Terlalu banyak percobaan'), findsOneWidget);
+  });
+
+  testWidgets('jeda tersimpan langsung aktif saat app dibuka', (tester) async {
+    SharedPreferences.setMockInitialValues({
+      'unlock_cooldown_until_ms':
+          DateTime.now().add(const Duration(seconds: 20)).millisecondsSinceEpoch,
+    });
+    final calls = <String>[];
+    await _pump(tester, minutes: 1, verifyCalls: calls, lockOnLaunch: true);
+    await tester.pump();
+    await tester.pump();
+    expect(_lockedText, findsOneWidget);
+
+    await tester.enterText(find.byType(TextField), 'rahasia123');
+    await tester.tap(find.text('Buka kunci'), warnIfMissed: false);
+    await tester.pump();
+    expect(calls, isEmpty);
+    expect(_lockedText, findsOneWidget);
+  });
 }
