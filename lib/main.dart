@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/theme/app_scroll_behavior.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
+import 'features/auth/auto_lock.dart';
 import 'printer/printer_service.dart';
 import 'package:flutter/services.dart';
 
@@ -38,7 +39,10 @@ class _KasirRestoAppState extends ConsumerState<KasirRestoApp> {
     return MaterialApp.router(
       title: 'Resto Flow Free',
       theme: AppTheme.light,
-      builder: clampTextScale,
+      builder: (context, child) => clampTextScale(
+        context,
+        AutoLockGate(child: child ?? const SizedBox.shrink()),
+      ),
       scrollBehavior: const AppScrollBehavior(),
       routerConfig: router,
       debugShowCheckedModeBanner: false,

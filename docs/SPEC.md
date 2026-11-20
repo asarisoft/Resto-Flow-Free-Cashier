@@ -355,6 +355,17 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
   reset/ganti password (hanya nama user, bukan password), restore backup, tutup shift.
 - Gagal menulis log tidak menggagalkan aksi utama.
 
+### 7.12 Kunci Otomatis
+- Pengaturan (Owner) → "Kunci otomatis": Nonaktif (default) / 1 / 5 / 10 / 15 / 30 menit. Disimpan di
+  `shared_preferences` (`auto_lock_minutes`), per perangkat.
+- Terkunci bila: tidak ada sentuhan selama N menit (presisi ±10 dtk), app di background ≥ N menit,
+  atau app dibuka ulang (supaya kunci tidak bisa dilewati dengan menutup paksa app). Hanya bila fitur aktif
+  dan sudah login.
+- Layar kunci menutup seluruh app termasuk dialog; tombol Back tidak menembus. Keranjang & pesanan
+  terbuka tetap utuh. Buka kunci = password user yang sedang login (`UsersDao.verify`).
+- 5 kali salah berturut-turut → jeda 30 detik. "Ganti pengguna (logout)" tersedia di layar kunci;
+  keranjang tidak dikosongkan oleh logout.
+
 ---
 
 ## 8. Print Struk (ESC/POS)

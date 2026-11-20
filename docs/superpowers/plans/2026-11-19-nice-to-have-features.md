@@ -95,9 +95,9 @@
 - [x] Halaman log (Owner only), filter tanggal
 
 ### 12. #17 Kunci otomatis
-- [ ] Idle N menit (atur di Pengaturan) → kembali ke login / layar kunci
-- [ ] Keranjang tidak hilang saat terkunci
-- [ ] `/security-review`
+- [x] Idle N menit (atur di Pengaturan) → kembali ke login / layar kunci
+- [x] Keranjang tidak hilang saat terkunci
+- [ ] `/security-review` (ditunda ke reviewer Opus; catatan: kunci hanya pengaman layar, bukan enkripsi DB; hitungan salah-password + jeda 30 dtk ada di memori, menutup paksa app mengulangnya)
 
 ### 13. #11 Menu terlaris & jam ramai
 - [ ] Top N produk per periode (qty & omzet)

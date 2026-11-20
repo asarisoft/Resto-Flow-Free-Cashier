@@ -18,6 +18,7 @@ import '../../features/backup/backup_service.dart';
 import '../../features/users/users_providers.dart';
 import '../../features/users/password_dialogs.dart';
 import '../activity_log/activity_log_page.dart';
+import '../auth/auto_lock.dart';
 import '../activity_log/activity_log_providers.dart';
 import 'settings_providers.dart';
 
@@ -136,6 +137,8 @@ class SettingsPage extends ConsumerWidget {
                     ),
                   ),
                 ),
+                const SizedBox(height: 12),
+                const AppCard(child: _AutoLockTile()),
               ],
               if (canBackup) ...[
                 const SizedBox(height: 12),
@@ -562,5 +565,37 @@ class _EditProfileDialogState
     } finally {
       if (mounted) setState(() => _saving = false);
     }
+  }
+}
+
+/// Pilih menit idle sebelum layar terkunci (Owner). 0 = nonaktif.
+class _AutoLockTile extends ConsumerWidget {
+  const _AutoLockTile();
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final textTheme = AppTypography.textTheme;
+    final minutes = ref.watch(autoLockMinutesProvider).valueOrNull ?? 0;
+    return ListTile(
+      contentPadding: EdgeInsets.zero,
+      leading: const Icon(AppIcons.key, color: AppColors.textPrimary),
+      title: Text('Kunci otomatis', style: textTheme.bodyLarge),
+      subtitle: Text(
+        'Layar terkunci setelah tidak disentuh. Keranjang tetap aman.',
+        style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+      ),
+      trailing: DropdownButton<int>(
+        value: autoLockChoices.contains(minutes) ? minutes : 0,
+        underline: const SizedBox.shrink(),
+        items: [
+          for (final m in autoLockChoices)
+            DropdownMenuItem(
+                value: m, child: Text(m == 0 ? 'Nonaktif' : '$m menit')),
+        ],
+        onChanged: (v) {
+          if (v != null) ref.read(autoLockMinutesProvider.notifier).set(v);
+        },
+      ),
+    );
   }
 }
