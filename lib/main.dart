@@ -11,10 +11,9 @@ import 'package:flutter/services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await SystemChrome.setPreferredOrientations([
-    DeviceOrientation.landscapeLeft,
-    DeviceOrientation.landscapeRight,
-  ]);
+  final view = WidgetsBinding.instance.platformDispatcher.views.first;
+  final shortest = view.physicalSize.shortestSide / view.devicePixelRatio;
+  await SystemChrome.setPreferredOrientations(orientationsFor(shortest));
   runApp(const ProviderScope(child: KasirRestoApp()));
 }
 
@@ -58,3 +57,10 @@ Widget clampTextScale(BuildContext context, Widget? child) {
     child: child ?? const SizedBox.shrink(),
   );
 }
+
+/// HP (sisi terpendek < 600 dp): bebas portrait & landscape.
+/// Tablet: dikunci landscape (dipakai di meja kasir).
+List<DeviceOrientation> orientationsFor(double shortestSideDp) =>
+    shortestSideDp < 600
+        ? DeviceOrientation.values
+        : const [DeviceOrientation.landscapeLeft, DeviceOrientation.landscapeRight];
