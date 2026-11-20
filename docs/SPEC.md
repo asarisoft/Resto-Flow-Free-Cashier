@@ -212,6 +212,8 @@ Ringkasan tabel: `Products`, `Transactions`, `TransactionItems`, `Users`, `Resto
 - Sesi persist lintas restart app — tetap login sampai logout manual
 - Router redirect: cek `currentUserProvider` → null = ke `/login`, ada = ke `/home`
 - Logout: hapus session dari `shared_preferences`, invalidate provider
+- Owner bawaan (`UsersDao.defaultPassword`): selama password belum diganti, masuk ke home memunculkan dialog
+  "Ganti password bawaan" yang wajib diselesaikan (tanpa Batal, tidak bisa ditutup).
 
 ### Seed Default
 - DB kosong → buat user `admin` / `P@ssw0rd123` / role `owner` / `active=true`
@@ -389,7 +391,7 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 - **Void** transaksi lunas mengembalikan stok; dari 0 → produk otomatis ready lagi. Hanya transaksi `paid`
   yang bisa di-void (pesanan `open` tidak).
 - **Pesanan open** tidak memesan stok; stok baru dikurangi (dan dicek) saat pesanan dibayar.
-- POS: ketuk produk tidak menambah melebihi sisa ("Stok X tinggal N"). Chip kartu produk: "Sisa N".
+- POS: ketuk produk tidak menambah melebihi sisa ("Stok X tinggal N"; qty dijumlah dari semua baris produk itu). Chip kartu produk: "Sisa N".
 - Produk stok habis tidak bisa dijadikan ready lewat chip sebelum stoknya ditambah; mengubah stok jadi 0 di
   form otomatis menonaktifkan ready.
 - Batasan: stok diedit manual lewat form (belum ada riwayat/penyesuaian stok); void sesudah stok diedit manual

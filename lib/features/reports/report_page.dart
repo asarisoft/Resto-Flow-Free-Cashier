@@ -433,15 +433,17 @@ class _RevenueChartState extends ConsumerState<_RevenueChart> {
     'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des',
   ];
 
-  late final DateTime _now = DateTime.now();
   bool _daily = true;
 
   @override
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
+    // Dihitung tiap build (bukan sekali) agar ikut pindah bulan/tahun saat
+    // app terbuka melewati pergantian bulan.
+    final now = DateTime.now();
     final valuesAsync = _daily
-        ? ref.watch(dailyRevenueProvider(DateTime(_now.year, _now.month)))
-        : ref.watch(monthlyRevenueProvider(DateTime(_now.year)));
+        ? ref.watch(dailyRevenueProvider(DateTime(now.year, now.month)))
+        : ref.watch(monthlyRevenueProvider(DateTime(now.year)));
 
     return AppCard(
       child: Column(
@@ -473,8 +475,8 @@ class _RevenueChartState extends ConsumerState<_RevenueChart> {
                     label: _daily ? '${i + 1}' : _months[i],
                     value: values[i],
                     detail: _daily
-                        ? '${i + 1} ${_months[_now.month - 1]} ${_now.year} · ${formatRupiah(values[i])}'
-                        : '${_months[i]} ${_now.year} · ${formatRupiah(values[i])}',
+                        ? '${i + 1} ${_months[now.month - 1]} ${now.year} · ${formatRupiah(values[i])}'
+                        : '${_months[i]} ${now.year} · ${formatRupiah(values[i])}',
                   ),
               ],
             ),

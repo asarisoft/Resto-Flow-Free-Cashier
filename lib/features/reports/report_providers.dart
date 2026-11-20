@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' show TableUpdateQuery;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/database_provider.dart';
@@ -9,22 +10,32 @@ import 'report_repository.dart';
 final reportsDaoProvider =
     Provider<ReportsDao>((ref) => ReportsDao(ref.watch(databaseProvider)));
 
+/// Ringkasan laporan; dihitung ulang setiap tabel transaksi/pengeluaran
+/// berubah (halaman Laporan hidup terus di IndexedStack).
 final reportSummaryProvider =
-    FutureProvider.family<ReportSummary, DateTimeRange>((ref, range) async {
+    StreamProvider.family<ReportSummary, DateTimeRange>((ref, range) async* {
+  final db = ref.watch(databaseProvider);
   final reports = ref.watch(reportsDaoProvider);
 
-  final revenue = await reports.sumRevenue(range.start, range.end);
-  final profit = await reports.sumProfit(range.start, range.end);
-  final expense = await reports.sumExpenses(range.start, range.end);
-  final count = await reports.countTransactions(range.start, range.end);
+  Future<ReportSummary> load() async {
+    final revenue = await reports.sumRevenue(range.start, range.end);
+    final profit = await reports.sumProfit(range.start, range.end);
+    final expense = await reports.sumExpenses(range.start, range.end);
+    final count = await reports.countTransactions(range.start, range.end);
+    return ReportSummary(
+      totalRevenue: revenue,
+      totalProfit: profit,
+      totalExpense: expense,
+      transactionCount: count,
+      averagePerTransaction: count > 0 ? revenue ~/ count : 0,
+    );
+  }
 
-  return ReportSummary(
-    totalRevenue: revenue,
-    totalProfit: profit,
-    totalExpense: expense,
-    transactionCount: count,
-    averagePerTransaction: count > 0 ? revenue ~/ count : 0,
-  );
+  yield await load();
+  await for (final _ in db.tableUpdates(
+      TableUpdateQuery.onAllTables([db.transactions, db.expenses]))) {
+    yield await load();
+  }
 });
 
 final recentTransactionsProvider =

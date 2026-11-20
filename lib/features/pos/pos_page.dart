@@ -314,7 +314,12 @@ class _ProductGrid extends ConsumerWidget {
                   final stock = product.stock;
                   // Stok dilacak: jangan tambah melebihi sisa. (Penjaga
                   // terakhir ada di SalesDao saat bayar.)
-                  if (stock != null && (cartItem?.qty ?? 0) >= stock) {
+                  // Jumlahkan semua baris produk ini (catatan item bisa
+                  // memecah produk yang sama jadi beberapa baris).
+                  final inCart = cart
+                      .where((i) => i.productId == product.id)
+                      .fold(0, (s, i) => s + i.qty);
+                  if (stock != null && inCart >= stock) {
                     ScaffoldMessenger.of(context)
                       ..hideCurrentSnackBar()
                       ..showSnackBar(SnackBar(

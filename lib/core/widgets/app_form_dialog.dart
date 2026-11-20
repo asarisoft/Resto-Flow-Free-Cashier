@@ -15,6 +15,9 @@ class AppFormDialog extends StatelessWidget {
   final GlobalKey<FormState>? formKey;
   final VoidCallback? onDelete;
 
+  /// false = tanpa tombol Batal (dialog wajib diselesaikan).
+  final bool cancellable;
+
   const AppFormDialog({
     super.key,
     required this.title,
@@ -25,6 +28,7 @@ class AppFormDialog extends StatelessWidget {
     this.error,
     this.formKey,
     this.onDelete,
+    this.cancellable = true,
   });
 
   static double _width(BuildContext context) {
@@ -69,35 +73,41 @@ class AppFormDialog extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-Row(
-            children: [
-              Expanded(
-                child: OutlinedButton(
-                  onPressed: saving ? null : () => Navigator.of(context).pop(),
-                  style: OutlinedButton.styleFrom(
-                    minimumSize: const Size(0, 52),
-                    foregroundColor: AppColors.textPrimary,
-                    side: const BorderSide(color: AppColors.inputBorder),
+              Row(
+                children: [
+                  if (cancellable)
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: saving
+                            ? null
+                            : () => Navigator.of(context).pop(),
+                        style: OutlinedButton.styleFrom(
+                          minimumSize: const Size(0, 52),
+                          foregroundColor: AppColors.textPrimary,
+                          side: const BorderSide(color: AppColors.inputBorder),
+                        ),
+                        child: const Text('Batal'),
+                      ),
+                    ),
+                  if (cancellable) const SizedBox(width: 12),
+                  Expanded(
+                    child: PrimaryButton(
+                      label: submitLabel,
+                      loading: saving,
+                      onPressed: onSubmit,
+                    ),
                   ),
-                  child: const Text('Batal'),
-                ),
+                ],
               ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: PrimaryButton(
-                  label: submitLabel,
-                  loading: saving,
-                  onPressed: onSubmit,
-                ),
-              ),
-            ],
-          ),
               if (onDelete != null)
                 Padding(
                   padding: const EdgeInsets.only(top: 8),
                   child: TextButton.icon(
                     onPressed: saving ? null : onDelete,
-                    style: TextButton.styleFrom(foregroundColor: AppColors.error, minimumSize: const Size(0, 48)),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                      minimumSize: const Size(0, 48),
+                    ),
                     icon: const Icon(AppIcons.delete),
                     label: const Text('Hapus'),
                   ),

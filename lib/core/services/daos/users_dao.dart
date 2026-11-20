@@ -16,11 +16,22 @@ class UsersDao {
     }
   }
 
+  /// Password owner bawaan saat DB pertama dibuat. Wajib diganti saat login
+  /// pertama (lihat [usesDefaultPassword]).
+  static const defaultPassword = 'P@ssw0rd123';
+
+  /// True bila user masih memakai [defaultPassword].
+  Future<bool> usesDefaultPassword(String userId) async {
+    final row = await getById(userId);
+    if (row == null) return false;
+    return PasswordHasher.verify(defaultPassword, row.salt, row.passwordHash);
+  }
+
   Future<void> seedDefaultOwnerIfEmpty() async {
     final count = await db.select(db.users).get();
     if (count.isNotEmpty) return;
     final salt = PasswordHasher.generateSalt();
-    final hash = PasswordHasher.hash('P@ssw0rd123', salt);
+    final hash = PasswordHasher.hash(defaultPassword, salt);
     await db.into(db.users).insert(
           UsersCompanion.insert(
             id: 'admin',
