@@ -24,6 +24,7 @@ import '../reports/report_repository.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/services/csv_share.dart';
 import 'report_export.dart';
+import 'report_insights.dart';
 import '../auth/auth_controller.dart';
 import '../pos/pos_providers.dart';
 import '../users/users_providers.dart';
@@ -110,6 +111,10 @@ class _ReportPageState extends ConsumerState<ReportPage> {
               ),
               const SizedBox(height: 24),
               const _RevenueChart(),
+              const SizedBox(height: 24),
+              TopProductsCard(range: _range),
+              const SizedBox(height: 24),
+              HourlyCard(range: _range),
               const SizedBox(height: 24),
               Text('Transaksi', style: textTheme.titleMedium),
               const SizedBox(height: 12),

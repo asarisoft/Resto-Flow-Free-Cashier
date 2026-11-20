@@ -57,3 +57,17 @@ final monthlyRevenueProvider =
     StreamProvider.family<List<int>, DateTime>((ref, year) {
   return ref.watch(reportsDaoProvider).watchMonthlyRevenue(year);
 });
+
+/// Menu terlaris (top 5) pada rentang laporan; ikut diperbarui otomatis.
+final topProductsProvider = StreamProvider.family<List<ProductStat>,
+    ({DateTimeRange range, TopBy by})>((ref, a) {
+  return ref
+      .watch(reportsDaoProvider)
+      .watchTopProducts(a.range.start, a.range.end, by: a.by);
+});
+
+/// Omzet & transaksi per jam pada rentang laporan.
+final hourlyStatsProvider =
+    StreamProvider.family<HourlyStats, DateTimeRange>((ref, range) {
+  return ref.watch(reportsDaoProvider).watchHourly(range.start, range.end);
+});

@@ -34,6 +34,7 @@
 - Produk/menu: nama, kategori, harga, HPP, foto lokal, status ready
 - Laporan: omzet, laba kotor/bersih per hari & bulan
 - Grafik omzet: batang harian (bulan berjalan) & bulanan (tahun berjalan), offline
+- Menu terlaris (top 5, urut terjual/omzet) & jam ramai (omzet + jumlah transaksi per jam), mengikuti filter periode Laporan
 - Cetak struk via Bluetooth thermal printer (58mm / 80mm, ESC/POS)
 - Log aktivitas (Owner): jejak aksi penting (ubah produk, void, pengguna, password, restore, tutup kasir)
 - Shift kasir harian: buka (modal awal) & tutup laci (rekap omzet, pengeluaran, selisih) + cetak rekap
@@ -354,6 +355,16 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 - Dicatat: tambah/ubah produk, ubah status ready, void transaksi, tambah/(non)aktifkan pengguna,
   reset/ganti password (hanya nama user, bukan password), restore backup, tutup shift.
 - Gagal menulis log tidak menggagalkan aksi utama.
+
+### 7.13 Menu Terlaris & Jam Ramai (Owner, di Laporan)
+- Dua kartu di bawah Grafik Omzet, mengikuti filter **periode** Laporan (filter metode bayar/pencarian
+  tidak memengaruhi).
+- **Menu Terlaris**: top 5 produk; toggle urut Terjual (qty) / Omzet. Omzet item = (harga − diskon item) × qty;
+  diskon tingkat transaksi tidak dibagi ke item. Produk digabung per `product_id` (ganti nama → nama terbaru
+  dipakai); produk tanpa id (sudah dihapus) digabung per nama.
+- **Jam Ramai**: grafik batang omzet per jam (0–23, zona waktu lokal) + teks "Paling ramai: jam HH.00
+  (N transaksi)" berdasarkan jumlah transaksi (seri → jam lebih awal).
+- Hanya transaksi `paid` (void & pesanan open tidak dihitung). Data berupa stream: ikut diperbarui otomatis.
 
 ### 7.12 Kunci Otomatis
 - Pengaturan (Owner) → "Kunci otomatis": Nonaktif (default) / 1 / 5 / 10 / 15 / 30 menit. Disimpan di

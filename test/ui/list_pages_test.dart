@@ -144,7 +144,7 @@ void main() {
       }
       expect(find.text('#1'), findsOneWidget);
       expect(find.text('#2'), findsOneWidget);
-      expect(find.textContaining('2 transaksi'), findsOneWidget);
+      expect(find.textContaining('2 transaksi · Total'), findsOneWidget);
     });
 
     testWidgets('search by item name narrows the table', (tester) async {
@@ -161,7 +161,12 @@ void main() {
       await tester.tap(find.text('#1'));
       await tester.pump(const Duration(milliseconds: 400));
       expect(find.text('Transaksi #1'), findsOneWidget);
-      expect(find.text('Nasi Goreng'), findsOneWidget);
+      // Nama item juga tampil di kartu Menu Terlaris; cek yang di dalam dialog.
+      expect(
+        find.descendant(
+            of: find.byType(AlertDialog), matching: find.text('Nasi Goreng')),
+        findsOneWidget,
+      );
       expect(find.text('Cetak ulang'), findsWidgets);
     });
   });

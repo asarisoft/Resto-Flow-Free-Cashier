@@ -100,8 +100,8 @@
 - [ ] `/security-review` (ditunda ke reviewer Opus; catatan: kunci hanya pengaman layar, bukan enkripsi DB; hitungan salah-password + jeda 30 dtk ada di memori, menutup paksa app mengulangnya)
 
 ### 13. #11 Menu terlaris & jam ramai
-- [ ] Top N produk per periode (qty & omzet)
-- [ ] Omzet per jam (0–23)
+- [x] Top N produk per periode (qty & omzet)
+- [x] Omzet per jam (0–23)
 
 ### 14. #19 Diskon persen ⚠️
 - [ ] Update SPEC; `discountType` (nominal/persen), hasil dibulatkan ke rupiah int
