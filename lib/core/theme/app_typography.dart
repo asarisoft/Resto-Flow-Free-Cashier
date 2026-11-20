@@ -27,6 +27,7 @@ class AppTypography {
         titleSmall: _s(heading, 14, FontWeight.w500, 20),
         bodyLarge: _s(body, 16, FontWeight.w400, 24),
         bodyMedium: _s(body, 14, FontWeight.w400, 20),
+        bodySmall: _s(body, 12, FontWeight.w400, 16),
         labelLarge: _s(body, 14, FontWeight.w500, 20),
         labelSmall: _s(body, 11, FontWeight.w500, 16, letterSpacing: 0.5),
       );

@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir_resto/core/services/database.dart';
 import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/services/session_service.dart';
+import 'package:kasir_resto/core/theme/app_typography.dart';
 import 'package:kasir_resto/features/auth/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -52,5 +53,53 @@ void main() {
 
     expect(find.text('Username atau password salah'), findsOneWidget);
     expect(await SessionService().read(), isNull);
+  });
+
+  group('tata letak', () {
+    void setSize(WidgetTester tester, Size size) {
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.reset);
+    }
+
+    testWidgets('lebar (tablet): panel brand + form berdampingan', (tester) async {
+      setSize(tester, const Size(1024, 768));
+      await pumpLoginPage(tester);
+
+      expect(find.text('Resto Flow'), findsOneWidget);
+      expect(find.text('Masuk ke kasir'), findsOneWidget);
+
+      final brand = tester.getTopLeft(find.text('Resto Flow'));
+      final form = tester.getTopLeft(find.text('Masuk ke kasir'));
+      expect(brand.dx, lessThan(form.dx)); // panel di kiri form
+    });
+
+    testWidgets('sempit (HP portrait): panel jadi pita di atas form', (tester) async {
+      setSize(tester, const Size(375, 667));
+      await pumpLoginPage(tester);
+
+      final brand = tester.getTopLeft(find.text('Resto Flow'));
+      final form = tester.getTopLeft(find.text('Masuk ke kasir'));
+      expect(brand.dy, lessThan(form.dy)); // panel di atas form
+    });
+
+    testWidgets('login tetap berfungsi di layout sempit', (tester) async {
+      setSize(tester, const Size(375, 667));
+      await pumpLoginPage(tester);
+
+      await tester.enterText(find.byType(TextField), 'P@ssw0rd123');
+      await tester.tap(find.text('Masuk'));
+      await tester.pumpAndSettle();
+
+      expect(await SessionService().read(), 'admin');
+    });
+  });
+
+  test('AppTypography mendefinisikan bodySmall (dipakai di banyak layar)', () {
+    // Tanpa ini `textTheme.bodySmall?.copyWith(...)` menghasilkan null dan teks
+    // kecil kehilangan warna/ukuran yang dimaksud.
+    final s = AppTypography.textTheme.bodySmall;
+    expect(s, isNotNull);
+    expect(s!.fontSize, 12);
   });
 }

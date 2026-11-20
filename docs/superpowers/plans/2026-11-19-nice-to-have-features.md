@@ -164,6 +164,6 @@ Opsi layout (pilih satu; semua pakai token `docs/DESIGN.md`: Outfit/Work Sans, p
 Rekomendasi: **C** (dipadu nama/logo resto dari profil di atas) — kasir cukup tap wajahnya, tanpa dropdown; jumlah user lokal sedikit.
 
 - [x] User pilih layout (A/B/C/D) → **A. Split panel** (2026-11-19)
-- [ ] Implementasi pakai skill `frontend-design`, cek `web-design-guidelines`
-- [ ] Responsif: HP portrait, HP landscape, tablet
-- [ ] Widget test login tetap lulus
+- [x] Implementasi pakai skill `frontend-design` (`web-design-guidelines` khusus web: diganti cek manual kontras/label/target sentuh)
+- [x] Responsif: HP portrait, HP landscape, tablet (tes overflow 375x667, 800x360, 1024x768, 1280x800, 1920x1200 @ teks 1,3x)
+- [x] Widget test login tetap lulus

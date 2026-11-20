@@ -36,6 +36,7 @@ Warna tambahan:
 | `titleMedium`     | 16/24       | SemiBold 600    | Card title             |
 | `bodyLarge`       | 16/24       | Regular 400     | List item              |
 | `bodyMedium`      | 14/20       | Regular 400     | Secondary text         |
+| `bodySmall`       | 12/16       | Regular 400     | Keterangan kecil       |
 | `labelLarge`      | 14/20       | Medium 500      | Button label           |
 
 ## Spacing
@@ -107,6 +108,14 @@ Sebelumnya: Material `Icons.*` (diganti).
 
 Aturan: ikon tombol tanpa teks wajib `tooltip`; ikon dekoratif di samping teks tidak diberi label;
 satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
+
+## Layout Login (split panel)
+
+- **Lebar ≥ 720 dp**: panel brand oranye (`primary`, teks `onPrimary` penuh, tanpa transparansi demi kontras)
+  di kiri (flex 5), form di kanan (flex 6, rata kiri, maks 400 dp). Isi panel bisa scroll di layar pendek.
+- **Lebih sempit (HP portrait)**: panel jadi pita pendek di atas, form di bawah (bisa scroll saat keyboard muncul).
+- Tepi panel yang berbatasan dengan form berlubang seperti sobekan struk (dekoratif, di luar semantics).
+- Judul form "Masuk ke kasir" (bukan "Masuk": teks "Masuk" milik tombol). Tanpa animasi.
 
 ## Prinsip
 
