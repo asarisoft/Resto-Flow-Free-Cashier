@@ -36,6 +36,7 @@
 - Grafik omzet: batang harian (bulan berjalan) & bulanan (tahun berjalan), offline
 - Menu terlaris (top 5, urut terjual/omzet) & jam ramai (omzet + jumlah transaksi per jam), mengikuti filter periode Laporan
 - Cetak struk via Bluetooth thermal printer (58mm / 80mm, ESC/POS)
+- Bagikan struk sebagai teks (share sheet → WhatsApp dll) dari rincian transaksi
 - Log aktivitas (Owner): jejak aksi penting (ubah produk, void, pengguna, password, restore, tutup kasir)
 - Shift kasir harian: buka (modal awal) & tutup laci (rekap omzet, pengeluaran, selisih) + cetak rekap
 - User lokal + role (Owner/Kasir). Login pilih user + password teks
@@ -394,6 +395,13 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 - Batasan: stok diedit manual lewat form (belum ada riwayat/penyesuaian stok); void sesudah stok diedit manual
   tetap menambah qty transaksi itu apa adanya.
 
+### 7.15 Bagikan Struk (WhatsApp)
+- Laporan → ketuk transaksi → tombol **Bagikan (WhatsApp)** di dialog rincian (tombol Cetak ulang tetap ada).
+- Membuka share sheet sistem dengan teks struk (`ReceiptBuilder.shareText` = `buildText` dibungkus ```
+  agar WhatsApp menampilkan monospace; aplikasi lain menampilkan penandanya apa adanya). User memilih
+  WhatsApp/aplikasi lain sendiri; app tidak mengirim apa pun secara otomatis & tidak butuh internet/izin.
+- Berisi nama resto, item, total — tanpa data pelanggan. Transaksi batal membawa tanda DIBATALKAN.
+- Memakai `share_plus` yang sudah ada (tanpa dependency baru).
 
 ---
 

@@ -47,6 +47,7 @@ class AppIcons {
   static const IconData backup = LucideIcons300.download;
   static const IconData restore = LucideIcons300.fileUp;
   static const IconData print = LucideIcons300.printer;
+  static const IconData share = LucideIcons300.share2;
   static const IconData receipt = LucideIcons300.receipt;
   static const IconData wallet = LucideIcons300.wallet;
   static const IconData calendar = LucideIcons300.calendar;

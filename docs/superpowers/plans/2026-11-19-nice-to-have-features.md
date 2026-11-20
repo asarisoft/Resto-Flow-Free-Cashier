@@ -113,7 +113,7 @@
 - [x] Tes
 
 ### 16. #22 Kirim struk WhatsApp ⚠️
-- [ ] Update SPEC; tombol "Bagikan" di struk → share teks dari `ReceiptBuilder.buildText`
+- [x] Update SPEC; tombol "Bagikan" di struk → share teks dari `ReceiptBuilder.buildText`
 
 ### 17. Redesain layout login
 Sekarang: kolom tengah polos (judul teks, dropdown username, password, tombol) di bg tulang.

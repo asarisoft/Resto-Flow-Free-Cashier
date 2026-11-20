@@ -18,6 +18,12 @@ class ReceiptBuilder {
     decimalDigits: 0,
   );
 
+  /// Teks struk untuk dibagikan (mis. ke WhatsApp). Isinya sama dengan
+  /// [buildText]; dibungkus ``` agar WhatsApp menampilkannya monospace
+  /// (kolom rata). Aplikasi lain menampilkan penandanya apa adanya.
+  static String shareText(models.Transaction txn, RestoProfile profile) =>
+      '```\n${buildText(txn, profile).trimRight()}\n```';
+
   /// Bytes untuk printer (isi sama persis dengan [buildText]).
   static List<int> fromTransaction(
           models.Transaction txn, RestoProfile profile) =>

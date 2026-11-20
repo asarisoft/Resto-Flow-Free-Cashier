@@ -14,6 +14,9 @@ import 'transaction_filter.dart';
 class TransactionDetailDialog extends StatelessWidget {
   final models.Transaction txn;
   final VoidCallback onReprint;
+
+  /// Bagikan struk sebagai teks (mis. WhatsApp). Null = tombol tidak tampil.
+  final VoidCallback? onShare;
   final VoidCallback? onVoid;
   final bool canVoid;
 
@@ -21,6 +24,7 @@ class TransactionDetailDialog extends StatelessWidget {
     super.key,
     required this.txn,
     required this.onReprint,
+    this.onShare,
     this.onVoid,
     this.canVoid = false,
   });
@@ -151,6 +155,19 @@ class TransactionDetailDialog extends StatelessWidget {
                   ),
                   icon: const Icon(AppIcons.delete),
                   label: const Text('Batalkan'),
+                ),
+                const SizedBox(height: 12),
+              ],
+              if (onShare != null) ...[
+                OutlinedButton.icon(
+                  onPressed: onShare,
+                  style: OutlinedButton.styleFrom(
+                    minimumSize: const Size(0, 48),
+                    foregroundColor: AppColors.textPrimary,
+                    side: const BorderSide(color: AppColors.inputBorder),
+                  ),
+                  icon: const Icon(AppIcons.share),
+                  label: const Text('Bagikan (WhatsApp)'),
                 ),
                 const SizedBox(height: 12),
               ],

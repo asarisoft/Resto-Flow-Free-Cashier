@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../core/widgets/app_data_table.dart';
 import '../../core/widgets/app_form_dialog.dart';
 import '../../core/widgets/bar_chart.dart';
@@ -144,6 +145,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                           builder: (dialogCtx) => TransactionDetailDialog(
                             txn: t,
                             onReprint: () => _reprint(t),
+                            onShare: () => _share(t),
                             canVoid: canVoid,
                             onVoid: () async {
                               final ok = await _confirmVoid(t);
@@ -263,6 +265,24 @@ class _ReportPageState extends ConsumerState<ReportPage> {
           builder: (_) => _VoidDialog(txn: txn),
         ) ??
         false;
+  }
+
+  /// Bagikan struk sebagai teks lewat share sheet (user pilih WhatsApp dll).
+  void _share(models.Transaction txn) async {
+    final profile = await ref.read(profileProvider.future);
+    if (profile == null) return;
+    try {
+      await SharePlus.instance.share(ShareParams(
+        text: ReceiptBuilder.shareText(txn, profile),
+        subject: 'Struk #${txn.number ?? '-'}',
+      ));
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Gagal membagikan: $e')),
+        );
+      }
+    }
   }
 
   void _reprint(models.Transaction txn) async {
