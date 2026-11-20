@@ -259,13 +259,29 @@ class _PosPageState extends ConsumerState<PosPage> {
       isScrollControlled: true,
       useSafeArea: true,
       backgroundColor: Colors.transparent,
-      builder: (_) => Container(
-        height: MediaQuery.of(context).size.height * 0.85,
-        decoration: const BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
-        ),
-        child: _CartPanel(cart: ref.watch(cartProvider)),
+      // Isi sheet memantau keranjang sendiri (bukan salinan saat dibuka), dan
+      // menutup sendiri setelah keranjang dikosongkan (bayar / simpan pesanan).
+      builder: (sheetCtx) => Consumer(
+        builder: (_, sheetRef, __) {
+          sheetRef.listen(cartProvider, (prev, next) {
+            if ((prev?.isNotEmpty ?? false) && next.isEmpty) {
+              // removeRoute, bukan pop: dialog bayar ada DI ATAS sheet,
+              // pop akan menutup route paling atas (dialog), bukan sheet ini.
+              final route = ModalRoute.of(sheetCtx);
+              if (route != null && route.isActive) {
+                Navigator.of(sheetCtx).removeRoute(route);
+              }
+            }
+          });
+          return Container(
+            height: MediaQuery.of(context).size.height * 0.85,
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+            ),
+            child: _CartPanel(cart: sheetRef.watch(cartProvider)),
+          );
+        },
       ),
     );
   }
@@ -938,16 +954,26 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: bold
-                ? tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)
-                : tt.bodyLarge,
+          Flexible(
+            child: Text(
+              label,
+              overflow: TextOverflow.ellipsis,
+              style: bold
+                  ? tt.titleMedium?.copyWith(fontWeight: FontWeight.w600)
+                  : tt.bodyLarge,
+            ),
           ),
-          AmountText(
-            amount: amount,
-            style: (bold ? tt.titleMedium : tt.bodyLarge)?.copyWith(
-              fontWeight: bold ? FontWeight.w700 : null,
+          const SizedBox(width: 8),
+          Flexible(
+            child: FittedBox(
+              fit: BoxFit.scaleDown,
+              alignment: Alignment.centerRight,
+              child: AmountText(
+                amount: amount,
+                style: (bold ? tt.titleMedium : tt.bodyLarge)?.copyWith(
+                  fontWeight: bold ? FontWeight.w700 : null,
+                ),
+              ),
             ),
           ),
         ],
