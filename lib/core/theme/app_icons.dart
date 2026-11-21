@@ -22,6 +22,9 @@ class AppIcons {
   static const IconData category = LucideIcons300.tags;
   static const IconData settings = LucideIcons300.settings;
   static const IconData brand = LucideIcons300.flame;
+  static const IconData support = LucideIcons300.handHeart;
+  static const IconData instagram = LucideIcons300.camera;
+  static const IconData tiktok = LucideIcons300.music;
 
   // Aksi
   static const IconData add = LucideIcons300.plus;

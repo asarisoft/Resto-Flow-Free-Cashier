@@ -9,7 +9,7 @@ void main() {
       canUsers: false,
       canExpenses: false,
     );
-    expect(tabs, [HomeTab.pos, HomeTab.products]);
+    expect(tabs, [HomeTab.pos, HomeTab.products, HomeTab.support]);
   });
 
   test('owner sees every tab', () {
@@ -29,7 +29,7 @@ void main() {
       canUsers: false,
       canExpenses: true,
     );
-    expect(tabs, [HomeTab.pos, HomeTab.products, HomeTab.expenses]);
+    expect(tabs, [HomeTab.pos, HomeTab.products, HomeTab.expenses, HomeTab.support]);
   });
 
   test('optional tabs follow their own permission flag', () {
@@ -39,6 +39,6 @@ void main() {
       canUsers: false,
       canExpenses: false,
     );
-    expect(tabs, [HomeTab.pos, HomeTab.products, HomeTab.settings]);
+    expect(tabs, [HomeTab.pos, HomeTab.products, HomeTab.settings, HomeTab.support]);
   });
 }

@@ -408,6 +408,13 @@ Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable,
 
 ---
 
+### 7.16 Dukung Developer (semua role)
+- Menu sidebar "Dukung Developer" (tablet/desktop) = tab terakhir; di HP jadi tab bar bawah bila < 5 tab (Kasir), selain itu masuk lewat tile di Pengaturan.
+- Kartu "Follow kami" (Instagram, TikTok) dan "Jasa Bikin Aplikasi" (ajakan + tombol Hubungi via Instagram).
+- Buka link lewat `url_launcher` (`externalApplication`); gagal → SnackBar. Android `<queries>` https ditambahkan.
+
+---
+
 ## 8. Print Struk (ESC/POS)
 
 - Service: `PrinterService` via package `bluetooth_serial_next`

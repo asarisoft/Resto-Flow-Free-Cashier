@@ -14,9 +14,10 @@ import '../auth/auth_controller.dart' show currentUserProvider;
 import '../users/password_dialogs.dart';
 import '../expenses/expense_list_page.dart';
 import '../backup/backup_reminder.dart';
+import '../support/support_page.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/tap_area.dart';
-enum HomeTab { pos, products, expenses, reports, settings, users }
+enum HomeTab { pos, products, expenses, reports, settings, users, support }
 
 /// Tabs visible for the current role. Pages, sidebar and bottom nav all use
 /// this list so their order and indexes stay in sync.
@@ -33,6 +34,7 @@ List<HomeTab> visibleHomeTabs({
       if (canReports) HomeTab.reports,
       if (canSettings) HomeTab.settings,
       if (canUsers) HomeTab.users,
+      HomeTab.support,
     ];
 
 class HomeShell extends ConsumerWidget {
@@ -129,6 +131,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
         HomeTab.reports => const ReportPage(),
         HomeTab.settings => const SettingsPage(),
         HomeTab.users => const UserListPage(),
+        HomeTab.support => const SupportPage(),
       };
 
   NavigationDestination _navDestination(HomeTab tab) {
@@ -139,6 +142,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
       HomeTab.reports => (AppIcons.report, AppIcons.report, 'Laporan'),
       HomeTab.settings => (AppIcons.settings, AppIcons.settings, 'Pengaturan'),
       HomeTab.users => (AppIcons.users, AppIcons.users, 'Pengguna'),
+      HomeTab.support => (AppIcons.support, AppIcons.support, 'Dukung'),
     };
     return NavigationDestination(
       icon: Icon(icon),
@@ -216,6 +220,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
                         child: Text('BANTUAN', style: AppTypography.textTheme.labelSmall?.copyWith(color: AppColors.textSecondary, letterSpacing: 1.2)),
                       ),
                       if (canSettings) _buildSidebarItem(tabs.indexOf(HomeTab.settings), AppIcons.settings, 'Pengaturan'),
+                      _buildSidebarItem(tabs.indexOf(HomeTab.support), AppIcons.support, 'Dukung Developer'),
                     ],
                   )),
                 ),
@@ -238,8 +243,14 @@ class _MainShellState extends ConsumerState<_MainShell> {
           );
         }
 
-        // HP: maks 5 tab agar label tidak patah; Pengguna dibuka dari Pengaturan.
-        final navTabs = [for (final t in tabs) if (t != HomeTab.users) t];
+        // HP: maks 5 tab agar label tidak patah; Pengguna & Dukung Developer
+        // dibuka dari Pengaturan (Dukung tetap di bar bila tab < 5, mis. Kasir).
+        final navTabs = [
+          for (final t in tabs)
+            if (t != HomeTab.users &&
+                !(t == HomeTab.support && canSettings))
+              t
+        ];
         final navCurrent = _tab < navTabs.length ? _tab : 0;
         final navPages = [for (final t in navTabs) pages[tabs.indexOf(t)]];
 
