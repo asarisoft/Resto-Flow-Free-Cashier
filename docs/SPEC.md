@@ -251,6 +251,8 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 
 ### 7.4 Kasir (POS) Page
 
+- Cari produk + toggle grid/list (sama dengan Produk, digabung dengan filter kategori). Tap baris list = tap kartu (tambah ke keranjang, cek stok sama).
+
 **Compact (< 600 dp):**
 - Atas: filter kategori + toggle "Ready only"
 - Grid produk 2 kolom, scrollable
@@ -286,6 +288,7 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 - Pesanan `open` tidak dapat nomor dan tidak tampil di Laporan (daftar & rekap hanya `paid`).
 
 ### 7.5 Produk Page
+- Cari nama produk (contains, tanpa beda huruf, live) + tombol grid/list (`ProductSearchBar`); tanpa hasil → "Produk tidak ditemukan". Pilihan grid/list disimpan (prefs `product_view_list`, dipakai bersama POS); teks cari tidak disimpan. Mode list = `ProductListRow` (tap = edit)
 - Grid kartu `ProductCard` (sama dengan POS), foto penuh lebar, chip Ready/Habis (ketuk = ubah status)
 - FAB "+" → dialog form `AppFormDialog` (foto 4:3, nama, kategori, harga, HPP, ready)
 

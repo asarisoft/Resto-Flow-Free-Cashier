@@ -24,6 +24,9 @@ import '../../core/theme/app_icons.dart';
 import '../../core/widgets/qty_stepper.dart';
 import '../../core/widgets/tap_area.dart';
 import '../products/product_card.dart';
+import '../products/product_list_row.dart';
+import '../products/product_view_mode.dart';
+import '../../core/widgets/product_search_bar.dart';
 import '../shifts/open_shift_card.dart';
 import '../shifts/shift_page.dart';
 import '../shifts/shift_providers.dart';
@@ -39,6 +42,7 @@ class PosPage extends ConsumerStatefulWidget {
 
 class _PosPageState extends ConsumerState<PosPage> {
   String _selectedCategory = 'All Menu';
+  String _query = '';
 
   @override
   Widget build(BuildContext context) {
@@ -77,9 +81,10 @@ class _PosPageState extends ConsumerState<PosPage> {
           }
 
           // Filter products
-          final filteredProducts = _selectedCategory == 'All Menu'
+          final byCategory = _selectedCategory == 'All Menu'
               ? products
               : products.where((p) => p.category == _selectedCategory).toList();
+          final filteredProducts = filterProductsByName(byCategory, _query);
 
           if (isWide) {
             return _buildTabletLayout(categories, filteredProducts, cart);
@@ -90,6 +95,16 @@ class _PosPageState extends ConsumerState<PosPage> {
       ),
     );
   }
+
+  Widget _searchBar(double horizontal) => Padding(
+        padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 0),
+        child: ProductSearchBar(
+          value: _query,
+          onChanged: (v) => setState(() => _query = v),
+          isList: ref.watch(productViewModeProvider).valueOrNull ?? false,
+          onToggleView: () => ref.read(productViewModeProvider.notifier).toggle(),
+        ),
+      );
 
   void _openShiftPage(BuildContext context) {
     Navigator.of(
@@ -120,7 +135,16 @@ class _PosPageState extends ConsumerState<PosPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const Spacer(),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 420),
+                          child: _searchBar(0),
+                        ),
+                      ),
+                    ),
                     const _OpenOrdersButton(),
                     IconButton(
                       tooltip: 'Shift Kasir',
@@ -188,6 +212,7 @@ class _PosPageState extends ConsumerState<PosPage> {
     return Column(
       children: [
         const _ShiftGate(horizontalPadding: 12),
+        _searchBar(12),
         // Horizontal Categories
         SizedBox(
           height: 80,
@@ -423,50 +448,64 @@ class _ProductGrid extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    if (products.isEmpty) return const Center(child: Text(productNotFoundText));
+    final isList = ref.watch(productViewModeProvider).valueOrNull ?? false;
+    final padding = EdgeInsets.only(
+      top: 16,
+      left: isWide ? 24 : 16,
+      right: isWide ? 24 : 16,
+      bottom: 24,
+    );
+    int qtyOf(Product p) =>
+        cart.where((i) => i.productId == p.id).firstOrNull?.qty ?? 0;
+    if (isList) {
+      return ListView.builder(
+        padding: padding,
+        itemCount: products.length,
+        itemBuilder: (context, index) {
+          final product = products[index];
+          return ProductListRow(
+            product: product,
+            cartQty: qtyOf(product),
+            onTap: product.ready ? () => _add(context, ref, product) : null,
+          );
+        },
+      );
+    }
     return GridView.builder(
-      padding: EdgeInsets.only(
-        top: 16,
-        left: isWide ? 24 : 16,
-        right: isWide ? 24 : 16,
-        bottom: 24,
-      ),
+      padding: padding,
       gridDelegate: productGridDelegateFor(context),
       clipBehavior: Clip.none,
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];
-        final cartItem = cart
-            .where((item) => item.productId == product.id)
-            .firstOrNull;
         return ProductCard(
           product: product,
-          cartQty: cartItem?.qty ?? 0,
-          onTap: product.ready
-              ? () {
-                  final stock = product.stock;
-                  // Stok dilacak: jangan tambah melebihi sisa. (Penjaga
-                  // terakhir ada di SalesDao saat bayar.)
-                  // Jumlahkan semua baris produk ini (catatan item bisa
-                  // memecah produk yang sama jadi beberapa baris).
-                  final inCart = cart
-                      .where((i) => i.productId == product.id)
-                      .fold(0, (s, i) => s + i.qty);
-                  if (stock != null && inCart >= stock) {
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(
-                        SnackBar(
-                          content: Text('Stok ${product.name} tinggal $stock'),
-                        ),
-                      );
-                    return;
-                  }
-                  ref.read(cartProvider.notifier).addItem(product);
-                }
-              : null,
+          cartQty: qtyOf(product),
+          onTap: product.ready ? () => _add(context, ref, product) : null,
         );
       },
     );
+  }
+
+  void _add(BuildContext context, WidgetRef ref, Product product) {
+    final stock = product.stock;
+    // Stok dilacak: jangan tambah melebihi sisa. (Penjaga
+    // terakhir ada di SalesDao saat bayar.)
+    // Jumlahkan semua baris produk ini (catatan item bisa
+    // memecah produk yang sama jadi beberapa baris).
+    final inCart = cart
+        .where((i) => i.productId == product.id)
+        .fold(0, (s, i) => s + i.qty);
+    if (stock != null && inCart >= stock) {
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text('Stok ${product.name} tinggal $stock')),
+        );
+      return;
+    }
+    ref.read(cartProvider.notifier).addItem(product);
   }
 }
 

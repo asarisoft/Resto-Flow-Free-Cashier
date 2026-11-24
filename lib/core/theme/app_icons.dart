@@ -35,6 +35,8 @@ class AppIcons {
   static const IconData export = LucideIcons300.fileDown;
   static const IconData delete = LucideIcons300.trash2;
   static const IconData close = LucideIcons300.x;
+  static const IconData viewGrid = LucideIcons300.layoutGrid;
+  static const IconData viewList = LucideIcons300.list;
   static const IconData filterReset = LucideIcons300.filterX;
   static const IconData checkCircle = LucideIcons300.circleCheck;
   static const IconData cart = LucideIcons300.shoppingCart;

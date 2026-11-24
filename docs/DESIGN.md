@@ -92,6 +92,8 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | `FilterPanel`   | Kartu kontrol filter + "Reset filter" (muncul saat filter aktif) |
 | `PeriodFilterBar`| Chip clay kecil (radius 14, `compact`, tinggi ≥ 48 dp; terpilih = `textPrimary` + teks putih): Hari ini / Bulan ini / Bulan lalu / Semua / Pilih tanggal (rentang) |
 | `SearchField`   | Kolom cari dengan ikon + tombol hapus               |
+| `ProductSearchBar` | `SearchField` "Cari produk" + tombol ikon grid/list (tooltip + Semantics, ≥ 48 dp). Dipakai Produk & POS |
+| `ProductListRow` | Baris produk mode list: foto 48 dp, nama, harga, `ReadyChip`; clay compact radius 16, tinggi ≥ 64 dp; parameter sama dengan `ProductCard` |
 | `ReceiptPreview`| Preview nota monospace (teks sama dengan yang dicetak) di form profil |
 
 ## Ikon
