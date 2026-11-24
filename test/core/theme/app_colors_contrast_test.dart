@@ -25,14 +25,14 @@ void main() {
   text('warning on surface', AppColors.warning, AppColors.surface);
   text('inputBorder on background (non-text)', AppColors.inputBorder, AppColors.background, 3.0);
   text('inputBorder on surface (non-text)', AppColors.inputBorder, AppColors.surface, 3.0);
-  text('primary on peach', AppColors.primary, AppColors.peach);
-  text('primary on mint', AppColors.primary, AppColors.mint, 4.5);
-  text('primary on sky', AppColors.primary, AppColors.sky);
   text('textPrimary on lilac', AppColors.textPrimary, AppColors.lilac);
   text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
-  for (final e in {'peach': AppColors.peach, 'mint': AppColors.mint, 'sky': AppColors.sky, 'surface': AppColors.surface}.entries) {
+  // Aturan: teks oranye tidak dipakai di atas kartu bertint; pakai textPrimary/textSecondary.
+  for (final e in {'peach': AppColors.peach, 'mint': AppColors.mint, 'sky': AppColors.sky, 'lilac': AppColors.lilac}.entries) {
     final dark = Color.lerp(e.value, AppColors.lilac, .25)!;
-    text('primary on ${e.key} ujung gelap gradasi', AppColors.primary, dark);
-    text('textSecondary on ${e.key} ujung gelap gradasi', AppColors.textSecondary, dark);
+    for (final bg in [e.value, dark]) {
+      text('textPrimary on ${e.key}', AppColors.textPrimary, bg);
+      text('textSecondary on ${e.key}', AppColors.textSecondary, bg);
+    }
   }
 }

@@ -16,9 +16,9 @@ class AppColors {
   static const textPrimary = Color(0xFF1E1A2E);
   static const textSecondary = Color(0xFF5A5470);
   static const divider = border; // sesuai DESIGN.md
-  static const peach = Color(0xFFFFF3EC);
-  static const mint = Color(0xFFE7FAF0);
-  static const sky = Color(0xFFEEF7FF);
+  static const peach = Color(0xFFFFD9C7);
+  static const mint = Color(0xFFC9F2DD);
+  static const sky = Color(0xFFCFE7FF);
   static const lilac = Color(0xFFE3DAFF);
   static const clayShadow = Color(0x3854408C);
   static const clayInnerDark = Color(0x2454408C);
