@@ -64,7 +64,9 @@ class HeroLayout extends StatelessWidget {
                 alignment: Alignment.centerRight,
                 child: SizedBox(
                   width: inner * 0.46,
-                  child: _scroll(
+                  // Tanpa scroll luar: kartu tetap utuh (bayangan tidak terpotong),
+                  // isi kartu yang scroll sendiri.
+                  child: Padding(
                     padding: const EdgeInsets.fromLTRB(0, 24, 24, 24),
                     child: Center(child: wideRight),
                   ),

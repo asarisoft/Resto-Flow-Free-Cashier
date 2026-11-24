@@ -104,7 +104,10 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             wideLeft: intro,
             wideRight: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 520),
-              child: form,
+              child: AppCard(
+                padding: EdgeInsets.zero,
+                child: SingleChildScrollView(padding: const EdgeInsets.all(24), child: form.child),
+              ),
             ),
             narrowChild: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
