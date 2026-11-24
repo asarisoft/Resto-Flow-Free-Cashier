@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:bluetooth_serial_next/bluetooth_serial_next.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/clay.dart';
 import '../../core/theme/app_typography.dart';
 import '../../printer/printer_service.dart';
 import '../../core/theme/app_icons.dart';
@@ -99,13 +100,8 @@ class _PrinterPairingPageState extends ConsumerState<PrinterPairingPage> {
     return Container(
       margin: const EdgeInsets.only(bottom: 8),
       padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(10),
-        border: Border.all(
-          color: connected ? AppColors.primary : AppColors.border,
-          width: connected ? 1.5 : 1,
-        ),
+      decoration: ClayDecoration.box(radius: 16).copyWith(
+        border: connected ? Border.all(color: AppColors.primary, width: 1.5) : null,
       ),
       child: Row(
         children: [

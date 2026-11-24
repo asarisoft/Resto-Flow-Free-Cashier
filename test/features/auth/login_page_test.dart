@@ -62,24 +62,24 @@ void main() {
       addTearDown(tester.view.reset);
     }
 
-    testWidgets('lebar (tablet): panel brand + form berdampingan', (tester) async {
+    testWidgets('lebar (tablet): gambar + form berdampingan', (tester) async {
       setSize(tester, const Size(1024, 768));
       await pumpLoginPage(tester);
 
-      expect(find.text('Resto Flow'), findsOneWidget);
-      expect(find.text('Masuk ke kasir'), findsOneWidget);
+      expect(find.byType(Image), findsOneWidget);
+      expect(find.text('Halo, selamat datang!'), findsOneWidget);
 
-      final brand = tester.getTopLeft(find.text('Resto Flow'));
-      final form = tester.getTopLeft(find.text('Masuk ke kasir'));
+      final brand = tester.getTopLeft(find.byType(Image));
+      final form = tester.getTopLeft(find.text('Halo, selamat datang!'));
       expect(brand.dx, lessThan(form.dx)); // panel di kiri form
     });
 
-    testWidgets('sempit (HP portrait): panel jadi pita di atas form', (tester) async {
+    testWidgets('sempit (HP portrait): gambar di atas form', (tester) async {
       setSize(tester, const Size(375, 667));
       await pumpLoginPage(tester);
 
-      final brand = tester.getTopLeft(find.text('Resto Flow'));
-      final form = tester.getTopLeft(find.text('Masuk ke kasir'));
+      final brand = tester.getTopLeft(find.byType(Image));
+      final form = tester.getTopLeft(find.text('Halo, selamat datang!'));
       expect(brand.dy, lessThan(form.dy)); // panel di atas form
     });
 
@@ -88,6 +88,7 @@ void main() {
       await pumpLoginPage(tester);
 
       await tester.enterText(find.byType(TextField), 'P@ssw0rd123');
+      await tester.ensureVisible(find.text('Masuk'));
       await tester.tap(find.text('Masuk'));
       await tester.pumpAndSettle();
 

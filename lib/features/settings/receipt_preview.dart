@@ -25,7 +25,9 @@ class ReceiptPreview extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.surface,
           borderRadius: BorderRadius.circular(8),
-          border: Border.all(color: AppColors.border),
+          boxShadow: const [
+            BoxShadow(color: AppColors.clayShadow, offset: Offset(6, 8), blurRadius: 18),
+          ],
         ),
         child: Text(
           text.trimRight(),

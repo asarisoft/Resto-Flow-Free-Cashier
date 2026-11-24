@@ -8,6 +8,7 @@ class PasswordField extends StatefulWidget {
   final String label;
   final TextInputAction? textInputAction;
   final ValueChanged<String>? onSubmitted;
+  final IconData? prefixIcon;
 
   const PasswordField({
     super.key,
@@ -15,6 +16,7 @@ class PasswordField extends StatefulWidget {
     required this.label,
     this.textInputAction,
     this.onSubmitted,
+    this.prefixIcon,
   });
 
   @override
@@ -34,6 +36,7 @@ class _PasswordFieldState extends State<PasswordField> {
       onSubmitted: widget.onSubmitted,
       decoration: InputDecoration(
         labelText: widget.label,
+        prefixIcon: widget.prefixIcon == null ? null : Icon(widget.prefixIcon),
         suffixIcon: IconButton(
           tooltip: _obscure ? 'Tampilkan password' : 'Sembunyikan password',
           icon: Icon(_obscure ? AppIcons.visible : AppIcons.hidden),

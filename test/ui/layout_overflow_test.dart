@@ -68,6 +68,15 @@ void main() {
     }
   }
 
+  for (final size in const [Size(360, 640), Size(1280, 800)]) {
+    testWidgets('LoginPage hero layout no overflow on ${size.width.toInt()}x${size.height.toInt()}', (tester) async {
+      await pump(tester, size, const LoginPage());
+      await tester.pump(const Duration(milliseconds: 100));
+      expect(tester.takeException(), isNull);
+      expect(find.text('Halo, selamat datang!'), findsOneWidget);
+    });
+  }
+
   for (final e in sizes.entries) {
     for (final scale in [1.0, 1.3]) {
       testWidgets('LoginPage has no overflow on ${e.key} @ text ${scale}x', (tester) async {
