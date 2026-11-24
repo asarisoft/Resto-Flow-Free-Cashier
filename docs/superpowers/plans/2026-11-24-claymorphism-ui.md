@@ -283,12 +283,12 @@ Aturan (berlaku Owner & Kasir):
 - Ada shift terbuka sejak sebelum hari ini (`openedAt` < awal hari ini) → banner kecil "Shift dibuka sejak <tanggal>. Tutup dulu?" dengan tombol ke halaman Shift; transaksi TETAP boleh (masuk shift itu).
 - Logika uang tidak berubah: rekap shift tetap rentang `openedAt..closedAt`.
 
-- [ ] **Step 1: Tes skenario kasir** — (a) tanpa shift: tambah produk ke keranjang, tombol Bayar disabled, `OpenShiftCard` tampil; (b) isi modal 200000 → tap "Buka Shift" → `shiftsDao.open` terpanggil dengan openingCash 200000 dan tombol Bayar jadi aktif; (c) modal kosong/negatif/huruf → ditolak dengan pesan error, `open` tidak terpanggil; (d) shift terbuka kemarin → banner tampil dan Bayar aktif.
-- [ ] **Step 2: Jalankan** → FAIL.
-- [ ] **Step 3: Implement** `OpenShiftCard` (ekstrak dari dialog buka shift di `shift_page.dart`, halaman Shift memakainya juga), lalu gating di `pos_page.dart` (HP & tablet).
-- [ ] **Step 4: `flutter analyze` + `flutter test` penuh** → PASS (tes POS lama yang mengasumsikan bayar tanpa shift: sesuaikan fixture agar ada shift terbuka, sebutkan di report).
-- [ ] **Step 5: Update `docs/SPEC.md` §7.10**: ganti "Transaksi tetap bisa dicatat tanpa shift terbuka" dengan aturan baru di atas.
-- [ ] **Step 6: Commit** `feat(shift): shift wajib sebelum transaksi`
+- [x] **Step 1: Tes skenario kasir** — (a) tanpa shift: tambah produk ke keranjang, tombol Bayar disabled, `OpenShiftCard` tampil; (b) isi modal 200000 → tap "Buka Shift" → `shiftsDao.open` terpanggil dengan openingCash 200000 dan tombol Bayar jadi aktif; (c) modal kosong/negatif/huruf → ditolak dengan pesan error, `open` tidak terpanggil; (d) shift terbuka kemarin → banner tampil dan Bayar aktif.
+- [x] **Step 2: Jalankan** → FAIL.
+- [x] **Step 3: Implement** `OpenShiftCard` (ekstrak dari dialog buka shift di `shift_page.dart`, halaman Shift memakainya juga), lalu gating di `pos_page.dart` (HP & tablet).
+- [x] **Step 4: `flutter analyze` + `flutter test` penuh** → PASS (tes POS lama yang mengasumsikan bayar tanpa shift: sesuaikan fixture agar ada shift terbuka, sebutkan di report).
+- [x] **Step 5: Update `docs/SPEC.md` §7.10**: ganti "Transaksi tetap bisa dicatat tanpa shift terbuka" dengan aturan baru di atas.
+- [x] **Step 6: Commit** `feat(shift): shift wajib sebelum transaksi`
 
 ### Task 17: Menu Kategori di Pengaturan
 
@@ -296,7 +296,7 @@ Aturan (berlaku Owner & Kasir):
 - Modify: `lib/features/settings/settings_page.dart`
 - Test: tes widget settings (yang ada atau baru)
 
-- [ ] **Step 1: Tes** — di Pengaturan ada tile "Kategori" (ikon `AppIcons.category` atau yang ada, subjudul "Ubah nama & hapus kategori produk/pengeluaran"); tap → `CategoryPage` tampil.
-- [ ] **Step 2: Implement** tile clay sama gaya dengan tile "Log aktivitas", membuka `CategoryPage(initialType: CategoryType.product)`. Hanya Owner (ikuti role guard tile Owner lain di halaman ini).
-- [ ] **Step 3: `flutter analyze` + `flutter test`** → PASS. Tambah baris di `docs/SPEC.md` §7.8.
-- [ ] **Step 4: Commit** `feat(settings): menu kategori`
+- [x] **Step 1: Tes** — di Pengaturan ada tile "Kategori" (ikon `AppIcons.category` atau yang ada, subjudul "Ubah nama & hapus kategori produk/pengeluaran"); tap → `CategoryPage` tampil.
+- [x] **Step 2: Implement** tile clay sama gaya dengan tile "Log aktivitas", membuka `CategoryPage(initialType: CategoryType.product)`. Hanya Owner (ikuti role guard tile Owner lain di halaman ini).
+- [x] **Step 3: `flutter analyze` + `flutter test`** → PASS. Tambah baris di `docs/SPEC.md` §7.8.
+- [x] **Step 4: Commit** `feat(settings): menu kategori`
