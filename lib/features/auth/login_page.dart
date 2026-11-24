@@ -4,6 +4,7 @@ import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/theme/clay.dart';
 import '../../core/widgets/app_card.dart';
+import '../../core/widgets/app_logo.dart';
 import '../../core/widgets/icon_badge.dart';
 import '../../core/widgets/password_field.dart';
 import '../../core/widgets/primary_button.dart';
@@ -206,7 +207,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   }
 }
 
-/// Logo + nama app (placeholder ikon, diganti logo asli di Task 14).
+/// Logo + nama app.
 class _Brand extends StatelessWidget {
   const _Brand();
 
@@ -215,12 +216,7 @@ class _Brand extends StatelessWidget {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        Container(
-          width: 56,
-          height: 56,
-          decoration: ClayDecoration.box(color: AppColors.peach, radius: 18),
-          child: const Icon(AppIcons.pos, color: AppColors.textPrimary, size: 28),
-        ),
+        const AppLogo(size: 56),
         const SizedBox(width: 12),
         Text('KasirKita',
             style: AppTypography.textTheme.titleLarge?.copyWith(color: AppColors.textPrimary)),

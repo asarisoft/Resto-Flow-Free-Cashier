@@ -8,6 +8,9 @@ import 'package:kasir_resto/core/theme/app_typography.dart';
 import 'package:kasir_resto/features/auth/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+bool _isHero(Widget w) =>
+    w is Image && w.image is AssetImage && (w.image as AssetImage).assetName.endsWith('login_hero.webp');
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
@@ -55,6 +58,15 @@ void main() {
     expect(await SessionService().read(), isNull);
   });
 
+  testWidgets('login menampilkan logo app_logo.webp', (tester) async {
+    await pumpLoginPage(tester);
+    expect(
+      find.byWidgetPredicate((w) =>
+          w is Image && w.image is AssetImage && (w.image as AssetImage).assetName == 'assets/images/app_logo.webp'),
+      findsOneWidget,
+    );
+  });
+
   group('tata letak', () {
     void setSize(WidgetTester tester, Size size) {
       tester.view.physicalSize = size;
@@ -66,9 +78,9 @@ void main() {
       setSize(tester, const Size(1280, 800));
       await pumpLoginPage(tester);
 
-      expect(find.byType(Image), findsOneWidget);
+      expect(find.byWidgetPredicate(_isHero), findsOneWidget);
       expect(find.text('KasirKita'), findsOneWidget);
-      final img = tester.getRect(find.byType(Image));
+      final img = tester.getRect(find.byWidgetPredicate(_isHero));
       final form = tester.getTopLeft(find.text('Halo, selamat datang!'));
       expect(form.dx, greaterThan(img.left));
       expect(form.dx, lessThan(img.center.dx)); // teks di sisi kiri gambar
@@ -78,7 +90,7 @@ void main() {
       setSize(tester, const Size(375, 667));
       await pumpLoginPage(tester);
 
-      final brand = tester.getTopLeft(find.byType(Image));
+      final brand = tester.getTopLeft(find.byWidgetPredicate(_isHero));
       final form = tester.getTopLeft(find.text('Halo, selamat datang!'));
       expect(brand.dy, lessThan(form.dy)); // panel di atas form
     });

@@ -17,6 +17,7 @@ import '../expenses/expense_list_page.dart';
 import '../backup/backup_reminder.dart';
 import '../support/support_page.dart';
 import '../../core/theme/app_icons.dart';
+import '../../core/widgets/app_logo.dart';
 import '../../core/widgets/tap_area.dart';
 enum HomeTab { pos, products, expenses, reports, settings, users, support }
 
@@ -186,7 +187,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
                         padding: const EdgeInsets.all(24),
                         child: Row(
                           children: [
-                            const Icon(AppIcons.brand, color: AppColors.primary, size: AppIcons.xl),
+                            const AppLogo(size: 40),
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(

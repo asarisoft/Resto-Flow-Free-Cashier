@@ -145,6 +145,12 @@ void main() {
         }
         if (e.value.width > 800) {
           expect(find.text('KasirKita'), findsOneWidget, reason: 'sidebar must be visible (not onboarding)');
+          expect(
+            find.byWidgetPredicate((w) =>
+                w is Image && w.image is AssetImage && (w.image as AssetImage).assetName == 'assets/images/app_logo.webp'),
+            findsOneWidget,
+            reason: 'sidebar shows the app logo',
+          );
         } else {
           expect(find.byType(NavigationBar), findsOneWidget, reason: 'bottom nav at <= 800dp');
         }
