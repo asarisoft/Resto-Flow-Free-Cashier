@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/widgets/app_card.dart';
+import '../../core/widgets/hero_layout.dart';
+import '../../core/widgets/icon_badge.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../models/resto_profile.dart';
+import '../auth/auth_controller.dart';
 import '../settings/settings_providers.dart';
 import '../../core/theme/app_icons.dart';
 import '../settings/profile_fields.dart';
@@ -36,108 +40,106 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   @override
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Setup Resto')),
-      body: SafeArea(child: Form(
-        key: _formKey,
-        child: Row(
-          children: [
-            // Left Column: Promo / Features
-            Expanded(
-              flex: 4,
-              child: Container(
-                color: AppColors.primary,
-                padding: const EdgeInsets.all(32),
-                child: Center(
-                  child: SingleChildScrollView(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(12),
-                      decoration: BoxDecoration(
-                        color: AppColors.onPrimary.withValues(alpha: 0.2),
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      child: const Icon(AppIcons.star, color: AppColors.onPrimary, size: AppIcons.hero),
-                    ),
-                    const SizedBox(height: 32),
-                    Text(
-                      'Selamat Datang di\nRESTO FLOW FREE',
-                      style: textTheme.displaySmall?.copyWith(
-                        color: AppColors.onPrimary,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Aplikasi kasir pintar untuk bisnis restoran dan kafe Anda. Didesain secara profesional, mudah digunakan, dan 100% GRATIS tanpa batasan fitur maupun biaya tersembunyi.',
-                      style: textTheme.titleMedium?.copyWith(
-                        color: AppColors.onPrimary.withValues(alpha: 0.9),
-                        height: 1.5,
-                      ),
-                    ),
-                    const SizedBox(height: 48),
-                    _featureRow(AppIcons.checkCircle, 'Kelola Produk Tanpa Batas', textTheme),
-                    const SizedBox(height: 12),
-                    _featureRow(AppIcons.checkCircle, 'Catat Pengeluaran & Pemasukan', textTheme),
-                    const SizedBox(height: 12),
-                    _featureRow(AppIcons.checkCircle, 'Cetak Struk Bluetooth Thermal', textTheme),
-                    const SizedBox(height: 12),
-                    _featureRow(AppIcons.checkCircle, 'Laporan Keuangan Realtime', textTheme),
-                  ],
-                ),
-                  ),
-                ),
-              ),
-            ),
-            // Right Column: Form
-            Expanded(
-              flex: 5,
-              child: ListView(
-                padding: const EdgeInsets.symmetric(horizontal: 48, vertical: 32),
-                children: [
-                  Text('Pengaturan Awal', style: textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold)),
-                  const SizedBox(height: 8),
-                  Text(
-                    'Lengkapi profil restoran Anda untuk dicetak pada struk.',
-                    style: textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary),
-                  ),
-                  const SizedBox(height: 32),
-                  ProfileFields(
-                    name: _nameCtrl,
-                    address: _addressCtrl,
-                    phone: _phoneCtrl,
-                    footer: _footerCtrl,
-                    paperWidth: _paperWidth,
-                    onPaperWidth: (v) => setState(() => _paperWidth = v),
-                  ),
-                  const SizedBox(height: 48),
-                  PrimaryButton(
-                    label: 'Simpan Profil & Mulai',
-                    loading: _saving,
-                    onPressed: _save,
-                  ),
-                ],
-              ),
-            ),
-          ],
+    final intro = Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text('Selamat datang di KasirKita',
+            style: textTheme.displaySmall?.copyWith(color: AppColors.textPrimary)),
+        const SizedBox(height: 8),
+        Text('Kasir gratis untuk warung, toko & cafe. Bisa offline.',
+            style: textTheme.bodyLarge?.copyWith(color: AppColors.textSecondary)),
+        const SizedBox(height: 24),
+        for (final f in _features) ...[
+          _featureRow(f, textTheme),
+          const SizedBox(height: 12),
+        ],
+      ],
+    );
+    final form = AppCard(
+      padding: const EdgeInsets.all(24),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Pengaturan Awal', style: textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary)),
+          const SizedBox(height: 4),
+          Text('Lengkapi profil restoran Anda untuk dicetak pada struk.',
+              style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: 24),
+          ProfileFields(
+            name: _nameCtrl,
+            address: _addressCtrl,
+            phone: _phoneCtrl,
+            footer: _footerCtrl,
+            paperWidth: _paperWidth,
+            onPaperWidth: (v) => setState(() => _paperWidth = v),
+          ),
+          const SizedBox(height: 24),
+          PrimaryButton(
+            label: 'Simpan Profil & Mulai',
+            loading: _saving,
+            onPressed: _save,
+          ),
+        ],
+      ),
+    );
+    return PopScope(
+      canPop: false,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _backToLogin();
+      },
+      child: Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(AppIcons.arrowLeft),
+          tooltip: 'Kembali ke login',
+          onPressed: _backToLogin,
         ),
-      )),
+        title: const Text('Setup Resto'),
+      ),
+      body: SafeArea(
+        child: Form(
+          key: _formKey,
+          child: HeroLayout(
+            wideLeft: intro,
+            wideRight: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 520),
+              child: form,
+            ),
+            narrowChild: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AppCard(padding: const EdgeInsets.all(24), child: intro),
+                const SizedBox(height: 16),
+                form,
+              ],
+            ),
+          ),
+        ),
+      ),
+    ),
     );
   }
 
-  Widget _featureRow(IconData icon, String text, TextTheme textTheme) {
+  void _backToLogin() => ref.read(loginProvider).logout();
+
+  static const _features = [
+    'Kelola Produk Tanpa Batas',
+    'Catat Pengeluaran & Pemasukan',
+    'Cetak Struk Bluetooth Thermal',
+    'Laporan Keuangan Realtime',
+  ];
+
+  Widget _featureRow(String text, TextTheme textTheme) {
     return Row(
       children: [
-        Icon(icon, color: AppColors.onPrimary, size: AppIcons.lg),
-        const SizedBox(width: 12),
+        const IconBadge(AppIcons.checkCircle),
+        const SizedBox(width: 8),
         Expanded(
           child: Text(
             text,
             style: textTheme.bodyLarge?.copyWith(
-              color: AppColors.onPrimary.withValues(alpha: 0.9),
+              color: AppColors.textPrimary,
               fontWeight: FontWeight.w500,
             ),
           ),

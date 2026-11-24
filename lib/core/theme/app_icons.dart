@@ -40,6 +40,7 @@ class AppIcons {
   static const IconData cart = LucideIcons300.shoppingCart;
   static const IconData refresh = LucideIcons300.refreshCw;
   static const IconData arrowRight = LucideIcons300.arrowRight;
+  static const IconData arrowLeft = LucideIcons300.arrowLeft;
   static const IconData login = LucideIcons300.logIn;
   static const IconData logout = LucideIcons300.logOut;
   static const IconData visible = LucideIcons300.eye;
