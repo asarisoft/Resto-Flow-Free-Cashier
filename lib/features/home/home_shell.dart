@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/theme/clay.dart';
 import '../onboarding/onboarding_page.dart';
 import '../settings/settings_providers.dart';
 import '../pos/pos_page.dart';
@@ -89,19 +90,14 @@ class _MainShellState extends ConsumerState<_MainShell> {
 
   Widget _buildSidebarItem(int index, IconData icon, String label) {
     final isSelected = _tab == index;
-    return TapArea(
-      label: label,
-      borderRadius: const BorderRadius.horizontal(right: Radius.circular(24)),
-      onTap: () => setState(() => _tab = index),
-      child: Container(
-        margin: const EdgeInsets.only(bottom: 8, right: 16),
-        decoration: BoxDecoration(
-          color: isSelected ? AppColors.primary.withValues(alpha: 0.1) : Colors.transparent,
-          borderRadius: const BorderRadius.horizontal(right: Radius.circular(24)),
-          border: isSelected
-              ? const Border(left: BorderSide(color: AppColors.primary, width: 4))
-              : const Border(left: BorderSide(color: Colors.transparent, width: 4)),
-        ),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+      child: TapArea(
+        label: label,
+        borderRadius: BorderRadius.circular(18),
+        onTap: () => setState(() => _tab = index),
+        child: Container(
+          decoration: isSelected ? ClayDecoration.box(radius: 18) : null,
         padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
         child: Row(
           children: [
@@ -119,6 +115,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
               ),
             ),
           ],
+        ),
         ),
       ),
     );
@@ -181,8 +178,8 @@ class _MainShellState extends ConsumerState<_MainShell> {
                 // Sidebar
                 Container(
                   width: 250,
-                  color: AppColors.surface,
-                  child: SingleChildScrollView(child: Column(
+                  color: AppColors.background,
+                  child: SingleChildScrollView(clipBehavior: Clip.none, child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
@@ -266,12 +263,20 @@ class _MainShellState extends ConsumerState<_MainShell> {
               ),
             ],
           ),
-          bottomNavigationBar: NavigationBar(
-            selectedIndex: navCurrent,
-            onDestinationSelected: (i) => setState(() => _tab = i),
-            backgroundColor: AppColors.surface,
-            indicatorColor: AppColors.primary.withValues(alpha: 0.2),
-            destinations: [for (final tab in navTabs) _navDestination(tab)],
+          bottomNavigationBar: DecoratedBox(
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              boxShadow: [
+                BoxShadow(color: AppColors.clayShadow, offset: Offset(0, -6), blurRadius: 18),
+              ],
+            ),
+            child: NavigationBar(
+              selectedIndex: navCurrent,
+              onDestinationSelected: (i) => setState(() => _tab = i),
+              backgroundColor: Colors.transparent,
+              indicatorColor: AppColors.peach,
+              destinations: [for (final tab in navTabs) _navDestination(tab)],
+            ),
           ),
         );
       },
