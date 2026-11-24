@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir_resto/core/services/daos/products_dao.dart';
 import 'package:kasir_resto/core/services/daos/sales_dao.dart';
+import 'package:kasir_resto/core/services/daos/shifts_dao.dart';
 import 'package:kasir_resto/core/services/database.dart'
     hide Product, Transaction, TransactionItem, RestoProfile, Users, User;
 import 'package:kasir_resto/core/services/database_provider.dart';
@@ -28,6 +29,8 @@ void main() {
       await db.close();
       tester.view.reset();
     });
+    await tester.runAsync(
+        () => ShiftsDao(db).open(openedBy: 'kasir', openingCash: 100000));
     await tester.runAsync(() => ProductsDao(db).add(Product(
           id: 'p1',
           name: 'Mie Ayam',

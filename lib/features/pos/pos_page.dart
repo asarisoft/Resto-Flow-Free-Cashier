@@ -24,7 +24,11 @@ import '../../core/theme/app_icons.dart';
 import '../../core/widgets/qty_stepper.dart';
 import '../../core/widgets/tap_area.dart';
 import '../products/product_card.dart';
+import '../shifts/open_shift_card.dart';
 import '../shifts/shift_page.dart';
+import '../shifts/shift_providers.dart';
+import '../../core/widgets/app_card.dart';
+import 'package:intl/intl.dart';
 
 class PosPage extends ConsumerStatefulWidget {
   const PosPage({super.key});
@@ -127,6 +131,7 @@ class _PosPageState extends ConsumerState<PosPage> {
                 ),
               ),
               const SizedBox(height: 16),
+              const _ShiftGate(horizontalPadding: 24),
               // Horizontal Categories
               SizedBox(
                 height: 50,
@@ -182,6 +187,7 @@ class _PosPageState extends ConsumerState<PosPage> {
   ) {
     return Column(
       children: [
+        const _ShiftGate(horizontalPadding: 12),
         // Horizontal Categories
         SizedBox(
           height: 80,
@@ -283,6 +289,59 @@ class _PosPageState extends ConsumerState<PosPage> {
             child: _CartPanel(cart: sheetRef.watch(cartProvider)),
           );
         },
+      ),
+    );
+  }
+}
+
+/// Di atas grid POS: kartu Buka Shift (belum ada shift) atau banner
+/// (shift terbuka sejak sebelum hari ini). Transaksi tetap boleh di kasus banner.
+class _ShiftGate extends ConsumerWidget {
+  final double horizontalPadding;
+  const _ShiftGate({required this.horizontalPadding});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final async = ref.watch(openShiftProvider);
+    if (!async.hasValue) return const SizedBox.shrink();
+    final shift = async.value;
+    final Widget child;
+    if (shift == null) {
+      child = const OpenShiftCard();
+    } else {
+      final now = DateTime.now();
+      final today = DateTime(now.year, now.month, now.day);
+      if (!shift.openedAt.isBefore(today)) return const SizedBox.shrink();
+      child = AppCard(
+        color: AppColors.peach,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        child: Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Shift dibuka sejak ${DateFormat('dd/MM/yyyy').format(shift.openedAt)}. Tutup dulu?',
+                style: AppTypography.textTheme.bodyMedium,
+              ),
+            ),
+            TextButton(
+              style: TextButton.styleFrom(minimumSize: const Size(48, 48)),
+              onPressed: () => Navigator.of(context)
+                  .push(MaterialPageRoute(builder: (_) => const ShiftPage())),
+              child: const Text('Ke Shift'),
+            ),
+          ],
+        ),
+      );
+    }
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        // Layar pendek (landscape HP): sisakan ruang untuk kategori & grid.
+        maxHeight: MediaQuery.sizeOf(context).height *
+            (MediaQuery.sizeOf(context).height < 500 ? 0.15 : 0.3),
+      ),
+      child: SingleChildScrollView(
+        padding: EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 8),
+        child: child,
       ),
     );
   }
@@ -421,6 +480,7 @@ class _CartPanel extends ConsumerWidget {
     final textTheme = AppTypography.textTheme;
     final subtotal = cart.fold(0, (s, i) => s + i.subtotal);
     final resumed = ref.watch(resumedOrderProvider);
+    final shiftOpen = ref.watch(openShiftProvider).valueOrNull != null;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -538,11 +598,13 @@ class _CartPanel extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
-                Row(
+                Tooltip(
+                  message: shiftOpen ? '' : 'Buka shift dulu',
+                  child: Row(
                   children: [
                     Expanded(
                       child: OutlinedButton(
-                        onPressed: cart.isEmpty
+                        onPressed: cart.isEmpty || !shiftOpen
                             ? null
                             : () => _saveOpen(context, ref),
                         style: OutlinedButton.styleFrom(
@@ -568,12 +630,13 @@ class _CartPanel extends ConsumerWidget {
                     Expanded(
                       child: PrimaryButton(
                         label: 'Bayar',
-                        onPressed: cart.isEmpty
+                        onPressed: cart.isEmpty || !shiftOpen
                             ? null
                             : () => _checkout(context, ref),
                       ),
                     ),
                   ],
+                ),
                 ),
               ],
             ),

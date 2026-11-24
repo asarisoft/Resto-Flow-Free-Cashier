@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kasir_resto/core/services/daos/shifts_dao.dart';
 import 'package:kasir_resto/core/services/database.dart'
     hide Product, Transaction, TransactionItem, RestoProfile, Users, User;
 import 'package:kasir_resto/core/services/database_provider.dart';
@@ -68,6 +69,8 @@ void main() {
         await db.close();
         tester.view.reset();
       });
+      await tester.runAsync(
+          () => ShiftsDao(db).open(openedBy: 'kasir', openingCash: 100000));
       c.read(cartProvider.notifier).setItems(const [
         TransactionItem(productId: 'a', name: 'Nasi Goreng', price: 25000, hpp: 0, qty: 1),
         TransactionItem(productId: 'b', name: 'Mie Ayam', price: 8000, hpp: 0, qty: 1),

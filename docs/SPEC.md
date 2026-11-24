@@ -349,7 +349,12 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
   selisih = laci − seharusnya (int, bisa minus).
   Pengeluaran dihitung berdasarkan `createdAt` (waktu dicatat), bukan `date` (tanggal dipilih di date picker).
 - Cetak rekap lewat `ReceiptBuilder.buildShiftRecapText` (lebar 58/80 sesuai setting).
-- Transaksi tetap bisa dicatat tanpa shift terbuka (tidak memblokir kasir).
+- **Shift wajib sebelum transaksi** (Owner & Kasir): tanpa shift terbuka, POS menampilkan
+  `OpenShiftCard` ("Buka shift dulu untuk mulai jualan", input modal awal int ≥ 0 + tombol Buka Shift;
+  widget yang sama dipakai di `ShiftPage`). Produk tetap bisa masuk keranjang, tapi tombol Bayar &
+  Simpan (pesanan terbuka) nonaktif (tooltip "Buka shift dulu").
+- Shift terbuka sejak sebelum hari ini: banner "Shift dibuka sejak <tanggal>. Tutup dulu?" + tombol
+  ke `ShiftPage`; transaksi tetap boleh (masuk shift itu). Rekap tetap rentang `openedAt..closedAt`.
 
 ### 7.11 Log Aktivitas (Owner)
 - Akses: Pengaturan → "Log aktivitas" (hanya Owner; digate `canManageSettingsProvider`).

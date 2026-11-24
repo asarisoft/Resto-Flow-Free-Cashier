@@ -15,16 +15,10 @@ import '../../printer/receipt_builder.dart';
 import '../auth/auth_controller.dart';
 import '../reports/report_providers.dart';
 import '../settings/settings_providers.dart';
+import 'open_shift_card.dart';
 import 'shift_calc.dart';
 import '../activity_log/activity_log_providers.dart';
 import 'shift_providers.dart';
-
-/// Nominal kas (modal awal / uang di laci): int >= 0.
-int? parseShiftCash(String raw) {
-  final v = int.tryParse(raw.trim());
-  if (v == null || v < 0) return null;
-  return v;
-}
 
 class ShiftPage extends ConsumerWidget {
   const ShiftPage({super.key});
@@ -51,7 +45,9 @@ class ShiftPage extends ConsumerWidget {
               openAsync.when(
                 loading: () => const Center(child: CircularProgressIndicator()),
                 error: (e, _) => Center(child: Text('Error: $e')),
-                data: (open) => _ShiftStatusCard(shift: open),
+                data: (open) => open == null
+                    ? const OpenShiftCard(message: 'Belum ada shift terbuka')
+                    : _ShiftStatusCard(shift: open),
               ),
               const SizedBox(height: 24),
               Text('Riwayat Shift', style: textTheme.titleMedium),
@@ -81,7 +77,7 @@ class ShiftPage extends ConsumerWidget {
 }
 
 class _ShiftStatusCard extends ConsumerWidget {
-  final Shift? shift;
+  final Shift shift;
   const _ShiftStatusCard({required this.shift});
 
   @override
@@ -94,44 +90,38 @@ class _ShiftStatusCard extends ConsumerWidget {
         children: [
           Row(
             children: [
-              Icon(
+              const Icon(
                 AppIcons.wallet,
                 size: AppIcons.md,
-                color: open != null ? AppColors.success : AppColors.textSecondary,
+                color: AppColors.success,
               ),
               const SizedBox(width: 8),
               Text(
-                open != null ? 'Shift terbuka' : 'Belum ada shift terbuka',
-                style: textTheme.titleMedium?.copyWith(
-                  color: open != null ? AppColors.success : AppColors.textSecondary,
-                ),
+                'Shift terbuka',
+                style: textTheme.titleMedium?.copyWith(color: AppColors.success),
               ),
             ],
           ),
-          if (open != null) ...[
-            const SizedBox(height: 12),
-            Text(
-              'Dibuka ${DateFormat('dd/MM/yyyy HH:mm').format(open.openedAt)} oleh ${open.openedBy}',
-              style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
-            ),
-            const SizedBox(height: 8),
-            Row(
-              children: [
-                Text('Modal awal', style: textTheme.bodyMedium),
-                const Spacer(),
-                AmountText(amount: open.openingCash, style: textTheme.bodyLarge),
-              ],
-            ),
-          ],
+          const SizedBox(height: 12),
+          Text(
+            'Dibuka ${DateFormat('dd/MM/yyyy HH:mm').format(open.openedAt)} oleh ${open.openedBy}',
+            style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Text('Modal awal', style: textTheme.bodyMedium),
+              const Spacer(),
+              AmountText(amount: open.openingCash, style: textTheme.bodyLarge),
+            ],
+          ),
           const SizedBox(height: 16),
           PrimaryButton(
-            label: open != null ? 'Tutup Shift' : 'Buka Shift',
-            icon: open != null ? AppIcons.close : AppIcons.add,
+            label: 'Tutup Shift',
+            icon: AppIcons.close,
             onPressed: () => showDialog(
               context: context,
-              builder: (_) => open != null
-                  ? _CloseShiftDialog(shift: open)
-                  : const _OpenShiftDialog(),
+              builder: (_) => _CloseShiftDialog(shift: open),
             ),
           ),
         ],
@@ -183,69 +173,6 @@ class _ShiftHistoryRow extends StatelessWidget {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _OpenShiftDialog extends ConsumerStatefulWidget {
-  const _OpenShiftDialog();
-
-  @override
-  ConsumerState<_OpenShiftDialog> createState() => _OpenShiftDialogState();
-}
-
-class _OpenShiftDialogState extends ConsumerState<_OpenShiftDialog> {
-  final _formKey = GlobalKey<FormState>();
-  final _cashCtrl = TextEditingController();
-  bool _saving = false;
-
-  @override
-  void dispose() {
-    _cashCtrl.dispose();
-    super.dispose();
-  }
-
-  Future<void> _save() async {
-    if (!_formKey.currentState!.validate()) return;
-    final amount = parseShiftCash(_cashCtrl.text)!;
-    setState(() => _saving = true);
-    try {
-      final username = ref.read(currentUserProvider).valueOrNull?.username ?? '';
-      await ref.read(shiftsDaoProvider).open(openedBy: username, openingCash: amount);
-      if (mounted) Navigator.of(context).pop();
-    } catch (e) {
-      if (mounted) {
-        setState(() => _saving = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal buka shift: $e')));
-      }
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return AppFormDialog(
-      title: 'Buka Shift',
-      formKey: _formKey,
-      saving: _saving,
-      submitLabel: 'Buka Shift',
-      onSubmit: _save,
-      fields: [
-        TextFormField(
-          controller: _cashCtrl,
-          autofocus: true,
-          decoration: const InputDecoration(
-            labelText: 'Modal awal laci (Rp) *',
-            prefixText: 'Rp ',
-            hintText: '0',
-          ),
-          keyboardType: TextInputType.number,
-          validator: (v) {
-            if (v == null || v.trim().isEmpty) return 'Wajib diisi';
-            if (parseShiftCash(v) == null) return 'Harus angka 0 atau lebih';
-            return null;
-          },
-        ),
-      ],
     );
   }
 }
