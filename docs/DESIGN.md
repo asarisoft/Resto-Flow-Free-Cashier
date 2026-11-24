@@ -6,16 +6,17 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 
 | Peran            | Token `AppColors` | Hex       | Pemakaian |
 |------------------|-------------------|-----------|-----------|
-| Latar            | `background`      | `#F3EEFF` | Background halaman, AppBar |
+| Latar            | `background`      | `#F3EEFF` | Background halaman, AppBar, sidebar tablet (menu aktif = kotak clay putih, teks/ikon `primary`) |
 | Surface/Card     | `surface`         | `#FFFFFF` | Kartu, dialog, input |
 | Teks utama       | `textPrimary`     | `#1E1A2E` | Teks, judul, latar bar keranjang |
 | Teks sekunder    | `textSecondary`   | `#5A5470` | Subtitle, label |
 | Aksen            | `primary`/`price` | `#C2410C` | Tombol Bayar, harga, total, badge (putih di atasnya) |
 | Aksen terang     | `primaryLight`    | `#E8622A` | Ujung atas gradasi tombol utama |
 | Divider          | `border`          | `#E3DAFF` | Garis pemisah (dekoratif) |
-| Batas input      | `inputBorder`     | `#8A80AB` | Border input 1.5 dp (≥ 3:1) |
+| Batas input      | `inputBorder`     | `#827AA3` | Border input 1.5 dp (≥ 3:1 di atas surface, background, dan `inset`) |
+| Isi input/segmented | `inset` | `#EAE3FF` | Latar lekuk: input, wadah `ChoiceSegment` |
 | Tint             | `peach` `mint` `sky` `lilac` | `#FFD9C7` `#C9F2DD` `#CFE7FF` `#E3DAFF` | Kartu ringkasan, placeholder foto |
-| Bayangan clay    | `clayShadow`      | `#3854408C` | Bayangan luar kartu |
+| Bayangan clay    | `clayShadow`      | `#4D54408C` | Bayangan gelap luar kartu |
 | Success / Danger / Warning | `success` `error` `warning` | `#15803D` `#B91C1C` `#B45309` | Status |
 
 **Aturan:** teks oranye **dilarang** di atas kartu bertint — di tint pakai `textPrimary`/`textSecondary`
@@ -55,9 +56,18 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 
 ## Shadow & Clay
 
-- Kartu: `ClayDecoration.box({color, radius = 20})` (`lib/core/theme/clay.dart`) — gradasi halus
-  (lerp ke putih 35% → lerp ke lilac 25%) + 1 bayangan luar `clayShadow` offset (6,8) blur 18.
-  Tanpa blur/`BackdropFilter`. Bayangan dalam (`BlurStyle.inner`) tidak dipakai: tertutup warna isi.
+- Kartu: `ClayDecoration.box({color, radius = 20, raised = true, compact = false})`
+  (`lib/core/theme/clay.dart`) — gradasi halus (lerp ke putih 35% → lerp ke lilac 25%) + 2 bayangan
+  luar: gelap `clayShadow` offset (10,12) blur 24, terang `#FFFFFF` offset (-6,-6) blur 16.
+  `compact` (chip) = (4,5) blur 10 + (-3,-3) blur 8. `raised: false` = tanpa bayangan.
+  Tanpa `BackdropFilter`. Bayangan dalam (`BlurStyle.inner`) tidak dipakai: tertutup warna isi.
+- Lekuk: `ClayDecoration.inset({color = inset, radius = 16})` — tanpa bayangan, border 1.5 `inputBorder`,
+  gradasi atas sedikit gelap → bawah polos.
+- ATURAN bayangan tidak terpotong: bayangan dipasang di `DecoratedBox` LUAR; klip (`Material`
+  `clipBehavior: antiAlias` / `ClipRRect`) ada DI DALAM. Jangan taruh bayangan di `Ink` dan jangan
+  beri `clipBehavior` pada `Container` berbayangan. Grid/list berisi kartu: `clipBehavior: Clip.none`
+  atau padding ≥ 16.
+- Bar bawah HP: `surface` + bayangan clay ke atas (0,-6) blur 18, indikator `peach`.
 - Tombol utama: gradasi `primaryLight → primary` + bayangan oranye 35%; mengecil 0.96 saat ditekan
   (200 ms, `easeOutBack`, mati bila `disableAnimations`).
 
@@ -65,7 +75,7 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 
 | Widget          | Fungsi                                              |
 |-----------------|-----------------------------------------------------|
-| `AppCard`       | Kartu clay (`ClayDecoration`), param `color` untuk tint. `AppCardButton` = versi bisa di-tap |
+| `AppCard`       | Kartu clay (`ClayDecoration`), param `color` untuk tint. `AppCardButton` = versi bisa di-tap. Struktur: DecoratedBox (bayangan) > Material klip > InkWell |
 | `PrimaryButton` | Tombol clay gradasi oranye, `Semantics(button)`; disabled = `border` + teks `textSecondary` |
 | `SecondaryButton`| Tombol outline, border 1.5 dp                      |
 | `AmountText`    | Format rupiah + tabular figures                     |
@@ -76,11 +86,11 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | `AppFormDialog` | Dialog form standar (lebar 560 dp, field berjarak 16, [Batal][Simpan] sebaris di bawah). SEMUA form tambah/ubah (produk, pengeluaran, pengguna, profil) memakai ini — tidak ada form halaman penuh |
 | `QtyStepper`    | Tombol − qty +, target sentuh ≥ 48 dp               |
 | `TapArea`       | Ripple + Semantics tombol (pengganti `GestureDetector`) |
-| `ChoiceSegment` | Pilihan 1-dari-N (58/80 mm, Hari Ini/Bulan Ini)      |
+| `ChoiceSegment` | Pilihan 1-dari-N (58/80 mm, Hari Ini/Bulan Ini): wadah `inset`, segmen terpilih = kotak oranye gradasi `primaryLight→primary` teks putih, tinggi ≥ 48 dp |
 | `BarChart`       | Grafik batang sederhana (tanpa dependency chart): label sumbu bawah, batang tertinggi ditandai aksen, tap/long-press → SnackBar tanggal + nominal, scroll horizontal |
 | `AppDataTable`  | Tabel standar: header, baris berpembatas, angka rata kanan, scroll horizontal di layar sempit, "Tampilkan lebih banyak" per 25 baris. Dipakai Pengeluaran, Transaksi, Pengguna |
 | `FilterPanel`   | Kartu kontrol filter + "Reset filter" (muncul saat filter aktif) |
-| `PeriodFilterBar`| Chip periode: Hari ini / Bulan ini / Bulan lalu / Semua / Pilih tanggal (rentang) |
+| `PeriodFilterBar`| Chip clay kecil (radius 14, `compact`, tinggi ≥ 48 dp; terpilih = `textPrimary` + teks putih): Hari ini / Bulan ini / Bulan lalu / Semua / Pilih tanggal (rentang) |
 | `SearchField`   | Kolom cari dengan ikon + tombol hapus               |
 | `ReceiptPreview`| Preview nota monospace (teks sama dengan yang dicetak) di form profil |
 
