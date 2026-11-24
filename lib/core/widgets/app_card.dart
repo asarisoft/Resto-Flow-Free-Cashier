@@ -1,28 +1,26 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import '../theme/clay.dart';
 
 class AppCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final double? height;
+  final Color? color;
 
-  const AppCard({super.key, required this.child, this.padding, this.height});
+  const AppCard({super.key, required this.child, this.padding, this.height, this.color});
 
   @override
   Widget build(BuildContext context) {
-    // Surface color lives on the Material so tiles inside (ListTile, InkWell)
-    // keep their background and ink splashes visible.
+    // Material transparan di bawah Ink: tile di dalam (ListTile, InkWell)
+    // tetap menampilkan background dan ripple.
     return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
+      color: Colors.transparent,
+      child: Ink(
         height: height,
         padding: padding ?? const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: AppColors.border),
-        ),
+        decoration: ClayDecoration.box(color: color ?? AppColors.surface),
         child: child,
       ),
     );
@@ -32,27 +30,25 @@ class AppCard extends StatelessWidget {
 class AppCardButton extends StatelessWidget {
   final Widget child;
   final VoidCallback? onTap;
+  final Color? color;
 
-  const AppCardButton({super.key, required this.child, this.onTap});
+  const AppCardButton({super.key, required this.child, this.onTap, this.color});
 
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.surface,
-      borderRadius: BorderRadius.circular(12),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12),
-            color: AppColors.surface,
-            border: Border.all(color: AppColors.border),
-          ),
-          child: DefaultTextStyle(
-            style: AppTypography.textTheme.bodyLarge!,
-            child: child,
+      color: Colors.transparent,
+      child: Ink(
+        decoration: ClayDecoration.box(color: color ?? AppColors.surface),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: DefaultTextStyle(
+              style: AppTypography.textTheme.bodyLarge!,
+              child: child,
+            ),
           ),
         ),
       ),
