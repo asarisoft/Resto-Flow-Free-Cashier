@@ -262,3 +262,41 @@ Gambar: rasio ±2:1, sisi KIRI kosong (dinding lilac), karakter kasir di KANAN.
 - [x] **Step 2:** Ganti logo api di sidebar & login dengan `Image.asset('assets/images/app_logo.webp')` dalam kotak radius 14 (sidebar 40×40, login sesuai Task 13), `excludeFromSemantics: true` (nama app ada di teks sebelahnya).
 - [x] **Step 3: Tes** widget: sidebar & login merender `Image` dengan asset `app_logo.webp`; `flutter analyze` + `flutter test` → PASS.
 - [x] **Step 4: Commit** `feat: ikon aplikasi & logo kasir clay`
+
+---
+
+# Shift Wajib & Menu Kategori (permintaan user 2026-11-24)
+
+### Task 16: Shift wajib sebelum transaksi
+
+**Files:**
+- Create: `lib/features/shifts/open_shift_card.dart` (kartu "Buka shift" reusable)
+- Modify: `lib/features/pos/pos_page.dart`, `lib/features/shifts/shift_page.dart` (pakai widget/logika buka shift yang sama — jangan duplikat), `docs/SPEC.md` §7.10
+- Test: `test/features/pos/pos_shift_required_test.dart` (baru)
+
+**Interfaces:**
+- Consumes: `openShiftProvider` (stream/future `Shift?`), `shiftsDaoProvider.open({openedBy, openingCash})`, `currentUserProvider`.
+- Produces: `OpenShiftCard()` — input modal awal (int rupiah ≥ 0, validasi) + tombol "Buka Shift"; memanggil `shiftsDao.open` dengan user saat ini.
+
+Aturan (berlaku Owner & Kasir):
+- Tidak ada shift terbuka → di POS tampil `OpenShiftCard` (clay, di atas grid produk / panel keranjang) dengan teks "Buka shift dulu untuk mulai jualan". Produk tetap bisa dilihat & masuk keranjang; tombol **Bayar** dan **Simpan** (pesanan terbuka) NONAKTIF (onPressed null) dengan tooltip/teks bantu "Buka shift dulu".
+- Ada shift terbuka sejak sebelum hari ini (`openedAt` < awal hari ini) → banner kecil "Shift dibuka sejak <tanggal>. Tutup dulu?" dengan tombol ke halaman Shift; transaksi TETAP boleh (masuk shift itu).
+- Logika uang tidak berubah: rekap shift tetap rentang `openedAt..closedAt`.
+
+- [ ] **Step 1: Tes skenario kasir** — (a) tanpa shift: tambah produk ke keranjang, tombol Bayar disabled, `OpenShiftCard` tampil; (b) isi modal 200000 → tap "Buka Shift" → `shiftsDao.open` terpanggil dengan openingCash 200000 dan tombol Bayar jadi aktif; (c) modal kosong/negatif/huruf → ditolak dengan pesan error, `open` tidak terpanggil; (d) shift terbuka kemarin → banner tampil dan Bayar aktif.
+- [ ] **Step 2: Jalankan** → FAIL.
+- [ ] **Step 3: Implement** `OpenShiftCard` (ekstrak dari dialog buka shift di `shift_page.dart`, halaman Shift memakainya juga), lalu gating di `pos_page.dart` (HP & tablet).
+- [ ] **Step 4: `flutter analyze` + `flutter test` penuh** → PASS (tes POS lama yang mengasumsikan bayar tanpa shift: sesuaikan fixture agar ada shift terbuka, sebutkan di report).
+- [ ] **Step 5: Update `docs/SPEC.md` §7.10**: ganti "Transaksi tetap bisa dicatat tanpa shift terbuka" dengan aturan baru di atas.
+- [ ] **Step 6: Commit** `feat(shift): shift wajib sebelum transaksi`
+
+### Task 17: Menu Kategori di Pengaturan
+
+**Files:**
+- Modify: `lib/features/settings/settings_page.dart`
+- Test: tes widget settings (yang ada atau baru)
+
+- [ ] **Step 1: Tes** — di Pengaturan ada tile "Kategori" (ikon `AppIcons.category` atau yang ada, subjudul "Ubah nama & hapus kategori produk/pengeluaran"); tap → `CategoryPage` tampil.
+- [ ] **Step 2: Implement** tile clay sama gaya dengan tile "Log aktivitas", membuka `CategoryPage(initialType: CategoryType.product)`. Hanya Owner (ikuti role guard tile Owner lain di halaman ini).
+- [ ] **Step 3: `flutter analyze` + `flutter test`** → PASS. Tambah baris di `docs/SPEC.md` §7.8.
+- [ ] **Step 4: Commit** `feat(settings): menu kategori`
