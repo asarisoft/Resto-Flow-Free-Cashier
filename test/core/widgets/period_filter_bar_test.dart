@@ -31,8 +31,8 @@ void main() {
     for (final l in ['Hari ini', 'Bulan ini', 'Bulan lalu', 'Semua', 'Pilih tanggal']) {
       final c = labelColor(tester, l);
       expect(c.a, greaterThan(0.9), reason: '$l is transparent/invisible');
-      final bg = l == 'Bulan ini' ? AppColors.primary.withValues(alpha: 0.08) : AppColors.surface;
-      expect(contrast(c, Color.alphaBlend(bg, AppColors.surface)), greaterThanOrEqualTo(4.5), reason: l);
+      final bg = l == 'Bulan ini' ? AppColors.textPrimary : AppColors.surface;
+      expect(contrast(c, bg), greaterThanOrEqualTo(4.5), reason: l);
     }
   });
 

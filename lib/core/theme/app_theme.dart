@@ -25,7 +25,7 @@ class AppTheme {
       textTheme: textTheme,
       iconTheme: const IconThemeData(size: AppIcons.md),
       appBarTheme: AppBarTheme(
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         scrolledUnderElevation: 0,
@@ -37,8 +37,8 @@ class AppTheme {
         color: AppColors.surface,
         elevation: 0,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-          side: const BorderSide(color: AppColors.border),
+          borderRadius: BorderRadius.circular(20),
+          side: BorderSide.none,
         ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
@@ -48,7 +48,7 @@ class AppTheme {
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(10),
+            borderRadius: BorderRadius.circular(20),
           ),
           textStyle: textTheme.labelLarge
               ?.copyWith(fontWeight: FontWeight.w600),
@@ -68,6 +68,8 @@ class AppTheme {
       ),
       // Bar bawah HP (5 tab di ±375 dp): label kecil agar "Pengeluaran" tidak patah.
       navigationBarTheme: NavigationBarThemeData(
+        backgroundColor: AppColors.surface,
+        indicatorColor: AppColors.peach,
         labelTextStyle: WidgetStatePropertyAll(
           AppTypography.textTheme.labelSmall?.copyWith(letterSpacing: 0),
         ),
@@ -84,23 +86,23 @@ class AppTheme {
         filled: true,
         fillColor: AppColors.surface,
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.inputBorder),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.inputBorder, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.inputBorder),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.inputBorder, width: 1.5),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
         errorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
-          borderSide: const BorderSide(color: AppColors.error),
+          borderRadius: BorderRadius.circular(16),
+          borderSide: const BorderSide(color: AppColors.error, width: 1.5),
         ),
         focusedErrorBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(10),
+          borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: AppColors.error, width: 2),
         ),
         contentPadding:
@@ -135,7 +137,7 @@ class AppTheme {
       dialogTheme: DialogThemeData(
         backgroundColor: AppColors.surface,
         surfaceTintColor: Colors.transparent,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
         titleTextStyle: textTheme.titleLarge?.copyWith(color: AppColors.textPrimary),
       ),
       segmentedButtonTheme: SegmentedButtonThemeData(
@@ -145,21 +147,23 @@ class AppTheme {
               st.contains(WidgetState.selected) ? AppColors.primary : AppColors.surface),
           foregroundColor: WidgetStateProperty.resolveWith((st) =>
               st.contains(WidgetState.selected) ? AppColors.onPrimary : AppColors.textSecondary),
-          side: const WidgetStatePropertyAll(BorderSide(color: AppColors.inputBorder)),
+          side: const WidgetStatePropertyAll(BorderSide.none),
+          shape: WidgetStatePropertyAll(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(14))),
           textStyle: WidgetStatePropertyAll(textTheme.labelLarge),
         ),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: AppColors.surface,
-        selectedColor: AppColors.primary.withValues(alpha: 0.08),
-        side: const BorderSide(color: AppColors.inputBorder),
+        selectedColor: AppColors.textPrimary,
+        side: BorderSide.none,
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(14),
         ),
         showCheckmark: false,
         labelStyle: textTheme.bodyMedium?.copyWith(color: AppColors.textPrimary),
         secondaryLabelStyle: textTheme.bodyMedium?.copyWith(
-          color: AppColors.primary,
+          color: Colors.white,
           fontWeight: FontWeight.w600,
         ),
       ),
