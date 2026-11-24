@@ -25,4 +25,9 @@ void main() {
   text('warning on surface', AppColors.warning, AppColors.surface);
   text('inputBorder on background (non-text)', AppColors.inputBorder, AppColors.background, 3.0);
   text('inputBorder on surface (non-text)', AppColors.inputBorder, AppColors.surface, 3.0);
+  text('primary on peach', AppColors.primary, AppColors.peach);
+  text('primary on mint', AppColors.primary, AppColors.mint, 4.5);
+  text('primary on sky', AppColors.primary, AppColors.sky);
+  text('textPrimary on lilac', AppColors.textPrimary, AppColors.lilac);
+  text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
 }
