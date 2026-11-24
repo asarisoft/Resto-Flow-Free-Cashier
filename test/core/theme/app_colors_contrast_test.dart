@@ -30,4 +30,9 @@ void main() {
   text('primary on sky', AppColors.primary, AppColors.sky);
   text('textPrimary on lilac', AppColors.textPrimary, AppColors.lilac);
   text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
+  for (final e in {'peach': AppColors.peach, 'mint': AppColors.mint, 'sky': AppColors.sky, 'surface': AppColors.surface}.entries) {
+    final dark = Color.lerp(e.value, AppColors.lilac, .25)!;
+    text('primary on ${e.key} ujung gelap gradasi', AppColors.primary, dark);
+    text('textSecondary on ${e.key} ujung gelap gradasi', AppColors.textSecondary, dark);
+  }
 }

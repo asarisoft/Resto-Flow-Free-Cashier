@@ -1,3 +1,4 @@
+import 'dart:ui' show Tristate;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir_resto/core/theme/app_colors.dart';
@@ -40,5 +41,18 @@ void main() {
     await tester.pumpWidget(_wrap(PrimaryButton(label: 'Bayar', onPressed: () => n++)));
     await tester.tap(find.text('Bayar'));
     expect(n, 1);
+  });
+
+  testWidgets('semantics: tombol, enabled sesuai onPressed', (tester) async {
+    final h = tester.ensureSemantics();
+    await tester.pumpWidget(_wrap(PrimaryButton(label: 'Bayar', onPressed: () {})));
+    var sem = tester.getSemantics(find.byType(PrimaryButton));
+    expect(sem.flagsCollection.isButton, isTrue);
+    expect(sem.flagsCollection.isEnabled, Tristate.isTrue);
+    await tester.pumpWidget(_wrap(const PrimaryButton(label: 'Bayar')));
+    sem = tester.getSemantics(find.byType(PrimaryButton));
+    expect(sem.flagsCollection.isButton, isTrue);
+    expect(sem.flagsCollection.isEnabled, Tristate.isFalse);
+    h.dispose();
   });
 }

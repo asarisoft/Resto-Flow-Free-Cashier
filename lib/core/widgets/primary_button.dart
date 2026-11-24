@@ -34,7 +34,11 @@ class _PrimaryButtonState extends State<PrimaryButton> {
     final animate = !MediaQuery.disableAnimationsOf(context);
     final radius = BorderRadius.circular(20);
     final fg = enabled ? AppColors.onPrimary : AppColors.textSecondary;
-    return AnimatedScale(
+    return Semantics(
+      button: true,
+      enabled: enabled,
+      container: true,
+      child: AnimatedScale(
       scale: enabled && _pressed ? 0.96 : 1,
       duration: animate ? const Duration(milliseconds: 200) : Duration.zero,
       curve: Curves.easeOutBack,
@@ -97,7 +101,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
           ),
         ),
       ),
-    );
+    ));
   }
 }
 

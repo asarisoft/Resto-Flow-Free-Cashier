@@ -9,10 +9,11 @@ BoxDecoration _deco(WidgetTester t) {
 }
 
 void main() {
-  testWidgets('AppCard: 3 bayangan clay + radius 20', (tester) async {
+  testWidgets('AppCard: bayangan luar + gradasi clay + radius 20', (tester) async {
     await tester.pumpWidget(const MaterialApp(home: AppCard(child: Text('x'))));
     final d = _deco(tester);
-    expect(d.boxShadow!.length, 3);
+    expect(d.boxShadow!.length, 1);
+    expect(d.gradient, isNotNull);
     expect(d.borderRadius, BorderRadius.circular(20));
     expect(d.border, isNull);
     expect(d.color, AppColors.surface);
