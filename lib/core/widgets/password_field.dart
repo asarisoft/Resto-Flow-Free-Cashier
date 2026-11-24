@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_icons.dart';
+import 'icon_badge.dart';
 
 /// Field password dengan tombol lihat/sembunyikan. Dipakai di dialog
 /// ganti/reset password agar bentuknya konsisten.
@@ -36,7 +37,7 @@ class _PasswordFieldState extends State<PasswordField> {
       onSubmitted: widget.onSubmitted,
       decoration: InputDecoration(
         labelText: widget.label,
-        prefixIcon: widget.prefixIcon == null ? null : Icon(widget.prefixIcon),
+        prefixIcon: widget.prefixIcon == null ? null : IconBadge(widget.prefixIcon!),
         suffixIcon: IconButton(
           tooltip: _obscure ? 'Tampilkan password' : 'Sembunyikan password',
           icon: Icon(_obscure ? AppIcons.visible : AppIcons.hidden),

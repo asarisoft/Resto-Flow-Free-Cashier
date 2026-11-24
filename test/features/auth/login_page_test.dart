@@ -62,16 +62,16 @@ void main() {
       addTearDown(tester.view.reset);
     }
 
-    testWidgets('lebar (tablet): gambar + form berdampingan', (tester) async {
-      setSize(tester, const Size(1024, 768));
+    testWidgets('lebar: satu kartu, gambar full-bleed + teks di kiri', (tester) async {
+      setSize(tester, const Size(1280, 800));
       await pumpLoginPage(tester);
 
       expect(find.byType(Image), findsOneWidget);
-      expect(find.text('Halo, selamat datang!'), findsOneWidget);
-
-      final brand = tester.getTopLeft(find.byType(Image));
+      expect(find.text('KasirKita'), findsOneWidget);
+      final img = tester.getRect(find.byType(Image));
       final form = tester.getTopLeft(find.text('Halo, selamat datang!'));
-      expect(brand.dx, lessThan(form.dx)); // panel di kiri form
+      expect(form.dx, greaterThan(img.left));
+      expect(form.dx, lessThan(img.center.dx)); // teks di sisi kiri gambar
     });
 
     testWidgets('sempit (HP portrait): gambar di atas form', (tester) async {
@@ -82,6 +82,21 @@ void main() {
       final form = tester.getTopLeft(find.text('Halo, selamat datang!'));
       expect(brand.dy, lessThan(form.dy)); // panel di atas form
     });
+
+    for (final size in const [Size(360, 640), Size(800, 1280), Size(1280, 800)]) {
+      testWidgets('kasir bisa isi & tap Masuk di ${size.width.toInt()}x${size.height.toInt()}', (tester) async {
+        setSize(tester, size);
+        await pumpLoginPage(tester);
+        expect(tester.takeException(), isNull);
+
+        expect(find.text('Username'), findsWidgets);
+        await tester.enterText(find.byType(TextField), 'P@ssw0rd123');
+        await tester.ensureVisible(find.text('Masuk'));
+        await tester.tap(find.text('Masuk'));
+        await tester.pumpAndSettle();
+        expect(await SessionService().read(), 'admin');
+      });
+    }
 
     testWidgets('login tetap berfungsi di layout sempit', (tester) async {
       setSize(tester, const Size(375, 667));

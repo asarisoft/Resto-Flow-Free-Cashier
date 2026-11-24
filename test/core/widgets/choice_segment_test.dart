@@ -33,7 +33,8 @@ void main() {
     final wrap = tester.widget<DecoratedBox>(find.byKey(const ValueKey('segment-container')));
     expect((wrap.decoration as BoxDecoration).color, AppColors.inset);
     final sel = tester.widget<DecoratedBox>(find.byKey(const ValueKey('segment-58')));
-    expect((sel.decoration as BoxDecoration).gradient, isNotNull);
+    expect((sel.decoration as BoxDecoration).gradient, isNull);
+    expect((sel.decoration as BoxDecoration).color, AppColors.primary);
     expect(tester.getSize(find.byKey(const ValueKey('segment-80'))).height, greaterThanOrEqualTo(48));
     final h = tester.ensureSemantics();
     expect(tester.getSemantics(find.text('58 mm')), containsSemantics(label: '58 mm', isButton: true, isSelected: true, hasSelectedState: true));

@@ -38,13 +38,9 @@ class ChoiceSegment<T> extends StatelessWidget {
                   child: DecoratedBox(
                     key: ValueKey('segment-${o.$1}'),
                     decoration: o.$1 == value
-                        ? ClayDecoration.box(color: AppColors.primary, radius: 14, compact: true).copyWith(
-                            gradient: const LinearGradient(
-                              begin: Alignment.topCenter,
-                              end: Alignment.bottomCenter,
-                              colors: [AppColors.primaryLight, AppColors.primary],
-                            ),
-                          )
+                        ? BoxDecoration(color: AppColors.primary, borderRadius: radius, boxShadow: const [
+                            BoxShadow(color: AppColors.clayShadow, offset: Offset(4, 5), blurRadius: 10),
+                          ])
                         : const BoxDecoration(),
                     child: Material(
                       type: MaterialType.transparency,
