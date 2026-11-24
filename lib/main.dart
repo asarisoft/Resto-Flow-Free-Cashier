@@ -36,7 +36,7 @@ class _KasirRestoAppState extends ConsumerState<KasirRestoApp> {
   Widget build(BuildContext context) {
     final router = ref.watch(routerProvider);
     return MaterialApp.router(
-      title: 'Resto Flow Free',
+      title: 'KasirKita',
       theme: AppTheme.light,
       builder: (context, child) => clampTextScale(
         context,

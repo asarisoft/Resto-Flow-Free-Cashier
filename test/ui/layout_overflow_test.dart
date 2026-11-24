@@ -144,7 +144,7 @@ void main() {
           await tester.pump(const Duration(milliseconds: 200));
         }
         if (e.value.width > 800) {
-          expect(find.text('Resto Flow Free'), findsOneWidget, reason: 'sidebar must be visible (not onboarding)');
+          expect(find.text('KasirKita'), findsOneWidget, reason: 'sidebar must be visible (not onboarding)');
         } else {
           expect(find.byType(NavigationBar), findsOneWidget, reason: 'bottom nav at <= 800dp');
         }

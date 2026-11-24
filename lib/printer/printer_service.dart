@@ -71,7 +71,7 @@ class PrinterService extends ChangeNotifier {
     await port.write(Uint8List.fromList(bytes));
   }
 
-  Future<void> printTest() => printBytes([...utf8.encode('Resto Flow\n'), 10, 10, 10]);
+  Future<void> printTest() => printBytes([...utf8.encode('KasirKita\n'), 10, 10, 10]);
 
   Future<void> _saveAddress(String address) async {
     final prefs = await SharedPreferences.getInstance();
