@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/theme/clay.dart';
 import '../../core/widgets/amount_text.dart';
 import '../../core/widgets/ready_chip.dart';
 import '../../core/widgets/tap_area.dart';
@@ -49,17 +50,12 @@ class ProductCard extends StatelessWidget {
     final selected = cartQty > 0;
     return TapArea(
       label: product.ready ? product.name : '${product.name}, habis',
-      borderRadius: BorderRadius.circular(12),
+      borderRadius: BorderRadius.circular(20),
       onTap: onTap,
       child: Container(
         clipBehavior: Clip.antiAlias,
-        decoration: BoxDecoration(
-          color: AppColors.surface,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(
-            color: selected ? AppColors.primary : AppColors.border,
-            width: selected ? 2 : 1,
-          ),
+        decoration: ClayDecoration.box().copyWith(
+          border: selected ? Border.all(color: AppColors.primary, width: 2) : null,
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -73,7 +69,7 @@ class ProductCard extends StatelessWidget {
                     child: ProductImage(
                       path: product.imagePath,
                       fit: BoxFit.cover,
-                      placeholder: const _ImagePlaceholder(),
+                      placeholder: _ImagePlaceholder(color: _tints[_tintIndex(product.id)]),
                     ),
                   ),
                   if (selected)
@@ -142,14 +138,20 @@ class ProductCard extends StatelessWidget {
   }
 }
 
+const _tints = [AppColors.peach, AppColors.mint, AppColors.sky, AppColors.lilac];
+
+/// Indeks tint stabil dari id produk (id String? -> jumlah code unit % 4).
+int _tintIndex(String? id) => (id ?? '').codeUnits.fold(0, (a, b) => a + b) % 4;
+
 class _ImagePlaceholder extends StatelessWidget {
-  const _ImagePlaceholder();
+  final Color color;
+  const _ImagePlaceholder({required this.color});
 
   @override
   Widget build(BuildContext context) {
-    return const ColoredBox(
-      color: AppColors.background,
-      child: Center(
+    return ColoredBox(
+      color: color,
+      child: const Center(
         child: Icon(AppIcons.food, size: AppIcons.xl, color: AppColors.textSecondary),
       ),
     );

@@ -72,7 +72,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
             child: Container(
               constraints: const BoxConstraints(minHeight: 52),
               width: double.infinity,
-              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
               alignment: Alignment.center,
               child: DefaultTextStyle(
                 style: (AppTypography.textTheme.labelLarge ?? const TextStyle())
@@ -87,13 +87,16 @@ class _PrimaryButtonState extends State<PrimaryButton> {
                         ),
                       )
                     : Row(
+                        mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           if (widget.icon != null) ...[
                             Icon(widget.icon, size: AppIcons.md, color: fg),
                             const SizedBox(width: 8),
                           ],
-                          Text(widget.label),
+                          Flexible(
+                            child: Text(widget.label, overflow: TextOverflow.ellipsis),
+                          ),
                         ],
                       ),
               ),

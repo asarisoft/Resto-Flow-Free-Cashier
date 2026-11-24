@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/amount_text.dart';
+import '../../core/widgets/primary_button.dart';
 import '../../models/product.dart';
 import '../../models/transaction.dart' as models;
 import '../../models/transaction_item.dart';
@@ -209,13 +210,13 @@ class _PosPageState extends ConsumerState<PosPage> {
         if (cart.isNotEmpty)
           TapArea(
             label: 'Lihat keranjang',
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(16)),
+            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
             onTap: () => _showMobileCart(context),
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
               decoration: const BoxDecoration(
-                color: AppColors.primary,
-                borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+                color: AppColors.textPrimary,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
               child: Row(
                 children: [
@@ -482,14 +483,8 @@ class _CartPanel extends ConsumerWidget {
           Container(
             padding: const EdgeInsets.all(24),
             decoration: const BoxDecoration(
-              color: AppColors.surface,
-              boxShadow: [
-                BoxShadow(
-                  color: Color(0x1F0E0E0E),
-                  blurRadius: 10,
-                  offset: Offset(0, -4),
-                ),
-              ],
+              color: AppColors.textPrimary,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
             ),
             child: Column(
               children: [
@@ -501,7 +496,7 @@ class _CartPanel extends ConsumerWidget {
                         'Jumlah item (${cart.fold(0, (s, i) => s + i.qty)})',
                         overflow: TextOverflow.ellipsis,
                         style: textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
+                          color: AppColors.onPrimary,
                         ),
                       ),
                     ),
@@ -509,6 +504,7 @@ class _CartPanel extends ConsumerWidget {
                     AmountText(
                       amount: subtotal,
                       style: textTheme.bodyMedium?.copyWith(
+                        color: AppColors.onPrimary,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
@@ -521,6 +517,7 @@ class _CartPanel extends ConsumerWidget {
                     Text(
                       'Total',
                       style: textTheme.titleLarge?.copyWith(
+                        color: AppColors.onPrimary,
                         fontWeight: FontWeight.bold,
                       ),
                     ),
@@ -531,8 +528,8 @@ class _CartPanel extends ConsumerWidget {
                         alignment: Alignment.centerRight,
                         child: AmountText(
                           amount: subtotal,
-                          style: textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
+                          style: textTheme.displayMedium?.copyWith(
+                            color: AppColors.onPrimary,
                           ),
                         ),
                       ),
@@ -553,7 +550,7 @@ class _CartPanel extends ConsumerWidget {
                           minimumSize: const Size(0, 56),
                           padding: const EdgeInsets.symmetric(vertical: 20),
                           shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           side: const BorderSide(color: AppColors.border),
                           elevation: 0,
@@ -568,38 +565,11 @@ class _CartPanel extends ConsumerWidget {
                     ),
                     const SizedBox(width: 12),
                     Expanded(
-                      child: ElevatedButton(
+                      child: PrimaryButton(
+                        label: 'Bayar',
                         onPressed: cart.isEmpty
                             ? null
                             : () => _checkout(context, ref),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColors.primary,
-                          foregroundColor: AppColors.onPrimary,
-                          minimumSize: const Size(double.infinity, 56),
-                          padding: const EdgeInsets.symmetric(vertical: 20),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Flexible(
-                              child: Text(
-                                'Bayar',
-                                overflow: TextOverflow.ellipsis,
-                                style: AppTypography.textTheme.titleMedium
-                                    ?.copyWith(
-                                      color: AppColors.onPrimary,
-                                      fontWeight: FontWeight.w700,
-                                    ),
-                              ),
-                            ),
-                            const SizedBox(width: 8),
-                            const Icon(AppIcons.arrowRight, size: AppIcons.md),
-                          ],
-                        ),
                       ),
                     ),
                   ],

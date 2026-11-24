@@ -5,6 +5,8 @@ import 'package:kasir_resto/core/services/database.dart'
     hide Product, Transaction, TransactionItem, RestoProfile, Users, User;
 import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/theme/app_theme.dart';
+import 'package:kasir_resto/core/widgets/amount_text.dart' show formatRupiah;
+import 'package:kasir_resto/core/widgets/primary_button.dart';
 import 'package:kasir_resto/features/pos/cart_provider.dart';
 import 'package:kasir_resto/features/pos/pos_page.dart';
 import 'package:kasir_resto/main.dart' show clampTextScale;
@@ -49,5 +51,42 @@ void main() {
         expect(tester.takeException(), isNull);
       });
     }
+  }
+
+  // Skenario kasir: 3 produk (25.000 + 8.000 + 5.000) -> total Rp 38.000, Bayar bisa di-tap.
+  for (final size in const [Size(360, 640), Size(1280, 800)]) {
+    testWidgets('kasir: 3 produk -> total 38.000 & Bayar bisa di-tap @ ${size.width.toInt()}x${size.height.toInt()}', (tester) async {
+      SharedPreferences.setMockInitialValues({});
+      final db = AppDatabase.forTest();
+      final c = ProviderContainer(overrides: [databaseProvider.overrideWithValue(db)]);
+      tester.view.physicalSize = size;
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(() async {
+        await tester.pumpWidget(const SizedBox());
+        await tester.pump(const Duration(seconds: 1));
+        c.dispose();
+        await db.close();
+        tester.view.reset();
+      });
+      c.read(cartProvider.notifier).setItems(const [
+        TransactionItem(productId: 'a', name: 'Nasi Goreng', price: 25000, hpp: 0, qty: 1),
+        TransactionItem(productId: 'b', name: 'Mie Ayam', price: 8000, hpp: 0, qty: 1),
+        TransactionItem(productId: 'c', name: 'Es Teh', price: 5000, hpp: 0, qty: 1),
+      ]);
+      await tester.pumpWidget(UncontrolledProviderScope(
+        container: c,
+        child: MaterialApp(theme: AppTheme.light, builder: clampTextScale, home: const PosPage()),
+      ));
+      for (var i = 0; i < 5; i++) { await tester.pump(const Duration(milliseconds: 200)); }
+      if (size.width < 600) {
+        await tester.tap(find.text('3 item'));
+        for (var i = 0; i < 5; i++) { await tester.pump(const Duration(milliseconds: 200)); }
+      }
+      expect(find.text(formatRupiah(38000)), findsWidgets);
+      await tester.tap(find.widgetWithText(PrimaryButton, 'Bayar'));
+      for (var i = 0; i < 5; i++) { await tester.pump(const Duration(milliseconds: 200)); }
+      expect(find.byType(CheckoutDialog), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    });
   }
 }
