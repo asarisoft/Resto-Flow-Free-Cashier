@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
+import 'app_card.dart';
 import 'tap_area.dart';
 
 class AppColumn<T> {
@@ -54,7 +55,8 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
   void didUpdateWidget(covariant AppDataTable<T> old) {
     super.didUpdateWidget(old);
     // Filter berubah (jumlah baris beda) → mulai lagi dari halaman pertama.
-    if (old.rows.length != widget.rows.length && widget.rows.length <= widget.pageSize) {
+    if (old.rows.length != widget.rows.length &&
+        widget.rows.length <= widget.pageSize) {
       _visible = widget.pageSize;
     }
   }
@@ -69,15 +71,15 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
     final remaining = widget.rows.length - shown.length;
 
     Widget cellBox(AppColumn<T> c, Widget child) => Expanded(
-          flex: c.flex,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-            child: Align(
-              alignment: c.numeric ? Alignment.centerRight : Alignment.centerLeft,
-              child: child,
-            ),
-          ),
-        );
+      flex: c.flex,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Align(
+          alignment: c.numeric ? Alignment.centerRight : Alignment.centerLeft,
+          child: child,
+        ),
+      ),
+    );
 
     final header = Container(
       color: AppColors.background,
@@ -103,7 +105,9 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
         decoration: const BoxDecoration(
           border: Border(top: BorderSide(color: AppColors.border)),
         ),
-        child: Row(children: [for (final c in widget.columns) cellBox(c, c.cell(r))]),
+        child: Row(
+          children: [for (final c in widget.columns) cellBox(c, c.cell(r))],
+        ),
       );
       if (widget.onRowTap == null) return row;
       return TapArea(
@@ -130,7 +134,9 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
               children: [
                 Expanded(
                   child: DefaultTextStyle.merge(
-                    style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
                     child: first.cell(r),
                   ),
                 ),
@@ -145,14 +151,20 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
                   children: [
                     Expanded(
                       flex: 2,
-                      child: Text(c.label,
-                          style: textTheme.bodyMedium
-                              ?.copyWith(color: AppColors.textSecondary)),
+                      child: Text(
+                        c.label,
+                        style: textTheme.bodyMedium?.copyWith(
+                          color: AppColors.textSecondary,
+                        ),
+                      ),
                     ),
                     const SizedBox(width: 8),
                     Expanded(
                       flex: 3,
-                      child: Align(alignment: Alignment.centerRight, child: c.cell(r)),
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: c.cell(r),
+                      ),
                     ),
                   ],
                 ),
@@ -171,9 +183,7 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
     final cards = Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        for (final r in shown) cardFor(r),
-      ],
+      children: [for (final r in shown) cardFor(r)],
     );
 
     final table = Column(
@@ -182,33 +192,32 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
       children: [header, for (final r in shown) rowFor(r)],
     );
 
-    return Container(
-      decoration: BoxDecoration(
-        color: AppColors.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColors.border),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          LayoutBuilder(
-            builder: (_, constraints) {
-              if (constraints.maxWidth < AppDataTable.cardBreakpoint) return cards;
-              if (constraints.maxWidth >= _minWidth) return table;
-              return SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: SizedBox(width: _minWidth, child: table),
-              );
-            },
-          ),
-          if (remaining > 0)
-            TextButton(
-              onPressed: () => setState(() => _visible += widget.pageSize),
-              child: Text('Tampilkan lebih banyak ($remaining lagi)'),
+    return AppCard(
+      padding: EdgeInsets.zero,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(20),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            LayoutBuilder(
+              builder: (_, constraints) {
+                if (constraints.maxWidth < AppDataTable.cardBreakpoint)
+                  return cards;
+                if (constraints.maxWidth >= _minWidth) return table;
+                return SingleChildScrollView(
+                  scrollDirection: Axis.horizontal,
+                  child: SizedBox(width: _minWidth, child: table),
+                );
+              },
             ),
-        ],
+            if (remaining > 0)
+              TextButton(
+                onPressed: () => setState(() => _visible += widget.pageSize),
+                child: Text('Tampilkan lebih banyak ($remaining lagi)'),
+              ),
+          ],
+        ),
       ),
     );
   }

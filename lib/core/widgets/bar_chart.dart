@@ -21,7 +21,7 @@ class BarChartDatum {
 }
 
 /// Grafik batang sederhana tanpa dependency chart.
-/// Batang tertinggi ditandai warna aksen; batang lain transparan netral.
+/// Batang tertinggi ditandai warna aksen; batang lain biru muda (sky).
 /// Scroll horizontal agar banyak batang (28–31 hari) tetap muat di HP.
 class BarChart extends StatelessWidget {
   final List<BarChartDatum> data;
@@ -76,8 +76,8 @@ class _Bar extends StatelessWidget {
               decoration: BoxDecoration(
                 color: isMax
                     ? AppColors.primary
-                    : AppColors.primary.withValues(alpha: 0.28),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(4)),
+                    : AppColors.sky,
+                borderRadius: const BorderRadius.vertical(top: Radius.circular(10)),
               ),
             ),
             const SizedBox(height: 6),

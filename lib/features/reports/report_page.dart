@@ -338,6 +338,7 @@ class _SummaryCards extends StatelessWidget {
           children: [
             _card(
               'Omzet',
+              AppColors.peach,
               summary.totalRevenue,
               AppIcons.trendingUp,
               AppColors.success,
@@ -345,6 +346,7 @@ class _SummaryCards extends StatelessWidget {
             ),
             _card(
               'Laba Kotor',
+              AppColors.mint,
               summary.totalProfit,
               AppIcons.trendingUp,
               AppColors.success,
@@ -352,6 +354,7 @@ class _SummaryCards extends StatelessWidget {
             ),
             _card(
               'Pengeluaran',
+              AppColors.sky,
               summary.totalExpense,
               AppIcons.expense,
               AppColors.warning,
@@ -359,6 +362,7 @@ class _SummaryCards extends StatelessWidget {
             ),
             _card(
               'Laba Bersih',
+              AppColors.lilac,
               summary.netProfit,
               AppIcons.wallet,
               summary.netProfit >= 0
@@ -368,17 +372,19 @@ class _SummaryCards extends StatelessWidget {
             ),
             _card(
               'Transaksi',
+              AppColors.peach,
               summary.transactionCount,
               AppIcons.receipt,
-              AppColors.primary,
+              AppColors.textPrimary,
               width, textTheme,
               isCount: true,
             ),
             _card(
               'Rata-rata',
+              AppColors.mint,
               summary.averagePerTransaction,
               AppIcons.cart,
-              AppColors.primary,
+              AppColors.textPrimary,
               width, textTheme,
             ),
           ],
@@ -387,12 +393,13 @@ class _SummaryCards extends StatelessWidget {
     );
   }
 
-  Widget _card(String label, int value, IconData icon, Color color,
+  Widget _card(String label, Color tint, int value, IconData icon, Color color,
       double width, TextTheme tt,
       {bool isCount = false}) {
     return SizedBox(
       width: width,
       child: AppCard(
+        color: tint,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
