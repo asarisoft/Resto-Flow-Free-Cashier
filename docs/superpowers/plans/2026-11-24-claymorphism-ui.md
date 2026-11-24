@@ -233,3 +233,32 @@ Masalah dari screenshot tablet: bayangan kartu terpotong kotak (sudut gelap pers
 
 - [ ] **Step 1:** Update `docs/DESIGN.md` bagian Shadow & Clay, Warna (`clayShadow`, fill input `#EAE3FF`), komponen (`ChoiceSegment`, chip, sidebar).
 - [ ] **Step 2: Commit** `docs: clay pass 2`
+
+### Task 13: Login hero full-bleed + fix kontras segmen
+
+**Files:**
+- Modify: `lib/features/auth/login_page.dart`, `lib/core/widgets/choice_segment.dart`, `lib/core/widgets/password_field.dart` (bila perlu)
+- Replace asset: `assets/images/login_hero.webp` dari `/Users/mbm1pro/Downloads/Kasir Kafe Ceria Bergaya Kawaii.png` (`cwebp -q 80 -resize 1600 0`, target ≤ 250 KB; file sumber jangan diubah)
+- Test: `test/features/auth/login_page_test.dart`, `test/ui/layout_overflow_test.dart`, `test/core/widgets/choice_segment_test.dart`
+
+Gambar: rasio ±2:1, sisi KIRI kosong (dinding lilac), karakter kasir di KANAN.
+
+- [ ] **Step 1: Tes** — layout login 360×640, 800×1280 (tablet portrait) & 1280×800 tanpa overflow; field username/password & tombol "Masuk" ada dan bisa di-tap setelah `ensureVisible`; segmen terpilih `ChoiceSegment` berwarna solid `AppColors.primary` (tanpa gradient).
+- [ ] **Step 2: Lebar ≥ 900 dp** — satu kartu besar `ClayDecoration.box(radius: 32)` dengan margin 24, berisi `Stack`: gambar `BoxFit.cover`, `alignment: Alignment.centerRight`, dipotong radius 32; di kiri (lebar ±42%, padding 40): logo (placeholder `AppIcons.pos` dalam kotak clay peach 56×56 radius 18 — Task 14 menggantinya) + nama "KasirKita" (titleLarge), lalu judul "Halo, selamat datang!" (displaySmall, textPrimary) + subjudul "Masuk untuk mulai jualan hari ini" (bodyLarge, textSecondary), lalu kartu form `AppCard` putih (maks lebar 400). Halaman bisa scroll bila tinggi kurang.
+- [ ] **Step 3: Lebar < 900 dp** — gambar di atas setinggi `min(260, lebar*0.5)` dp, `alignment: Alignment.centerRight`, radius bawah 32; logo+nama di atas gambar kiri atas; kartu form `AppCard` naik menumpuk gambar 32 dp (`Transform.translate`/Stack), judul & subjudul di DALAM kartu form. Halaman scroll saat keyboard muncul.
+- [ ] **Step 4: Input** — prefixIcon dibungkus kotak 36×36 radius 12 warna `AppColors.lilac` ikon `textPrimary` (person / lock); password tetap pakai `PasswordField` dengan tombol mata (tooltip ada). Tanpa tombol Google/Microsoft/Sign up.
+- [ ] **Step 5: ChoiceSegment** — segmen terpilih solid `AppColors.primary` (putih di atasnya 5.18:1), hapus gradient `primaryLight`.
+- [ ] **Step 6:** `flutter analyze` + `flutter test` → PASS. Gambar dekoratif: `excludeFromSemantics: true`.
+- [ ] **Step 7: Commit** `feat(ui): login hero full-bleed`
+
+### Task 14: Ikon aplikasi + logo dalam app
+
+**Files:**
+- Create: `assets/images/app_logo.webp` (512 px, dari `/Users/mbm1pro/Downloads/Kasir Mini Ceria dengan Struk Ungu.png`)
+- Modify: `android/app/src/main/res/mipmap-*/ic_launcher.png`, adaptive icon (`mipmap-anydpi-v26/ic_launcher.xml` + `drawable/ic_launcher_foreground.png` per density, background warna `#E6D5FB`), `ios/Runner/Assets.xcassets/AppIcon.appiconset/*`, `lib/features/home/home_shell.dart` (logo sidebar), `lib/features/auth/login_page.dart` (logo)
+- Test: widget test sidebar & login menampilkan `Image` asset `app_logo.webp`
+
+- [ ] **Step 1:** Generate ikon pakai `magick` (tanpa paket baru): legacy `ic_launcher.png` 48/72/96/144/192 px = gambar penuh; foreground adaptive 108 dp (108/162/216/324/432 px) = objek diperkecil 66% di tengah kanvas transparan; iOS semua ukuran di `Contents.json` yang ada (tanpa alpha, latar `#E6D5FB`).
+- [ ] **Step 2:** Ganti logo api di sidebar & login dengan `Image.asset('assets/images/app_logo.webp')` dalam kotak radius 14 (sidebar 40×40, login sesuai Task 13), `excludeFromSemantics: true` (nama app ada di teks sebelahnya).
+- [ ] **Step 3: Tes** widget: sidebar & login merender `Image` dengan asset `app_logo.webp`; `flutter analyze` + `flutter test` → PASS.
+- [ ] **Step 4: Commit** `feat: ikon aplikasi & logo kasir clay`
