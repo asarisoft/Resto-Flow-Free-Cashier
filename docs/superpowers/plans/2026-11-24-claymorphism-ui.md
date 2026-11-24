@@ -201,21 +201,21 @@ Masalah dari screenshot tablet: bayangan kartu terpotong kotak (sudut gelap pers
 - Produces: `ClayDecoration.box({Color color = AppColors.surface, double radius = 20, bool raised = true})` dan `ClayDecoration.inset({Color color = AppColors.background, double radius = 16})`.
 - `AppCard`/`AppCardButton` API tidak berubah.
 
-- [ ] **Step 1: Tes** — `AppCard` & `AppCardButton`: tidak ada `Ink` yang dekorasinya punya `boxShadow` (bayangan harus di `DecoratedBox`/`Container` LUAR `Material`); `Material` punya `borderRadius == BorderRadius.circular(20)` dan `clipBehavior == Clip.antiAlias`; tap `AppCardButton` tetap memanggil callback.
-- [ ] **Step 2: Jalankan** → FAIL.
-- [ ] **Step 3: Implement** — struktur: `DecoratedBox(decoration: ClayDecoration.box(...)) > Material(type: MaterialType.transparency, borderRadius: 20, clipBehavior: antiAlias) > InkWell > Padding`. `ClayDecoration.box` (raised): gradasi tetap + 2 bayangan luar: gelap `clayShadow` offset (10,12) blur 24, terang `#FFFFFFFF` offset (-6,-6) blur 16. Ubah `clayShadow` ke `#4D54408C`. inset = warna `#EAE3FF`, tanpa bayangan dalam; border 1.5 `inputBorder` + highlight bawah via gradasi (atas `Color.lerp(color, AppColors.inputBorder, .12)` → bawah `color`). `ProductCard` pakai struktur yang sama (bayangan di luar clip).
-- [ ] **Step 4:** cek tidak ada parent yang memotong bayangan: `GridView`/`ListView`/`Wrap` yang berisi kartu diberi `clipBehavior: Clip.none` atau padding ≥ 16 agar bayangan (offset 12, blur 24) tidak terpotong; `flutter test` → PASS.
-- [ ] **Step 5: Commit** `fix(ui): bayangan clay tidak terpotong & lebih tebal`
+- [x] **Step 1: Tes** — `AppCard` & `AppCardButton`: tidak ada `Ink` yang dekorasinya punya `boxShadow` (bayangan harus di `DecoratedBox`/`Container` LUAR `Material`); `Material` punya `borderRadius == BorderRadius.circular(20)` dan `clipBehavior == Clip.antiAlias`; tap `AppCardButton` tetap memanggil callback.
+- [x] **Step 2: Jalankan** → FAIL.
+- [x] **Step 3: Implement** — struktur: `DecoratedBox(decoration: ClayDecoration.box(...)) > Material(type: MaterialType.transparency, borderRadius: 20, clipBehavior: antiAlias) > InkWell > Padding`. `ClayDecoration.box` (raised): gradasi tetap + 2 bayangan luar: gelap `clayShadow` offset (10,12) blur 24, terang `#FFFFFFFF` offset (-6,-6) blur 16. Ubah `clayShadow` ke `#4D54408C`. inset = warna `#EAE3FF`, tanpa bayangan dalam; border 1.5 `inputBorder` + highlight bawah via gradasi (atas `Color.lerp(color, AppColors.inputBorder, .12)` → bawah `color`). `ProductCard` pakai struktur yang sama (bayangan di luar clip).
+- [x] **Step 4:** cek tidak ada parent yang memotong bayangan: `GridView`/`ListView`/`Wrap` yang berisi kartu diberi `clipBehavior: Clip.none` atau padding ≥ 16 agar bayangan (offset 12, blur 24) tidak terpotong; `flutter test` → PASS.
+- [x] **Step 5: Commit** `fix(ui): bayangan clay tidak terpotong & lebih tebal`
 
 ### Task 10: Sidebar, AppBar, navigasi clay
 
 **Files:**
 - Modify: `lib/features/home/home_shell.dart`, `lib/core/theme/app_theme.dart`
 
-- [ ] **Step 1:** Sidebar tablet & AppBar: latar `AppColors.background` (bukan putih), tanpa garis pemisah. Item menu aktif: kotak `ClayDecoration.box(color: surface, radius: 18)` dengan teks/ikon `primary` (oranye di atas putih — boleh), tanpa strip kiri/blok pink. Item tidak aktif: tanpa dekorasi.
-- [ ] **Step 2:** Bar bawah HP (`NavigationBar`): latar `surface` dengan bayangan clay ke atas, indikator `peach`.
-- [ ] **Step 3:** `flutter test` (termasuk `test/ui/`) → PASS.
-- [ ] **Step 4: Commit** `feat(ui): sidebar & navigasi clay`
+- [x] **Step 1:** Sidebar tablet & AppBar: latar `AppColors.background` (bukan putih), tanpa garis pemisah. Item menu aktif: kotak `ClayDecoration.box(color: surface, radius: 18)` dengan teks/ikon `primary` (oranye di atas putih — boleh), tanpa strip kiri/blok pink. Item tidak aktif: tanpa dekorasi.
+- [x] **Step 2:** Bar bawah HP (`NavigationBar`): latar `surface` dengan bayangan clay ke atas, indikator `peach`.
+- [x] **Step 3:** `flutter test` (termasuk `test/ui/`) → PASS.
+- [x] **Step 4: Commit** `feat(ui): sidebar & navigasi clay`
 
 ### Task 11: Input, chip, segmented clay
 
@@ -223,16 +223,16 @@ Masalah dari screenshot tablet: bayangan kartu terpotong kotak (sudut gelap pers
 - Modify: `lib/core/theme/app_theme.dart`, `lib/core/widgets/period_filter_bar.dart`, `lib/core/widgets/choice_segment.dart`
 - Test: `test/core/theme/app_theme_test.dart`, `test/core/widgets/period_filter_bar_test.dart`, `test/core/widgets/choice_segment_test.dart`
 
-- [ ] **Step 1: Tes** — input: `fillColor == Color(0xFFEAE3FF)`, `enabledBorder` radius 16 warna `inputBorder` lebar 1.5 (tetap ≥3:1), `focusedBorder` `primary` 2; tambah tes kontras `textPrimary`/`textSecondary` di atas `#EAE3FF` ≥ 4.5 dan `inputBorder` di atas `#EAE3FF` ≥ 3.
-- [ ] **Step 2:** Chip periode: tiap chip = kotak `ClayDecoration.box(radius: 14)` kecil (bayangan offset (4,5) blur 10 — tambah parameter `depth` bila perlu, default sesuai Task 9); terpilih = latar `textPrimary`, teks putih. Tinggi ≥ 48 dp.
-- [ ] **Step 3:** `ChoiceSegment`: wadah `ClayDecoration.inset(radius: 16)`; segmen terpilih = kotak raised oranye gradasi (`primaryLight→primary`) teks putih; tidak terpilih transparan teks `textSecondary`. API `ChoiceSegment` tidak berubah. Tetap pakai `Semantics(selected)`/role tombol.
-- [ ] **Step 4:** `flutter analyze` + `flutter test` → PASS.
-- [ ] **Step 5: Commit** `feat(ui): input, chip & segmented clay`
+- [x] **Step 1: Tes** — input: `fillColor == Color(0xFFEAE3FF)`, `enabledBorder` radius 16 warna `inputBorder` lebar 1.5 (tetap ≥3:1), `focusedBorder` `primary` 2; tambah tes kontras `textPrimary`/`textSecondary` di atas `#EAE3FF` ≥ 4.5 dan `inputBorder` di atas `#EAE3FF` ≥ 3.
+- [x] **Step 2:** Chip periode: tiap chip = kotak `ClayDecoration.box(radius: 14)` kecil (bayangan offset (4,5) blur 10 — tambah parameter `depth` bila perlu, default sesuai Task 9); terpilih = latar `textPrimary`, teks putih. Tinggi ≥ 48 dp.
+- [x] **Step 3:** `ChoiceSegment`: wadah `ClayDecoration.inset(radius: 16)`; segmen terpilih = kotak raised oranye gradasi (`primaryLight→primary`) teks putih; tidak terpilih transparan teks `textSecondary`. API `ChoiceSegment` tidak berubah. Tetap pakai `Semantics(selected)`/role tombol.
+- [x] **Step 4:** `flutter analyze` + `flutter test` → PASS.
+- [x] **Step 5: Commit** `feat(ui): input, chip & segmented clay`
 
 ### Task 12: Dokumen pass 2
 
-- [ ] **Step 1:** Update `docs/DESIGN.md` bagian Shadow & Clay, Warna (`clayShadow`, fill input `#EAE3FF`), komponen (`ChoiceSegment`, chip, sidebar).
-- [ ] **Step 2: Commit** `docs: clay pass 2`
+- [x] **Step 1:** Update `docs/DESIGN.md` bagian Shadow & Clay, Warna (`clayShadow`, fill input `#EAE3FF`), komponen (`ChoiceSegment`, chip, sidebar).
+- [x] **Step 2: Commit** `docs: clay pass 2`
 
 ### Task 13: Login hero full-bleed + fix kontras segmen
 
@@ -243,13 +243,13 @@ Masalah dari screenshot tablet: bayangan kartu terpotong kotak (sudut gelap pers
 
 Gambar: rasio ±2:1, sisi KIRI kosong (dinding lilac), karakter kasir di KANAN.
 
-- [ ] **Step 1: Tes** — layout login 360×640, 800×1280 (tablet portrait) & 1280×800 tanpa overflow; field username/password & tombol "Masuk" ada dan bisa di-tap setelah `ensureVisible`; segmen terpilih `ChoiceSegment` berwarna solid `AppColors.primary` (tanpa gradient).
-- [ ] **Step 2: Lebar ≥ 900 dp** — satu kartu besar `ClayDecoration.box(radius: 32)` dengan margin 24, berisi `Stack`: gambar `BoxFit.cover`, `alignment: Alignment.centerRight`, dipotong radius 32; di kiri (lebar ±42%, padding 40): logo (placeholder `AppIcons.pos` dalam kotak clay peach 56×56 radius 18 — Task 14 menggantinya) + nama "KasirKita" (titleLarge), lalu judul "Halo, selamat datang!" (displaySmall, textPrimary) + subjudul "Masuk untuk mulai jualan hari ini" (bodyLarge, textSecondary), lalu kartu form `AppCard` putih (maks lebar 400). Halaman bisa scroll bila tinggi kurang.
-- [ ] **Step 3: Lebar < 900 dp** — gambar di atas setinggi `min(260, lebar*0.5)` dp, `alignment: Alignment.centerRight`, radius bawah 32; logo+nama di atas gambar kiri atas; kartu form `AppCard` naik menumpuk gambar 32 dp (`Transform.translate`/Stack), judul & subjudul di DALAM kartu form. Halaman scroll saat keyboard muncul.
-- [ ] **Step 4: Input** — prefixIcon dibungkus kotak 36×36 radius 12 warna `AppColors.lilac` ikon `textPrimary` (person / lock); password tetap pakai `PasswordField` dengan tombol mata (tooltip ada). Tanpa tombol Google/Microsoft/Sign up.
-- [ ] **Step 5: ChoiceSegment** — segmen terpilih solid `AppColors.primary` (putih di atasnya 5.18:1), hapus gradient `primaryLight`.
-- [ ] **Step 6:** `flutter analyze` + `flutter test` → PASS. Gambar dekoratif: `excludeFromSemantics: true`.
-- [ ] **Step 7: Commit** `feat(ui): login hero full-bleed`
+- [x] **Step 1: Tes** — layout login 360×640, 800×1280 (tablet portrait) & 1280×800 tanpa overflow; field username/password & tombol "Masuk" ada dan bisa di-tap setelah `ensureVisible`; segmen terpilih `ChoiceSegment` berwarna solid `AppColors.primary` (tanpa gradient).
+- [x] **Step 2: Lebar ≥ 900 dp** — satu kartu besar `ClayDecoration.box(radius: 32)` dengan margin 24, berisi `Stack`: gambar `BoxFit.cover`, `alignment: Alignment.centerRight`, dipotong radius 32; di kiri (lebar ±42%, padding 40): logo (placeholder `AppIcons.pos` dalam kotak clay peach 56×56 radius 18 — Task 14 menggantinya) + nama "KasirKita" (titleLarge), lalu judul "Halo, selamat datang!" (displaySmall, textPrimary) + subjudul "Masuk untuk mulai jualan hari ini" (bodyLarge, textSecondary), lalu kartu form `AppCard` putih (maks lebar 400). Halaman bisa scroll bila tinggi kurang.
+- [x] **Step 3: Lebar < 900 dp** — gambar di atas setinggi `min(260, lebar*0.5)` dp, `alignment: Alignment.centerRight`, radius bawah 32; logo+nama di atas gambar kiri atas; kartu form `AppCard` naik menumpuk gambar 32 dp (`Transform.translate`/Stack), judul & subjudul di DALAM kartu form. Halaman scroll saat keyboard muncul.
+- [x] **Step 4: Input** — prefixIcon dibungkus kotak 36×36 radius 12 warna `AppColors.lilac` ikon `textPrimary` (person / lock); password tetap pakai `PasswordField` dengan tombol mata (tooltip ada). Tanpa tombol Google/Microsoft/Sign up.
+- [x] **Step 5: ChoiceSegment** — segmen terpilih solid `AppColors.primary` (putih di atasnya 5.18:1), hapus gradient `primaryLight`.
+- [x] **Step 6:** `flutter analyze` + `flutter test` → PASS. Gambar dekoratif: `excludeFromSemantics: true`.
+- [x] **Step 7: Commit** `feat(ui): login hero full-bleed`
 
 ### Task 14: Ikon aplikasi + logo dalam app
 
@@ -258,7 +258,7 @@ Gambar: rasio ±2:1, sisi KIRI kosong (dinding lilac), karakter kasir di KANAN.
 - Modify: `android/app/src/main/res/mipmap-*/ic_launcher.png`, adaptive icon (`mipmap-anydpi-v26/ic_launcher.xml` + `drawable/ic_launcher_foreground.png` per density, background warna `#E6D5FB`), `ios/Runner/Assets.xcassets/AppIcon.appiconset/*`, `lib/features/home/home_shell.dart` (logo sidebar), `lib/features/auth/login_page.dart` (logo)
 - Test: widget test sidebar & login menampilkan `Image` asset `app_logo.webp`
 
-- [ ] **Step 1:** Generate ikon pakai `magick` (tanpa paket baru): legacy `ic_launcher.png` 48/72/96/144/192 px = gambar penuh; foreground adaptive 108 dp (108/162/216/324/432 px) = objek diperkecil 66% di tengah kanvas transparan; iOS semua ukuran di `Contents.json` yang ada (tanpa alpha, latar `#E6D5FB`).
-- [ ] **Step 2:** Ganti logo api di sidebar & login dengan `Image.asset('assets/images/app_logo.webp')` dalam kotak radius 14 (sidebar 40×40, login sesuai Task 13), `excludeFromSemantics: true` (nama app ada di teks sebelahnya).
-- [ ] **Step 3: Tes** widget: sidebar & login merender `Image` dengan asset `app_logo.webp`; `flutter analyze` + `flutter test` → PASS.
-- [ ] **Step 4: Commit** `feat: ikon aplikasi & logo kasir clay`
+- [x] **Step 1:** Generate ikon pakai `magick` (tanpa paket baru): legacy `ic_launcher.png` 48/72/96/144/192 px = gambar penuh; foreground adaptive 108 dp (108/162/216/324/432 px) = objek diperkecil 66% di tengah kanvas transparan; iOS semua ukuran di `Contents.json` yang ada (tanpa alpha, latar `#E6D5FB`).
+- [x] **Step 2:** Ganti logo api di sidebar & login dengan `Image.asset('assets/images/app_logo.webp')` dalam kotak radius 14 (sidebar 40×40, login sesuai Task 13), `excludeFromSemantics: true` (nama app ada di teks sebelahnya).
+- [x] **Step 3: Tes** widget: sidebar & login merender `Image` dengan asset `app_logo.webp`; `flutter analyze` + `flutter test` → PASS.
+- [x] **Step 4: Commit** `feat: ikon aplikasi & logo kasir clay`
