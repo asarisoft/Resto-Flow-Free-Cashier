@@ -30,6 +30,13 @@ class PeriodFilterBar extends StatelessWidget {
       initialDateRange: current ?? DateTimeRange(start: DateTime(now.year, now.month, 1), end: now),
       helpText: 'Pilih rentang tanggal',
       saveText: 'Terapkan',
+      // Bawaan Flutter layar penuh; dibatasi jadi modal di tengah.
+      builder: (context, child) => Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420, maxHeight: 600),
+          child: ClipRRect(borderRadius: BorderRadius.circular(24), child: child),
+        ),
+      ),
     );
     if (picked != null) onChanged(PeriodSelection.custom(picked));
   }

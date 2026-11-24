@@ -55,4 +55,16 @@ void main() {
     await tester.tap(find.text('Semua'));
     expect(got?.preset, PeriodPreset.all);
   });
+
+  testWidgets('Pilih tanggal membuka modal kecil, bukan layar penuh', (tester) async {
+    tester.view.physicalSize = const Size(400, 800);
+    tester.view.devicePixelRatio = 1;
+    addTearDown(tester.view.reset);
+    await pump(tester, PeriodSelection.thisMonth, (_) {});
+    await tester.tap(find.text('Pilih tanggal'));
+    await tester.pumpAndSettle();
+    final size = tester.getSize(find.byType(DateRangePickerDialog));
+    expect(size.width, lessThanOrEqualTo(420));
+    expect(size.height, lessThanOrEqualTo(600));
+  });
 }
