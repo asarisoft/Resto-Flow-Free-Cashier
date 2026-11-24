@@ -223,7 +223,7 @@ Ringkasan tabel: `Products`, `Transactions`, `TransactionItems`, `Users`, `Resto
 ## 7. UI/UX Spec
 
 ### 7.0 Design System
-Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable, ikon.
+Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lihat: **`docs/DESIGN.md`** untuk palet warna, font, spacing, komponen reusable, ikon.
 
 ### 7.1 Target Device & Responsive
 

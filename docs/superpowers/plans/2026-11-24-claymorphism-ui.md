@@ -63,7 +63,7 @@ Radius: kartu 20, tombol 20, input 16, dialog 24, chip 14. `success/error/warnin
 **Interfaces:**
 - Produces: konstanta `AppColors` sesuai tabel Token di atas.
 
-- [ ] **Step 1: Tambah tes kontras**
+- [x] **Step 1: Tambah tes kontras**
 
 ```dart
 text('primary on peach', AppColors.primary, AppColors.peach);
@@ -73,10 +73,10 @@ text('textPrimary on lilac', AppColors.textPrimary, AppColors.lilac);
 text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
 ```
 
-- [ ] **Step 2: Jalankan, pastikan gagal** — `.fvm/flutter_sdk/bin/flutter test test/core/theme/app_colors_contrast_test.dart` → FAIL (`peach` tidak ada).
-- [ ] **Step 3: Ubah/tambah konstanta di `AppColors`** sesuai tabel. Kalau ada tes yang gagal kontras, gelapkan tint (bukan oranye) dan catat nilai akhir di DESIGN.md (Task 8).
-- [ ] **Step 4: Jalankan tes lagi** → semua PASS.
-- [ ] **Step 5: Commit** `feat(ui): token warna claymorphism`
+- [x] **Step 2: Jalankan, pastikan gagal** — `.fvm/flutter_sdk/bin/flutter test test/core/theme/app_colors_contrast_test.dart` → FAIL (`peach` tidak ada).
+- [x] **Step 3: Ubah/tambah konstanta di `AppColors`** sesuai tabel. Kalau ada tes yang gagal kontras, gelapkan tint (bukan oranye) dan catat nilai akhir di DESIGN.md (Task 8).
+- [x] **Step 4: Jalankan tes lagi** → semua PASS.
+- [x] **Step 5: Commit** `feat(ui): token warna claymorphism`
 
 ### Task 2: `ClayDecoration` + `AppCard` clay
 
@@ -91,14 +91,14 @@ text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
   - `AppCard({child, padding, height, Color? color})` — `color` default `surface`, dipakai untuk tint pastel.
   - `AppCardButton({child, onTap, Color? color})`.
 
-- [ ] **Step 1: Tes** `app_card_test.dart`:
+- [x] **Step 1: Tes** `app_card_test.dart`:
   - `AppCard` merender `DecoratedBox`/`Container` dengan `boxShadow.length == 3` dan `borderRadius == BorderRadius.circular(20)`.
   - `AppCard(color: AppColors.mint)` → warna dekorasi `AppColors.mint`.
   - `AppCardButton(onTap: ...)` → `tester.tap` memanggil callback 1x.
-- [ ] **Step 2: Jalankan** → FAIL.
-- [ ] **Step 3: Implement** `ClayDecoration.box`; `AppCard`/`AppCardButton` pakai `Material(color: transparent)` + `Ink(decoration: ClayDecoration.box(...))` + `InkWell(borderRadius: 20)` agar ripple ikut radius. Hapus `Border.all`.
-- [ ] **Step 4: Jalankan tes widget + `test/ui/`** → PASS.
-- [ ] **Step 5: Commit** `feat(ui): kartu clay`
+- [x] **Step 2: Jalankan** → FAIL.
+- [x] **Step 3: Implement** `ClayDecoration.box`; `AppCard`/`AppCardButton` pakai `Material(color: transparent)` + `Ink(decoration: ClayDecoration.box(...))` + `InkWell(borderRadius: 20)` agar ripple ikut radius. Hapus `Border.all`.
+- [x] **Step 4: Jalankan tes widget + `test/ui/`** → PASS.
+- [x] **Step 5: Commit** `feat(ui): kartu clay`
 
 ### Task 3: Tema global clay
 
@@ -109,15 +109,15 @@ text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
 **Interfaces:**
 - Consumes: token Task 1.
 
-- [ ] **Step 1: Ubah tes**
+- [x] **Step 1: Ubah tes**
   - Input: `filled == true`, `fillColor == AppColors.surface`, `enabledBorder` radius 16, warna `inputBorder`, lebar 1.5; `focusedBorder` `primary` lebar 2.
   - `cardTheme.shape` radius 20 tanpa `side` (BorderSide.none).
   - `dialogTheme.shape` radius 24.
   - `elevatedButtonTheme` shape radius 20.
-- [ ] **Step 2: Jalankan** → FAIL.
-- [ ] **Step 3: Ubah `AppTheme.light`**: nilai di atas; `appBarTheme.backgroundColor = AppColors.background`; `chipTheme` radius 14, `side: BorderSide.none`, background `surface`, selected `textPrimary` dengan label putih; `segmentedButtonTheme` radius 14, terpilih `primary`; `navigationBarTheme` background `surface`, indicator `peach`; `bottomNavigationBarTheme` tetap fixed, background `surface`.
-- [ ] **Step 4: Jalankan semua tes** `.fvm/flutter_sdk/bin/flutter test` → PASS.
-- [ ] **Step 5: Commit** `feat(ui): tema global clay`
+- [x] **Step 2: Jalankan** → FAIL.
+- [x] **Step 3: Ubah `AppTheme.light`**: nilai di atas; `appBarTheme.backgroundColor = AppColors.background`; `chipTheme` radius 14, `side: BorderSide.none`, background `surface`, selected `textPrimary` dengan label putih; `segmentedButtonTheme` radius 14, terpilih `primary`; `navigationBarTheme` background `surface`, indicator `peach`; `bottomNavigationBarTheme` tetap fixed, background `surface`.
+- [x] **Step 4: Jalankan semua tes** `.fvm/flutter_sdk/bin/flutter test` → PASS.
+- [x] **Step 5: Commit** `feat(ui): tema global clay`
 
 ### Task 4: `PrimaryButton` clay
 
@@ -128,15 +128,15 @@ text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
 **Interfaces:**
 - Produces: API `PrimaryButton` tidak berubah (`label`, `onPressed`, `loading`, `icon`).
 
-- [ ] **Step 1: Tes**
+- [x] **Step 1: Tes**
   - Aktif: dekorasi punya `LinearGradient` `[primaryLight, primary]` dan `boxShadow` tidak kosong.
   - `onPressed: null` → tanpa gradient, warna `AppColors.border`, tap tidak memanggil apa pun.
   - `loading: true` → tampil `CircularProgressIndicator`, tap tidak memanggil callback.
   - Tinggi ≥ 52.
-- [ ] **Step 2: Jalankan** → FAIL.
-- [ ] **Step 3: Implement**: `Ink` + gradient + bayangan oranye (`primary` alpha 0.35, offset (4,6), blur 14) + `AnimatedScale` 0.96 saat ditekan (200 ms, `Curves.easeOutBack`); hormati `MediaQuery.disableAnimations`.
-- [ ] **Step 4: Jalankan** → PASS.
-- [ ] **Step 5: Commit** `feat(ui): tombol utama clay`
+- [x] **Step 2: Jalankan** → FAIL.
+- [x] **Step 3: Implement**: `Ink` + gradient + bayangan oranye (`primary` alpha 0.35, offset (4,6), blur 14) + `AnimatedScale` 0.96 saat ditekan (200 ms, `Curves.easeOutBack`); hormati `MediaQuery.disableAnimations`.
+- [x] **Step 4: Jalankan** → PASS.
+- [x] **Step 5: Commit** `feat(ui): tombol utama clay`
 
 ### Task 5: POS + kartu produk
 
@@ -147,40 +147,40 @@ text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
 **Interfaces:**
 - Consumes: `AppCard(color:)`, `ClayDecoration.box`.
 
-- [ ] **Step 1:** Ganti semua `Border.all(...AppColors.border)`/kartu manual di 3 file ini dengan `AppCard`/`AppCardButton` atau `ClayDecoration.box`. Thumbnail placeholder produk: latar bergilir `peach/mint/sky/lilac` berdasar `product.id % 4`.
-- [ ] **Step 2:** Bar keranjang bawah (HP) & panel total (tablet): latar `textPrimary`, teks putih, total `displayMedium`, tombol Bayar = `PrimaryButton`.
-- [ ] **Step 3:** Tes skenario kasir: tambah widget test di `pos_cart_overflow_test.dart` — tambah 3 produk ke keranjang lalu cek total `Rp38.000` tampil dan tombol "Bayar" dapat di-tap (tanpa overflow di 360×640 dan 1280×800).
-- [ ] **Step 4:** `.fvm/flutter_sdk/bin/flutter test test/ui` → PASS; `flutter analyze` bersih.
-- [ ] **Step 5: Commit** `feat(ui): POS & produk clay`
+- [x] **Step 1:** Ganti semua `Border.all(...AppColors.border)`/kartu manual di 3 file ini dengan `AppCard`/`AppCardButton` atau `ClayDecoration.box`. Thumbnail placeholder produk: latar bergilir `peach/mint/sky/lilac` berdasar `product.id % 4`.
+- [x] **Step 2:** Bar keranjang bawah (HP) & panel total (tablet): latar `textPrimary`, teks putih, total `displayMedium`, tombol Bayar = `PrimaryButton`.
+- [x] **Step 3:** Tes skenario kasir: tambah widget test di `pos_cart_overflow_test.dart` — tambah 3 produk ke keranjang lalu cek total `Rp38.000` tampil dan tombol "Bayar" dapat di-tap (tanpa overflow di 360×640 dan 1280×800).
+- [x] **Step 4:** `.fvm/flutter_sdk/bin/flutter test test/ui` → PASS; `flutter analyze` bersih.
+- [x] **Step 5: Commit** `feat(ui): POS & produk clay`
 
 ### Task 6: Laporan, Shift, Pengeluaran
 
 **Files:**
 - Modify: `lib/features/reports/report_page.dart`, `lib/features/reports/report_insights.dart`, `lib/features/shifts/shift_page.dart`, `lib/core/widgets/app_data_table.dart`, `lib/core/widgets/bar_chart.dart`
 
-- [ ] **Step 1:** Kartu ringkasan laporan: `AppCard(color: AppColors.peach / mint / sky / lilac)` bergilir. Ganti border manual dengan `AppCard`.
-- [ ] **Step 2:** `AppDataTable`: bungkus dalam `AppCard`, hapus border luar; garis antarbaris tetap `AppColors.border`.
-- [ ] **Step 3:** `BarChart`: batang radius atas 10, warna biasa `sky`, batang tertinggi tetap `primary`.
-- [ ] **Step 4:** `flutter test` (termasuk `bar_chart_test`, `app_data_table_test`, `list_pages_test`) → PASS.
-- [ ] **Step 5: Commit** `feat(ui): laporan & shift clay`
+- [x] **Step 1:** Kartu ringkasan laporan: `AppCard(color: AppColors.peach / mint / sky / lilac)` bergilir. Ganti border manual dengan `AppCard`.
+- [x] **Step 2:** `AppDataTable`: bungkus dalam `AppCard`, hapus border luar; garis antarbaris tetap `AppColors.border`.
+- [x] **Step 3:** `BarChart`: batang radius atas 10, warna biasa `sky`, batang tertinggi tetap `primary`.
+- [x] **Step 4:** `flutter test` (termasuk `bar_chart_test`, `app_data_table_test`, `list_pages_test`) → PASS.
+- [x] **Step 5: Commit** `feat(ui): laporan & shift clay`
 
 ### Task 7: Login, Settings, Printer, dialog & sisa
 
 **Files:**
 - Modify: `lib/features/auth/login_page.dart`, `lib/features/settings/settings_page.dart`, `lib/features/settings/printer_pairing_page.dart`, `lib/features/settings/receipt_preview.dart`, `lib/features/backup/backup_reminder.dart`, `lib/features/products/product_form_dialog.dart`
 
-- [ ] **Step 1:** Login: logo dalam kotak clay `peach` 84×84 radius 28, judul "Halo, selamat datang!", form dalam `AppCard`, input dengan `prefixIcon` (person / lock). `PasswordField` tetap dipakai.
-- [ ] **Step 2:** Ganti border manual di file sisa dengan `AppCard`. `receipt_preview` tetap putih polos (meniru kertas struk) tapi bayangan clay.
-- [ ] **Step 3:** Cek tidak ada sisa: `grep -rn "Border.all" lib/features` → hanya yang memang bukan kartu (dicatat alasannya di laporan).
-- [ ] **Step 4:** `flutter analyze` + `flutter test` → PASS.
-- [ ] **Step 5: Commit** `feat(ui): login & settings clay`
+- [x] **Step 1:** Login: logo dalam kotak clay `peach` 84×84 radius 28, judul "Halo, selamat datang!", form dalam `AppCard`, input dengan `prefixIcon` (person / lock). `PasswordField` tetap dipakai.
+- [x] **Step 2:** Ganti border manual di file sisa dengan `AppCard`. `receipt_preview` tetap putih polos (meniru kertas struk) tapi bayangan clay.
+- [x] **Step 3:** Cek tidak ada sisa: `grep -rn "Border.all" lib/features` → hanya yang memang bukan kartu (dicatat alasannya di laporan).
+- [x] **Step 4:** `flutter analyze` + `flutter test` → PASS.
+- [x] **Step 5: Commit** `feat(ui): login & settings clay`
 
 ### Task 8: Dokumen & cek visual
 
 **Files:**
 - Modify: `docs/DESIGN.md`, `docs/SPEC.md` (§7.0), `graphify-out/` (update graph, tidak di-commit)
 
-- [ ] **Step 1:** `DESIGN.md`: ganti bagian Warna, Spacing (radius), Shadow ("Default: clay 3 lapis via `ClayDecoration.box`"), tabel komponen (`AppCard` color tint, `PrimaryButton` gradient). Hapus aturan "tanpa shadow".
+- [x] **Step 1:** `DESIGN.md`: ganti bagian Warna, Spacing (radius), Shadow ("Default: clay 3 lapis via `ClayDecoration.box`"), tabel komponen (`AppCard` color tint, `PrimaryButton` gradient). Hapus aturan "tanpa shadow".
 - [ ] **Step 2:** Jalankan app di emulator HP & tablet, screenshot Login/POS/Laporan, cek dengan skill `web-design-guidelines` + checklist `ui-ux-pro-max` (kontras, target sentuh, scroll lancar).
-- [ ] **Step 3:** Update graphify.
-- [ ] **Step 4: Commit** `docs: design system claymorphism`
+- [x] **Step 3:** Update graphify.
+- [x] **Step 4: Commit** `docs: design system claymorphism`

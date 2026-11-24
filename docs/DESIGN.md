@@ -1,26 +1,25 @@
 # Design System — Resto Flow Free
 
-## Warna
+## Warna (Claymorphism)
 
-Palet 60-30-10:
+Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tint pastel.
 
-| Peran         | Warna         | Hex       | Pemakaian                              |
-|---------------|---------------|-----------|----------------------------------------|
-| Dasar (60%)   | Putih tulang  | `#F4F1EA` | Background halaman                     |
-| Teks (30%)    | Hitam         | `#0E0E0E` | Teks utama, judul                      |
-| Aksen (10%)   | Oranye bata   | `#C2410C` | Tombol Bayar, harga, total, badge cart (putih di atasnya 5.18:1) |
+| Peran            | Token `AppColors` | Hex       | Pemakaian |
+|------------------|-------------------|-----------|-----------|
+| Latar            | `background`      | `#F3EEFF` | Background halaman, AppBar |
+| Surface/Card     | `surface`         | `#FFFFFF` | Kartu, dialog, input |
+| Teks utama       | `textPrimary`     | `#1E1A2E` | Teks, judul, latar bar keranjang |
+| Teks sekunder    | `textSecondary`   | `#5A5470` | Subtitle, label |
+| Aksen            | `primary`/`price` | `#C2410C` | Tombol Bayar, harga, total, badge (putih di atasnya) |
+| Aksen terang     | `primaryLight`    | `#E8622A` | Ujung atas gradasi tombol utama |
+| Divider          | `border`          | `#E3DAFF` | Garis pemisah (dekoratif) |
+| Batas input      | `inputBorder`     | `#8A80AB` | Border input 1.5 dp (≥ 3:1) |
+| Tint             | `peach` `mint` `sky` `lilac` | `#FFD9C7` `#C9F2DD` `#CFE7FF` `#E3DAFF` | Kartu ringkasan, placeholder foto |
+| Bayangan clay    | `clayShadow`      | `#3854408C` | Bayangan luar kartu |
+| Success / Danger / Warning | `success` `error` `warning` | `#15803D` `#B91C1C` `#B45309` | Status |
 
-Warna tambahan:
-
-| Peran            | Hex       | Pemakaian                        |
-|------------------|-----------|----------------------------------|
-| Surface/Card     | `#FFFFFF` | Card, dialog                     |
-| Border kartu     | `#DDD7C8` | Border card (dekoratif), divider |
-| Border input     | `#8C8677` | Border field/kontrol (3.21:1 vs bg) |
-| Teks sekunder    | `#556070` | Subtitle, label (5.65:1 vs bg)   |
-| Success / Ready  | `#15803D` | Chip "Ready", status aktif       |
-| Danger / Habis   | `#B91C1C` | Chip "Habis", error, hapus       |
-| Warning          | `#B45309` | Peringatan                       |
+**Aturan:** teks oranye **dilarang** di atas kartu bertint — di tint pakai `textPrimary`/`textSecondary`
+(dijaga `app_colors_contrast_test`). Ikon status di atas tint boleh (non-teks, ≥ 3:1).
 
 ## Font
 
@@ -51,20 +50,23 @@ Warna tambahan:
 | `xl`  | 32 dp |
 
 - Padding default halaman: 16 dp.
-- Card radius: 12. Button radius: 10.
+- Radius: kartu 20, tombol 20, input 16, chip/segmented 14, dialog 24.
 - Divider: `color: #DDD7C8, height: 1`.
 
-## Shadow
+## Shadow & Clay
 
-- **Default: tanpa shadow.** Card pakai border 1px `#DDD7C8`.
-- Shadow halus (`elevation: 1–2`) hanya untuk: `FloatingActionButton`, `BottomAppBar`, dialog.
+- Kartu: `ClayDecoration.box({color, radius = 20})` (`lib/core/theme/clay.dart`) — gradasi halus
+  (lerp ke putih 35% → lerp ke lilac 25%) + 1 bayangan luar `clayShadow` offset (6,8) blur 18.
+  Tanpa blur/`BackdropFilter`. Bayangan dalam (`BlurStyle.inner`) tidak dipakai: tertutup warna isi.
+- Tombol utama: gradasi `primaryLight → primary` + bayangan oranye 35%; mengecil 0.96 saat ditekan
+  (200 ms, `easeOutBack`, mati bila `disableAnimations`).
 
 ## Komponen Reusable (`core/widgets/`)
 
 | Widget          | Fungsi                                              |
 |-----------------|-----------------------------------------------------|
-| `AppCard`       | Container datar, border `#DDD7C8` + radius 12       |
-| `PrimaryButton` | Tombol aksen `#C2410C`, teks putih                  |
+| `AppCard`       | Kartu clay (`ClayDecoration`), param `color` untuk tint. `AppCardButton` = versi bisa di-tap |
+| `PrimaryButton` | Tombol clay gradasi oranye, `Semantics(button)`; disabled = `border` + teks `textSecondary` |
 | `SecondaryButton`| Tombol outline, border 1.5 dp                      |
 | `AmountText`    | Format rupiah + tabular figures                     |
 | `ReadyChip`     | Chip hijau "Ready" / merah "Habis"                  |
@@ -127,13 +129,12 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 - Kartu ringkasan Laporan mengisi lebar: 3 kolom (≥ 500 dp), 6 kolom (≥ 1100 dp).
 - Pengaturan: kolom maks 760 dp, rata kiri sejajar judul.
 
-## Layout Login (split panel)
+## Layout Login (hero)
 
-- **Lebar ≥ 720 dp**: panel brand oranye (`primary`, teks `onPrimary` penuh, tanpa transparansi demi kontras)
-  di kiri (flex 5), form di kanan (flex 6, rata kiri, maks 400 dp). Isi panel bisa scroll di layar pendek.
-- **Lebih sempit (HP portrait)**: panel jadi pita pendek di atas, form di bawah (bisa scroll saat keyboard muncul).
-- Tepi panel yang berbatasan dengan form berlubang seperti sobekan struk (dekoratif, di luar semantics).
-- Judul form "Masuk ke kasir" (bukan "Masuk": teks "Masuk" milik tombol). Tanpa animasi.
+- Gambar hero `assets/images/login_hero.webp` (ilustrasi clay kasir, dekoratif, di luar semantics).
+- **Lebar ≥ 600 dp**: gambar kiri (radius 28), form dalam `AppCard` di kanan.
+- **Lebih sempit**: gambar 220 dp di atas form; halaman bisa scroll saat keyboard muncul.
+- Logo kotak clay `peach` 84×84 radius 28. Judul "Halo, selamat datang!", subjudul "Masuk untuk mulai jualan hari ini".
 
 ## Prinsip
 
