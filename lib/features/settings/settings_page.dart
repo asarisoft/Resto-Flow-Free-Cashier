@@ -60,7 +60,7 @@ class SettingsPage extends ConsumerWidget {
           // Tablet: kolom terbaca (maks 760 dp), bukan kartu selebar layar.
           // Rata kiri: sejajar dengan judul AppBar.
           return Align(
-            alignment: Alignment.topLeft,
+            alignment: Alignment.topCenter,
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 760),
               child: ListView(

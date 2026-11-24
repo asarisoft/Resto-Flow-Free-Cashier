@@ -137,7 +137,7 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 - Sidebar 250 dp **setinggi layar** (Row `crossAxisAlignment.stretch`); konten di kanan.
 - Judul AppBar wajib berwarna eksplisit (`titleTextStyle` = `titleLarge` + `textPrimary`).
 - Kartu ringkasan Laporan mengisi lebar: 3 kolom (≥ 500 dp), 6 kolom (≥ 1100 dp).
-- Pengaturan: kolom maks 760 dp, rata kiri sejajar judul.
+- Pengaturan & Dukung Developer: kolom maks 760 dp, di tengah horizontal.
 
 ## Layout Login (hero)
 

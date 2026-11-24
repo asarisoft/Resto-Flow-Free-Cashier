@@ -36,7 +36,7 @@ class SupportPage extends StatelessWidget {
         elevation: 0,
       ),
       body: Align(
-        alignment: Alignment.topLeft,
+        alignment: Alignment.topCenter,
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 760),
           child: ListView(
