@@ -12,6 +12,7 @@ class ClayDecoration {
     Color color = AppColors.surface,
     double radius = 20,
     bool raised = true,
+    bool compact = false, // bayangan kecil untuk chip
   }) {
     return BoxDecoration(
       color: color,
@@ -22,18 +23,15 @@ class ClayDecoration {
         colors: [clayLight(color), clayDark(color)],
       ),
       boxShadow: raised
-          ? const [
-              BoxShadow(
-                color: AppColors.clayShadow,
-                offset: Offset(10, 12),
-                blurRadius: 24,
-              ),
-              BoxShadow(
-                color: Color(0xFFFFFFFF),
-                offset: Offset(-6, -6),
-                blurRadius: 16,
-              ),
-            ]
+          ? compact
+              ? const [
+                  BoxShadow(color: AppColors.clayShadow, offset: Offset(4, 5), blurRadius: 10),
+                  BoxShadow(color: Color(0xFFFFFFFF), offset: Offset(-3, -3), blurRadius: 8),
+                ]
+              : const [
+                  BoxShadow(color: AppColors.clayShadow, offset: Offset(10, 12), blurRadius: 24),
+                  BoxShadow(color: Color(0xFFFFFFFF), offset: Offset(-6, -6), blurRadius: 16),
+                ]
           : null,
     );
   }

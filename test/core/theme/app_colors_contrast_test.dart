@@ -25,6 +25,9 @@ void main() {
   text('warning on surface', AppColors.warning, AppColors.surface);
   text('inputBorder on background (non-text)', AppColors.inputBorder, AppColors.background, 3.0);
   text('inputBorder on surface (non-text)', AppColors.inputBorder, AppColors.surface, 3.0);
+  text('textPrimary on inset (input)', AppColors.textPrimary, AppColors.inset);
+  text('textSecondary on inset (input)', AppColors.textSecondary, AppColors.inset);
+  text('inputBorder on inset (non-text)', AppColors.inputBorder, AppColors.inset, 3.0);
   text('textPrimary on lilac', AppColors.textPrimary, AppColors.lilac);
   text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
   // Aturan: teks oranye tidak dipakai di atas kartu bertint; pakai textPrimary/textSecondary.

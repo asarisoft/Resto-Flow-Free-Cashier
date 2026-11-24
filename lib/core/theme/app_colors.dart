@@ -6,7 +6,7 @@ class AppColors {
   static const background = Color(0xFFF3EEFF); // Lilac muda
   static const surface = Color(0xFFFFFFFF);
   static const border = Color(0xFFE3DAFF); // kartu/divider (dekoratif)
-  static const inputBorder = Color(0xFF8A80AB); // batas kontrol, >= 3:1
+  static const inputBorder = Color(0xFF827AA3); // batas kontrol, >= 3:1
   static const primary = Color(0xFFC2410C); // Oranye aksen
   static const primaryLight = Color(0xFFE8622A); // ujung atas gradasi tombol
   static const onPrimary = Color(0xFFFFFFFF); // White text on orange

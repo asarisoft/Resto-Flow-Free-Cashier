@@ -22,7 +22,7 @@ void main() {
       ));
 
   Color labelColor(WidgetTester tester, String label) {
-    final rich = tester.widget<RichText>(find.descendant(of: find.widgetWithText(ChoiceChip, label), matching: find.byType(RichText)).first);
+    final rich = tester.widget<RichText>(find.descendant(of: find.byKey(ValueKey('chip-$label')), matching: find.byType(RichText)).first);
     return rich.text.style?.color ?? const Color(0x00000000);
   }
 
@@ -34,6 +34,19 @@ void main() {
       final bg = l == 'Bulan ini' ? AppColors.textPrimary : AppColors.surface;
       expect(contrast(c, bg), greaterThanOrEqualTo(4.5), reason: l);
     }
+  });
+
+  testWidgets('chip = kotak clay radius 14, tinggi >= 48 dp, terpilih gelap', (tester) async {
+    await pump(tester, PeriodSelection.thisMonth, (_) {});
+    for (final l in ['Hari ini', 'Bulan ini']) {
+      final box = tester.widget<DecoratedBox>(find.byKey(ValueKey('chip-$l')));
+      final d = box.decoration as BoxDecoration;
+      expect(d.borderRadius, BorderRadius.circular(14));
+      expect(d.boxShadow, isNotNull);
+      expect(tester.getSize(find.byKey(ValueKey('chip-$l'))).height, greaterThanOrEqualTo(48));
+    }
+    final sel = tester.widget<DecoratedBox>(find.byKey(const ValueKey('chip-Bulan ini')));
+    expect((sel.decoration as BoxDecoration).color, AppColors.textPrimary);
   });
 
   testWidgets('tapping a preset reports it', (tester) async {
