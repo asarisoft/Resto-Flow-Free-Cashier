@@ -548,8 +548,8 @@ class _CartPanel extends ConsumerWidget {
                         style: OutlinedButton.styleFrom(
                           backgroundColor: AppColors.surface,
                           foregroundColor: AppColors.textPrimary,
-                          minimumSize: const Size(0, 56),
-                          padding: const EdgeInsets.symmetric(vertical: 20),
+                          minimumSize: const Size(0, 52),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(20),
                           ),
@@ -964,9 +964,12 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
       },
       style: OutlinedButton.styleFrom(
         foregroundColor: AppColors.primary,
+        backgroundColor: AppColors.surface,
         side: const BorderSide(color: AppColors.border),
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+        elevation: 2,
+        shadowColor: AppColors.clayShadow,
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
       child: Text(label),

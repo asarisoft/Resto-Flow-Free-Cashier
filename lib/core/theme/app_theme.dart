@@ -17,6 +17,9 @@ class AppTheme {
         brightness: Brightness.light,
         surface: AppColors.surface,
       ).copyWith(
+        // Paksa oranye asli: fromSeed menurunkan primary jadi cokelat.
+        primary: AppColors.primary,
+        onPrimary: AppColors.onPrimary,
         error: AppColors.error,
         onError: Colors.white,
         outline: AppColors.border,

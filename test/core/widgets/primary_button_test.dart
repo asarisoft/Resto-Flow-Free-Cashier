@@ -15,7 +15,10 @@ void main() {
     final d = _deco(tester);
     final g = d.gradient! as LinearGradient;
     expect(g.colors, [AppColors.primaryLight, AppColors.primary]);
-    expect(d.boxShadow, isNotEmpty);
+    // Bayangan di DecoratedBox luar (bukan Ink) agar tak terpotong jadi kotak.
+    final outer = tester.widget<DecoratedBox>(find.descendant(
+        of: find.byType(PrimaryButton), matching: find.byType(DecoratedBox)).first);
+    expect((outer.decoration as BoxDecoration).boxShadow, isNotEmpty);
     expect(tester.getSize(find.byType(PrimaryButton)).height, greaterThanOrEqualTo(52));
   });
 

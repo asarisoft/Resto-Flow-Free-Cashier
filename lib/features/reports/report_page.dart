@@ -56,7 +56,6 @@ class _ReportPageState extends ConsumerState<ReportPage> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Laporan'),
-        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         actions: [

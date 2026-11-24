@@ -42,8 +42,25 @@ class _PrimaryButtonState extends State<PrimaryButton> {
       scale: enabled && _pressed ? 0.96 : 1,
       duration: animate ? const Duration(milliseconds: 200) : Duration.zero,
       curve: Curves.easeOutBack,
-      child: Material(
-        color: Colors.transparent,
+      // Bayangan di DecoratedBox luar; Material memotong isi sesuai radius
+      // agar tidak muncul kotak bersudut di belakang tombol.
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          borderRadius: radius,
+          boxShadow: enabled
+              ? [
+                  BoxShadow(
+                    color: AppColors.primary.withValues(alpha: 0.30),
+                    offset: const Offset(0, 6),
+                    blurRadius: 14,
+                  ),
+                ]
+              : null,
+        ),
+        child: Material(
+        type: MaterialType.transparency,
+        borderRadius: radius,
+        clipBehavior: Clip.antiAlias,
         child: Ink(
           decoration: BoxDecoration(
             borderRadius: radius,
@@ -54,15 +71,6 @@ class _PrimaryButtonState extends State<PrimaryButton> {
                     end: Alignment.bottomCenter,
                     colors: [AppColors.primaryLight, AppColors.primary],
                   )
-                : null,
-            boxShadow: enabled
-                ? [
-                    BoxShadow(
-                      color: AppColors.primary.withValues(alpha: 0.35),
-                      offset: const Offset(4, 6),
-                      blurRadius: 14,
-                    ),
-                  ]
                 : null,
           ),
           child: InkWell(
@@ -103,6 +111,7 @@ class _PrimaryButtonState extends State<PrimaryButton> {
             ),
           ),
         ),
+      ),
       ),
     ));
   }

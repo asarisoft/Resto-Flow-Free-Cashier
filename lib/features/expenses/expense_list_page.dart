@@ -37,7 +37,6 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Pengeluaran'),
-        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
         actions: [

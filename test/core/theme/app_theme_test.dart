@@ -10,7 +10,7 @@ void main() {
   test('input clay: filled, radius 16, border 1.5, focus 2dp primary', () {
     final d = theme.inputDecorationTheme;
     expect(d.filled, true);
-    expect(d.fillColor, const Color(0xFFEAE3FF));
+    expect(d.fillColor, const Color(0xFFF4E9DA));
     final en = d.enabledBorder as OutlineInputBorder;
     expect(en.borderRadius, BorderRadius.circular(16));
     expect(en.borderSide.color, AppColors.inputBorder);

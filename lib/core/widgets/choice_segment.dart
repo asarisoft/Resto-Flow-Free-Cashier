@@ -38,9 +38,7 @@ class ChoiceSegment<T> extends StatelessWidget {
                   child: DecoratedBox(
                     key: ValueKey('segment-${o.$1}'),
                     decoration: o.$1 == value
-                        ? BoxDecoration(color: AppColors.primary, borderRadius: radius, boxShadow: const [
-                            BoxShadow(color: AppColors.clayShadow, offset: Offset(4, 5), blurRadius: 10),
-                          ])
+                        ? BoxDecoration(color: AppColors.primary, borderRadius: radius)
                         : const BoxDecoration(),
                     child: Material(
                       type: MaterialType.transparency,

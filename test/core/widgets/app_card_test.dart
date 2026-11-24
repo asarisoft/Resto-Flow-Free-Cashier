@@ -59,7 +59,7 @@ void main() {
   test('ClayDecoration.inset: tanpa bayangan, border inputBorder 1.5', () {
     final d = ClayDecoration.inset();
     expect(d.boxShadow, isNull);
-    expect(d.color, const Color(0xFFEAE3FF));
+    expect(d.color, const Color(0xFFF4E9DA));
     expect((d.border! as Border).top.width, 1.5);
     expect((d.border! as Border).top.color, AppColors.inputBorder);
   });

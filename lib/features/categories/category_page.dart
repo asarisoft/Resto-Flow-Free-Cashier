@@ -56,7 +56,6 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Kategori'),
-        backgroundColor: AppColors.surface,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),

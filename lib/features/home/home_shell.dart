@@ -92,7 +92,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
   Widget _buildSidebarItem(int index, IconData icon, String label) {
     final isSelected = _tab == index;
     return Padding(
-      padding: const EdgeInsets.only(bottom: 8, left: 16, right: 16),
+      padding: const EdgeInsets.only(bottom: 8, left: 12, right: 36), // kanan lega: bayangan clay tak terpotong konten
       child: TapArea(
         label: label,
         borderRadius: BorderRadius.circular(18),
@@ -178,7 +178,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
               children: [
                 // Sidebar
                 Container(
-                  width: 250,
+                  width: 270,
                   color: AppColors.background,
                   child: SingleChildScrollView(clipBehavior: Clip.none, child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,

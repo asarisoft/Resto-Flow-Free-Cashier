@@ -48,7 +48,7 @@ class SettingsPage extends ConsumerWidget {
       backgroundColor: AppColors.background,
       appBar: AppBar(
         title: const Text('Pengaturan'),
-        backgroundColor: AppColors.surface,
+        backgroundColor: AppColors.background,
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
@@ -64,7 +64,9 @@ class SettingsPage extends ConsumerWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 760),
               child: ListView(
-                padding: const EdgeInsets.all(16),
+                // Ruang kanan/bawah untuk bayangan clay (offset 12, blur 24)
+                // agar tidak terpotong tepi list jadi sudut kotak.
+                padding: const EdgeInsets.fromLTRB(16, 16, 40, 40),
                 children: [
                   if (canManageSettings) ...[
                     AppCard(
@@ -302,7 +304,7 @@ class SettingsPage extends ConsumerWidget {
                   const SizedBox(height: 24),
                   Center(
                     child: Text(
-                      'Kasir Resto v1.0.0',
+                      'KasirKita v1.0.0',
                       style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),
