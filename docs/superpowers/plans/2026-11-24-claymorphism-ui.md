@@ -184,3 +184,52 @@ text('textSecondary on peach', AppColors.textSecondary, AppColors.peach);
 - [ ] **Step 2:** Jalankan app di emulator HP & tablet, screenshot Login/POS/Laporan, cek dengan skill `web-design-guidelines` + checklist `ui-ux-pro-max` (kontras, target sentuh, scroll lancar).
 - [x] **Step 3:** Update graphify.
 - [x] **Step 4: Commit** `docs: design system claymorphism`
+
+---
+
+# Clay Pass 2 (feedback visual 2026-11-24)
+
+Masalah dari screenshot tablet: bayangan kartu terpotong kotak (sudut gelap persegi di belakang sudut bulat), sidebar/AppBar datar putih, input & chip & segmented datar, kesan clay tipis. Nama "Resto Flow Free" TIDAK diubah di pass ini.
+
+### Task 9: Perbaiki bayangan terpotong + clay lebih tebal
+
+**Files:**
+- Modify: `lib/core/theme/clay.dart`, `lib/core/widgets/app_card.dart`, `lib/features/products/product_card.dart`, `lib/core/theme/app_colors.dart`
+- Test: `test/core/widgets/app_card_test.dart`
+
+**Interfaces:**
+- Produces: `ClayDecoration.box({Color color = AppColors.surface, double radius = 20, bool raised = true})` dan `ClayDecoration.inset({Color color = AppColors.background, double radius = 16})`.
+- `AppCard`/`AppCardButton` API tidak berubah.
+
+- [ ] **Step 1: Tes** — `AppCard` & `AppCardButton`: tidak ada `Ink` yang dekorasinya punya `boxShadow` (bayangan harus di `DecoratedBox`/`Container` LUAR `Material`); `Material` punya `borderRadius == BorderRadius.circular(20)` dan `clipBehavior == Clip.antiAlias`; tap `AppCardButton` tetap memanggil callback.
+- [ ] **Step 2: Jalankan** → FAIL.
+- [ ] **Step 3: Implement** — struktur: `DecoratedBox(decoration: ClayDecoration.box(...)) > Material(type: MaterialType.transparency, borderRadius: 20, clipBehavior: antiAlias) > InkWell > Padding`. `ClayDecoration.box` (raised): gradasi tetap + 2 bayangan luar: gelap `clayShadow` offset (10,12) blur 24, terang `#FFFFFFFF` offset (-6,-6) blur 16. Ubah `clayShadow` ke `#4D54408C`. inset = warna `#EAE3FF`, tanpa bayangan dalam; border 1.5 `inputBorder` + highlight bawah via gradasi (atas `Color.lerp(color, AppColors.inputBorder, .12)` → bawah `color`). `ProductCard` pakai struktur yang sama (bayangan di luar clip).
+- [ ] **Step 4:** cek tidak ada parent yang memotong bayangan: `GridView`/`ListView`/`Wrap` yang berisi kartu diberi `clipBehavior: Clip.none` atau padding ≥ 16 agar bayangan (offset 12, blur 24) tidak terpotong; `flutter test` → PASS.
+- [ ] **Step 5: Commit** `fix(ui): bayangan clay tidak terpotong & lebih tebal`
+
+### Task 10: Sidebar, AppBar, navigasi clay
+
+**Files:**
+- Modify: `lib/features/home/home_shell.dart`, `lib/core/theme/app_theme.dart`
+
+- [ ] **Step 1:** Sidebar tablet & AppBar: latar `AppColors.background` (bukan putih), tanpa garis pemisah. Item menu aktif: kotak `ClayDecoration.box(color: surface, radius: 18)` dengan teks/ikon `primary` (oranye di atas putih — boleh), tanpa strip kiri/blok pink. Item tidak aktif: tanpa dekorasi.
+- [ ] **Step 2:** Bar bawah HP (`NavigationBar`): latar `surface` dengan bayangan clay ke atas, indikator `peach`.
+- [ ] **Step 3:** `flutter test` (termasuk `test/ui/`) → PASS.
+- [ ] **Step 4: Commit** `feat(ui): sidebar & navigasi clay`
+
+### Task 11: Input, chip, segmented clay
+
+**Files:**
+- Modify: `lib/core/theme/app_theme.dart`, `lib/core/widgets/period_filter_bar.dart`, `lib/core/widgets/choice_segment.dart`
+- Test: `test/core/theme/app_theme_test.dart`, `test/core/widgets/period_filter_bar_test.dart`, `test/core/widgets/choice_segment_test.dart`
+
+- [ ] **Step 1: Tes** — input: `fillColor == Color(0xFFEAE3FF)`, `enabledBorder` radius 16 warna `inputBorder` lebar 1.5 (tetap ≥3:1), `focusedBorder` `primary` 2; tambah tes kontras `textPrimary`/`textSecondary` di atas `#EAE3FF` ≥ 4.5 dan `inputBorder` di atas `#EAE3FF` ≥ 3.
+- [ ] **Step 2:** Chip periode: tiap chip = kotak `ClayDecoration.box(radius: 14)` kecil (bayangan offset (4,5) blur 10 — tambah parameter `depth` bila perlu, default sesuai Task 9); terpilih = latar `textPrimary`, teks putih. Tinggi ≥ 48 dp.
+- [ ] **Step 3:** `ChoiceSegment`: wadah `ClayDecoration.inset(radius: 16)`; segmen terpilih = kotak raised oranye gradasi (`primaryLight→primary`) teks putih; tidak terpilih transparan teks `textSecondary`. API `ChoiceSegment` tidak berubah. Tetap pakai `Semantics(selected)`/role tombol.
+- [ ] **Step 4:** `flutter analyze` + `flutter test` → PASS.
+- [ ] **Step 5: Commit** `feat(ui): input, chip & segmented clay`
+
+### Task 12: Dokumen pass 2
+
+- [ ] **Step 1:** Update `docs/DESIGN.md` bagian Shadow & Clay, Warna (`clayShadow`, fill input `#EAE3FF`), komponen (`ChoiceSegment`, chip, sidebar).
+- [ ] **Step 2: Commit** `docs: clay pass 2`
