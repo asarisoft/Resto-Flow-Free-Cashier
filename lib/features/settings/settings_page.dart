@@ -18,6 +18,8 @@ import '../../features/backup/backup_service.dart';
 import '../../features/users/users_providers.dart';
 import '../../features/users/password_dialogs.dart';
 import '../activity_log/activity_log_page.dart';
+import '../categories/category_page.dart';
+import '../../core/services/daos/categories_dao.dart' show CategoryType;
 import '../auth/auto_lock.dart';
 import '../users/user_list_page.dart';
 import '../support/support_page.dart';
@@ -164,6 +166,34 @@ class SettingsPage extends ConsumerWidget {
                         onTap: () => Navigator.of(context).push(
                           MaterialPageRoute(
                             builder: (_) => const ActivityLogPage(),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    AppCard(
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const Icon(
+                          AppIcons.category,
+                          color: AppColors.textPrimary,
+                        ),
+                        title: Text('Kategori', style: textTheme.bodyLarge),
+                        subtitle: Text(
+                          'Ubah nama & hapus kategori produk/pengeluaran',
+                          style: textTheme.bodySmall?.copyWith(
+                            color: AppColors.textSecondary,
+                          ),
+                        ),
+                        trailing: const Icon(
+                          AppIcons.arrowRight,
+                          color: AppColors.textSecondary,
+                        ),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => const CategoryPage(
+                              initialType: CategoryType.product,
+                            ),
                           ),
                         ),
                       ),

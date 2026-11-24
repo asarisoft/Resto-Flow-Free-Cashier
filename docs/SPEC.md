@@ -328,6 +328,7 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 - Kartu Printer: status "Terhubung: <nama>" (hijau) / "Belum terhubung"; tombol "Test Print" (cetak `Resto Flow`) muncul hanya saat terhubung
 - Ukuran kertas (58/80)
 - Backup & Restore (lihat §9) — Owner
+- Kategori (Owner): tile "Kategori" → `CategoryPage` (tambah/ubah nama/hapus kategori produk & pengeluaran)
 - Ganti password (semua role) → dialog `AppFormDialog` (password lama, baru, konfirmasi)
 - Logout
 - About / versi
