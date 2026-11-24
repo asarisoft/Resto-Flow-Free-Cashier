@@ -7,8 +7,7 @@ import 'app_logo.dart';
 /// Tata letak halaman dengan gambar hero (login & onboarding).
 ///
 /// Lebar (>= 900 dp): satu kartu clay besar, gambar full-bleed, logo + [wideLeft]
-/// di kiri (di atas dinding polos gambar). Bila [wideRight] diisi, lebar =
-/// dua kartu berdampingan: hero di kiri, [wideRight] di kanan.
+/// di kiri (di atas dinding polos gambar), [wideRight] opsional di kanan.
 /// HP: gambar di atas (<= 260 dp), [narrowChild] menumpuk di bawahnya, scroll.
 class HeroLayout extends StatelessWidget {
   final Widget wideLeft;
@@ -33,7 +32,6 @@ class HeroLayout extends StatelessWidget {
   }
 
   Widget _wide(BoxConstraints c) {
-    if (wideRight != null) return _wideSplit();
     final inner = c.maxWidth - 48;
     return Container(
       margin: const EdgeInsets.all(24),
@@ -61,58 +59,19 @@ class HeroLayout extends StatelessWidget {
                 ),
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  /// Dua kartu berdampingan: hero (teks di atas, karakter utuh di pojok
-  /// kanan bawah) dan form. Form tidak menumpuk gambar.
-  Widget _wideSplit() {
-    return Padding(
-      padding: const EdgeInsets.all(24),
-      child: Row(
-        children: [
-          Expanded(
-            flex: 5,
-            child: DecoratedBox(
-              decoration: ClayDecoration.box(radius: 32),
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(32),
-                child: Stack(
-                  children: [
-                    const Positioned(
-                      left: 0,
-                      right: 0,
-                      bottom: 0,
-                      child: _HeroImage(fit: BoxFit.fitWidth, alignment: Alignment.bottomRight),
-                    ),
-                    _scroll(
-                      padding: const EdgeInsets.all(40),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const _Brand(),
-                          const SizedBox(height: 32),
-                          wideLeft,
-                        ],
-                      ),
-                    ),
-                  ],
+            if (wideRight != null)
+              Align(
+                alignment: Alignment.centerRight,
+                child: SizedBox(
+                  width: inner * 0.46,
+                  child: _scroll(
+                    padding: const EdgeInsets.fromLTRB(0, 24, 24, 24),
+                    child: Center(child: wideRight),
+                  ),
                 ),
               ),
-            ),
-          ),
-          const SizedBox(width: 24),
-          Expanded(
-            flex: 6,
-            child: _scroll(
-              padding: EdgeInsets.zero,
-              child: Center(child: wideRight),
-            ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -180,16 +139,14 @@ class _Brand extends StatelessWidget {
 
 /// Gambar dekoratif: dinding kosong di kiri, karakter di kanan.
 class _HeroImage extends StatelessWidget {
-  final BoxFit fit;
-  final Alignment alignment;
-  const _HeroImage({this.fit = BoxFit.cover, this.alignment = Alignment.centerRight});
+  const _HeroImage();
 
   @override
   Widget build(BuildContext context) {
     return Image.asset(
       'assets/images/login_hero.webp',
-      fit: fit,
-      alignment: alignment,
+      fit: BoxFit.cover,
+      alignment: Alignment.centerRight,
       excludeFromSemantics: true,
     );
   }
