@@ -5,7 +5,7 @@ import 'package:kasir_resto/core/theme/app_scroll_behavior.dart';
 import 'package:kasir_resto/core/theme/app_theme.dart';
 
 void main() {
-  testWidgets('Android overscroll uses glow, not stretch', (tester) async {
+  testWidgets('Android overscroll diam: tanpa glow & stretch', (tester) async {
     debugDefaultTargetPlatformOverride = TargetPlatform.android;
     addTearDown(() => debugDefaultTargetPlatformOverride = null);
     await tester.pumpWidget(MaterialApp(
@@ -13,7 +13,7 @@ void main() {
       scrollBehavior: const AppScrollBehavior(),
       home: Scaffold(body: ListView(children: [for (var i = 0; i < 50; i++) Text('baris $i')])),
     ));
-    expect(find.byType(GlowingOverscrollIndicator), findsOneWidget);
+    expect(find.byType(GlowingOverscrollIndicator), findsNothing);
     expect(find.byType(StretchingOverscrollIndicator), findsNothing);
   });
 

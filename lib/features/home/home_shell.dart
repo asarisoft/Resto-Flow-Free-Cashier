@@ -184,7 +184,8 @@ class _MainShellState extends ConsumerState<_MainShell> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Padding(
-                        padding: const EdgeInsets.all(24),
+                        // Di bawah status bar, sejajar tengah judul AppBar (tinggi 56).
+                        padding: EdgeInsets.fromLTRB(24, MediaQuery.paddingOf(context).top + 8, 24, 24),
                         child: Row(
                           children: [
                             const AppLogo(size: 40),
