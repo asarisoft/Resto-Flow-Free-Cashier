@@ -56,6 +56,7 @@ class _UserFormDialogState extends ConsumerState<UserFormDialog> {
     try {
       await ref.read(usersDaoProvider).add(username: _username.text, password: _password.text, role: _role);
       await logActivity(ref, 'user.add', _username.text.trim(), detail: 'role $_role');
+      ref.invalidate(userListProvider); // tabel pengguna langsung tampil user baru
       if (mounted) Navigator.pop(context);
     } on ArgumentError catch (e) {
       if (mounted) setState(() => _error = '${e.message}');
