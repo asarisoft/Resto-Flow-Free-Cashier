@@ -20,7 +20,8 @@ class AppColors {
   static const mint = Color(0xFFC9F2DD);
   static const sky = Color(0xFFCFE7FF);
   static const lilac = Color(0xFFE3DAFF);
-  static const clayShadow = Color(0x3854408C);
+  static const clayShadow = Color(0x4D54408C);
+  static const inset = Color(0xFFEAE3FF); // isi input/segmented (lekuk)
   static const clayInnerDark = Color(0x2454408C);
   static const clayInnerLight = Color(0xE6FFFFFF);
   static const price = Color(0xFFC2410C); // Orange price

@@ -87,6 +87,7 @@ class _ProductGrid extends ConsumerWidget {
           child: GridView.builder(
             padding: const EdgeInsets.all(16),
             gridDelegate: productGridDelegateFor(context),
+            clipBehavior: Clip.none,
             itemCount: products.length,
             itemBuilder: (_, i) => ProductCard(
               product: products[i],

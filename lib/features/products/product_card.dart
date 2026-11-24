@@ -52,11 +52,13 @@ class ProductCard extends StatelessWidget {
       label: product.ready ? product.name : '${product.name}, habis',
       borderRadius: BorderRadius.circular(20),
       onTap: onTap,
-      child: Container(
-        clipBehavior: Clip.antiAlias,
+      // Bayangan di DecoratedBox luar; klip hanya untuk isi (foto).
+      child: DecoratedBox(
         decoration: ClayDecoration.box().copyWith(
           border: selected ? Border.all(color: AppColors.primary, width: 2) : null,
         ),
+        child: ClipRRect(
+        borderRadius: BorderRadius.circular(selected ? 18 : 20),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
@@ -132,6 +134,7 @@ class ProductCard extends StatelessWidget {
               ),
             ),
           ],
+        ),
         ),
       ),
     );

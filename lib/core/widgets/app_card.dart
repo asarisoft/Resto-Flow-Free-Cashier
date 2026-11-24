@@ -3,24 +3,63 @@ import '../theme/app_colors.dart';
 import '../theme/app_typography.dart';
 import '../theme/clay.dart';
 
+/// Bayangan clay di DecoratedBox LUAR; Material di dalam memotong ripple
+/// tanpa memotong bayangan.
+class _ClaySurface extends StatelessWidget {
+  final Widget child;
+  final Color color;
+  final double? height;
+  final VoidCallback? onTap;
+
+  const _ClaySurface({
+    required this.child,
+    required this.color,
+    this.height,
+    this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final radius = BorderRadius.circular(20);
+    return DecoratedBox(
+      decoration: ClayDecoration.box(color: color),
+      child: Material(
+        type: MaterialType.transparency,
+        borderRadius: radius,
+        clipBehavior: Clip.antiAlias,
+        child: onTap == null
+            ? SizedBox(height: height, child: child)
+            : InkWell(
+                onTap: onTap,
+                borderRadius: radius,
+                child: SizedBox(height: height, child: child),
+              ),
+      ),
+    );
+  }
+}
+
 class AppCard extends StatelessWidget {
   final Widget child;
   final EdgeInsetsGeometry? padding;
   final double? height;
   final Color? color;
 
-  const AppCard({super.key, required this.child, this.padding, this.height, this.color});
+  const AppCard({
+    super.key,
+    required this.child,
+    this.padding,
+    this.height,
+    this.color,
+  });
 
   @override
   Widget build(BuildContext context) {
-    // Material transparan di bawah Ink: tile di dalam (ListTile, InkWell)
-    // tetap menampilkan background dan ripple.
-    return Material(
-      color: Colors.transparent,
-      child: Ink(
-        height: height,
+    return _ClaySurface(
+      color: color ?? AppColors.surface,
+      height: height,
+      child: Padding(
         padding: padding ?? const EdgeInsets.all(16),
-        decoration: ClayDecoration.box(color: color ?? AppColors.surface),
         child: child,
       ),
     );
@@ -36,20 +75,14 @@ class AppCardButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Material(
-      color: Colors.transparent,
-      child: Ink(
-        decoration: ClayDecoration.box(color: color ?? AppColors.surface),
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(20),
-          child: Padding(
-            padding: const EdgeInsets.all(16),
-            child: DefaultTextStyle(
-              style: AppTypography.textTheme.bodyLarge!,
-              child: child,
-            ),
-          ),
+    return _ClaySurface(
+      color: color ?? AppColors.surface,
+      onTap: onTap,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: DefaultTextStyle(
+          style: AppTypography.textTheme.bodyLarge!,
+          child: child,
         ),
       ),
     );

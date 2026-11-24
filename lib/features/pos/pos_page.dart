@@ -372,6 +372,7 @@ class _ProductGrid extends ConsumerWidget {
         bottom: 24,
       ),
       gridDelegate: productGridDelegateFor(context),
+      clipBehavior: Clip.none,
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];
