@@ -208,8 +208,10 @@ class AppDatabase extends _$AppDatabase {
   /// Rilis pertama = v1 (riwayat dev di-reset sebelum rilis).
   /// Ubah skema: schemaVersion++ dan tambah satu blok `if (from < N)` di
   /// onUpgrade. Jangan ubah blok lama, jangan drop data user.
+  static const currentSchemaVersion = 1;
+
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => currentSchemaVersion;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(

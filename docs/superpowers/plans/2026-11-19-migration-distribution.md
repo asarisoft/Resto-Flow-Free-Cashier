@@ -145,9 +145,9 @@
 - [x] Tes: restore backup v(N-1) → migrasi sukses (baru ada v1 → dicakup `test/migration_test.dart` + restore versi sama); restore v(N+1) → ditolak; restore DB rusak → rollback
 
 ### Task 6: Safety copy sebelum migrasi
-- [ ] Sebelum buka `AppDatabase`: baca `user_version` file; kalau < schemaVersion → salin ke `backups/pre_migration_v<old>.sqlite`
-- [ ] Bersihkan setelah 2x start sukses
-- [ ] Tes unit untuk logika salin & bersihkan
+- [x] Sebelum buka `AppDatabase`: baca `user_version` file; kalau < schemaVersion → salin ke `backups/pre_migration_v<old>.sqlite`
+- [x] Bersihkan setelah 2x start sukses
+- [x] Tes unit untuk logika salin & bersihkan
 
 ### Task 7: Backup keluar dari sandbox app
 - [ ] Opsi "Simpan ke Download" (SAF/MediaStore)

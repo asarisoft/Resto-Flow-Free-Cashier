@@ -1,7 +1,11 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path_provider/path_provider.dart';
+import 'core/services/database.dart';
+import 'core/services/pre_migration_guard.dart';
 import 'core/theme/app_scroll_behavior.dart';
 import 'core/theme/app_theme.dart';
 import 'core/router/app_router.dart';
@@ -15,6 +19,15 @@ void main() async {
   final view = WidgetsBinding.instance.platformDispatcher.views.first;
   final shortest = view.physicalSize.shortestSide / view.devicePixelRatio;
   await SystemChrome.setPreferredOrientations(orientationsFor(shortest));
+  // Salinan DB sebelum migrasi; gagal = jangan blokir app.
+  try {
+    await PreMigrationGuard(
+      dbDir: await getApplicationDocumentsDirectory(),
+      schemaVersion: AppDatabase.currentSchemaVersion,
+    ).prepare();
+  } catch (e) {
+    debugPrint('PreMigrationGuard gagal: $e');
+  }
   runApp(const ProviderScope(child: KasirRestoApp()));
 }
 
