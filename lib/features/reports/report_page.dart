@@ -28,6 +28,7 @@ import '../../core/services/csv_share.dart';
 import 'report_export.dart';
 import 'report_insights.dart';
 import '../auth/auth_controller.dart';
+import '../../core/widgets/scroll_to_top_button.dart';
 import '../pos/pos_providers.dart';
 import '../users/users_providers.dart';
 import '../activity_log/activity_log_providers.dart';
@@ -41,6 +42,13 @@ class ReportPage extends ConsumerStatefulWidget {
 
 class _ReportPageState extends ConsumerState<ReportPage> {
   TransactionFilter _filter = const TransactionFilter();
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   /// Rentang untuk ringkasan (SQL). "Semua" = rentang sangat lebar.
   DateTimeRange get _range =>
@@ -67,10 +75,12 @@ class _ReportPageState extends ConsumerState<ReportPage> {
           ),
         ],
       ),
+      floatingActionButton: ScrollToTopButton(controller: _scroll),
       body: Center(
         child: ConstrainedBox(
           constraints: const BoxConstraints(maxWidth: 1040),
           child: ListView(
+            controller: _scroll,
             padding: const EdgeInsets.all(16),
             children: [
               FilterPanel(

@@ -17,6 +17,7 @@ import 'expense_providers.dart';
 import 'package:intl/intl.dart';
 import '../../core/services/csv_share.dart';
 import 'expense_export.dart';
+import '../../core/widgets/scroll_to_top_button.dart';
 import '../categories/category_page.dart';
 import '../../core/services/daos/categories_dao.dart';
 
@@ -29,6 +30,13 @@ class ExpenseListPage extends ConsumerStatefulWidget {
 
 class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
   ExpenseFilter _filter = const ExpenseFilter();
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -59,16 +67,23 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
         error: (e, _) => Center(child: Text('Error: $e')),
         data: _buildBody,
       ),
-      floatingActionButton: FloatingActionButton.extended(
-        heroTag: 'add_expense',
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.onPrimary,
-        icon: const Icon(AppIcons.add),
-        label: const Text('Tambah'),
-        onPressed: () => showDialog(
-          context: context,
-          builder: (_) => const ExpenseFormDialog(),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ScrollToTopButton(controller: _scroll, bottomGap: 12),
+          FloatingActionButton.extended(
+          heroTag: 'add_expense',
+          backgroundColor: AppColors.primary,
+          foregroundColor: AppColors.onPrimary,
+          icon: const Icon(AppIcons.add),
+          label: const Text('Tambah'),
+          onPressed: () => showDialog(
+            context: context,
+            builder: (_) => const ExpenseFormDialog(),
+          ),
         ),
+        ],
       ),
     );
   }
@@ -98,6 +113,7 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 960),
         child: ListView(
+          controller: _scroll,
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
           children: [
             FilterPanel(

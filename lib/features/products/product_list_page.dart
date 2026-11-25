@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/widgets/empty_state.dart';
+import '../../core/widgets/scroll_to_top_button.dart';
 import '../../models/product.dart';
 import '../products/product_providers.dart';
 import '../../core/widgets/product_search_bar.dart';
@@ -24,6 +25,13 @@ class ProductListPage extends ConsumerStatefulWidget {
 
 class _ProductListPageState extends ConsumerState<ProductListPage> {
   String _query = '';
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -79,18 +87,26 @@ class _ProductListPageState extends ConsumerState<ProductListPage> {
               Expanded(
                 child: shown.isEmpty
                     ? const Center(child: Text(productNotFoundText))
-                    : _ProductGrid(products: shown, ref: ref, canManage: canManage, isList: isList),
+                    : _ProductGrid(controller: _scroll, products: shown, ref: ref, canManage: canManage, isList: isList),
               ),
             ],
           );
         },
       ),
-      floatingActionButton: !canManage ? null : FloatingActionButton(
-        heroTag: 'add_product',
-        backgroundColor: AppColors.primary,
-        foregroundColor: AppColors.onPrimary,
-        onPressed: () => _openForm(context, ref),
-        child: const Icon(AppIcons.add),
+      floatingActionButton: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.end,
+        children: [
+          ScrollToTopButton(controller: _scroll, bottomGap: canManage ? 12 : 0),
+          if (canManage)
+            FloatingActionButton(
+              heroTag: 'add_product',
+              backgroundColor: AppColors.primary,
+              foregroundColor: AppColors.onPrimary,
+              onPressed: () => _openForm(context, ref),
+              child: const Icon(AppIcons.add),
+            ),
+        ],
       ),
     );
   }
@@ -101,12 +117,13 @@ class _ProductListPageState extends ConsumerState<ProductListPage> {
 }
 
 class _ProductGrid extends ConsumerWidget {
+  final ScrollController controller;
   final List<Product> products;
   final WidgetRef ref;
   final bool canManage;
   final bool isList;
 
-  const _ProductGrid({required this.products, required this.ref, required this.canManage, required this.isList});
+  const _ProductGrid({required this.controller, required this.products, required this.ref, required this.canManage, required this.isList});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -116,6 +133,7 @@ class _ProductGrid extends ConsumerWidget {
           onRefresh: () async => ref.invalidate(productListProvider),
           child: isList
               ? ListView.builder(
+                  controller: controller,
                   padding: const EdgeInsets.all(16),
                   itemCount: products.length,
                   itemBuilder: (_, i) => ProductListRow(
@@ -125,6 +143,7 @@ class _ProductGrid extends ConsumerWidget {
                   ),
                 )
               : GridView.builder(
+            controller: controller,
             // Klip default (konten tidak menimpa header); padding lega agar bayangan clay muat.
             padding: const EdgeInsets.fromLTRB(16, 16, 24, 28),
             gridDelegate: productGridDelegateFor(context),

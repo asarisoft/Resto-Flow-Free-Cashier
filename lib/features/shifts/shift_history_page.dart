@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/scroll_to_top_button.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/utils/period.dart';
@@ -32,6 +33,13 @@ class ShiftHistoryPage extends ConsumerStatefulWidget {
 
 class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
   PeriodSelection _period = PeriodSelection.thisMonth;
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _scroll.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,6 +51,7 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
         foregroundColor: AppColors.textPrimary,
         elevation: 0,
       ),
+      floatingActionButton: ScrollToTopButton(controller: _scroll),
       body: async.when(
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
@@ -58,6 +67,7 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 960),
         child: ListView(
+          controller: _scroll,
           padding: const EdgeInsets.all(16),
           children: [
             FilterPanel(

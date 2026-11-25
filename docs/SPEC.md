@@ -294,6 +294,7 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 ### 7.5 Produk Page
 - Cari nama produk (contains, tanpa beda huruf, live) + tombol grid/list (`ProductSearchBar`); tanpa hasil → "Produk tidak ditemukan". Pilihan grid/list disimpan (prefs `product_view_list`, dipakai bersama POS); teks cari tidak disimpan. Mode list = `ProductListRow` (tap = edit)
 - Grid kartu `ProductCard` (sama dengan POS), foto penuh lebar, chip Ready/Habis (ketuk = ubah status)
+- Daftar panjang (Laporan, Pengeluaran, Riwayat Shift, Produk): tombol "Kembali ke atas" muncul setelah scroll > 1 layar (`ScrollToTopButton`)
 - FAB "+" → dialog form `AppFormDialog` (foto 4:3, nama, kategori, harga, HPP, ready)
 
 ### 7.6 Laporan Page (Owner only)

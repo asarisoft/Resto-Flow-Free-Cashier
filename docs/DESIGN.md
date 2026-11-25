@@ -93,6 +93,7 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | `FilterPanel`   | Kartu kontrol filter + "Reset filter" (muncul saat filter aktif). HP: lipat, header "Filter · <summary>" |
 | `PeriodFilterBar`| Chip clay kecil (radius 14, `compact`, tinggi ≥ 48 dp; terpilih = `textPrimary` + teks putih): Hari ini / Bulan ini / Bulan lalu / Semua / Pilih tanggal (rentang) |
 | `ClayChip`      | Chip clay (radius 14, `compact`), tinggi tampak bisa diatur, area sentuh ≥ 48 dp; terpilih = `selectedColor` + teks putih. Dipakai `PeriodFilterBar` & tab kategori POS di HP (tinggi 40, terpilih `primary`, jarak 8). Tablet: tab kategori garis bawah |
+| `ScrollToTopButton` | Tombol clay bulat 48 dp (ikon `arrowUp`, tooltip "Kembali ke atas") di slot FAB. Fade masuk saat offset > 1 layar, hilang di dekat atas; tap = `animateTo(0)` (`jumpTo` bila `disableAnimations`). Dipakai Laporan, Pengeluaran (di atas FAB Tambah), Riwayat Shift, Produk (di atas FAB +) |
 | `SearchField`   | Kolom cari dengan ikon + tombol hapus               |
 | `ProductSearchBar` | `SearchField` "Cari produk" + tombol ikon grid/list (tooltip + Semantics, ≥ 48 dp). Dipakai Produk & POS |
 | `ProductListRow` | Baris produk mode list: foto 48 dp, nama, harga, `ReadyChip`; clay compact radius 16, tinggi ≥ 64 dp; parameter sama dengan `ProductCard`; di keranjang: border tipis `primary` 45% 1,5 dp (bukan oranye tebal) |
