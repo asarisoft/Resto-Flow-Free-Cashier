@@ -492,6 +492,9 @@ Kembali                 9.000
        └── logo/...
    ```
 3. Share sheet (`share_plus`) → simpan ke Files / Drive / kirim
+4. Atau tombol **Simpan ke Download** (`file_picker` `saveFile`, dialog simpan sistem/SAF): file di luar sandbox app, selamat dari uninstall. Dicatat sebagai backup hanya bila benar-benar tersimpan.
+
+Pengaturan menampilkan `KasirKita v<versi> (<build>) · skema DB <n>` di bagian bawah (untuk support).
 
 ### Restore (Settings → "Restore Data", Owner only)
 1. `file_picker` pilih file `.zip`

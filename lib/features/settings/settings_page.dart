@@ -299,6 +299,12 @@ class SettingsPage extends ConsumerWidget {
                           ),
                           const SizedBox(height: 8),
                           SecondaryButton(
+                            label: 'Simpan ke Download',
+                            icon: AppIcons.backup,
+                            onPressed: () => runBackupToDevice(ref, context),
+                          ),
+                          const SizedBox(height: 8),
+                          SecondaryButton(
                             label: 'Restore dari File',
                             icon: AppIcons.backup,
                             onPressed: () => _restoreBackup(context, ref),
@@ -351,7 +357,8 @@ class SettingsPage extends ConsumerWidget {
                   const SizedBox(height: 24),
                   Center(
                     child: Text(
-                      'KasirKita v1.0.0',
+                      ref.watch(appVersionLabelProvider).valueOrNull ??
+                          'KasirKita',
                       style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),

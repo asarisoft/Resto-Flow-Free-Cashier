@@ -1,3 +1,6 @@
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -64,6 +67,39 @@ Future<void> runBackupNow(WidgetRef ref, BuildContext context) async {
     }
   }
 }
+
+/// Export zip lalu simpan lewat dialog simpan sistem (SAF) — user pilih folder
+/// Download. File di luar sandbox app: selamat dari uninstall. Dicatat sebagai
+/// backup hanya bila file benar-benar tersimpan.
+Future<void> runBackupToDevice(WidgetRef ref, BuildContext context) async {
+  final messenger = ScaffoldMessenger.of(context);
+  try {
+    final file = await (await createBackupService(ref))
+        .exportZip(database: ref.read(databaseProvider));
+    final saved = await FilePicker.saveFile(
+      fileName: file.uri.pathSegments.last,
+      bytes: Uint8List.fromList(await file.readAsBytes()),
+      mimeType: 'application/zip',
+      dialogTitle: 'Simpan backup',
+    );
+    if (saved == null) {
+      messenger.showSnackBar(const SnackBar(content: Text('Simpan dibatalkan')));
+      return;
+    }
+    await BackupService.recordBackup(DateTime.now());
+    ref.invalidate(lastBackupTimeProvider);
+    messenger.showSnackBar(const SnackBar(content: Text('Backup disimpan')));
+  } catch (e) {
+    messenger.showSnackBar(SnackBar(content: Text('Backup gagal: $e')));
+  }
+}
+
+/// Teks versi untuk layar Pengaturan: "KasirKita v1.0.0 (2) · skema DB 1".
+final appVersionLabelProvider = FutureProvider<String>((ref) async {
+  final info = await PackageInfo.fromPlatform();
+  final schema = ref.read(databaseProvider).schemaVersion;
+  return 'KasirKita v${info.version} (${info.buildNumber}) · skema DB $schema';
+});
 
 /// Small non-intrusive reminder, shown only to the owner when a backup is due.
 class BackupReminderBanner extends ConsumerWidget {

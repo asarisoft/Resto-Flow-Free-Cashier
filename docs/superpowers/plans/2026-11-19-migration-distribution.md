@@ -150,8 +150,8 @@
 - [x] Tes unit untuk logika salin & bersihkan
 
 ### Task 7: Backup keluar dari sandbox app
-- [ ] Opsi "Simpan ke Download" (SAF/MediaStore)
-- [ ] Tampilkan versi app + skema di Pengaturan
+- [x] Opsi "Simpan ke Download" (SAF lewat `file_picker.saveFile`, dependency yang sudah ada)
+- [x] Tampilkan versi app + skema di Pengaturan
 
 ### Task 8: Dokumen & panduan
 - [ ] `docs/SPEC.md`: bagian Distribusi & Update (§4, §5 ringkas) + panduan user
