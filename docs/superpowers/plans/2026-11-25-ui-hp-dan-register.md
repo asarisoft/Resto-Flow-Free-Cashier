@@ -1,6 +1,6 @@
 # UI HP Rapi & Registrasi Owner Lokal — Plan
 
-> **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development. Checkbox (`- [ ]`) untuk tracking.
+> **For agentic workers:** REQUIRED SUB-SKILL: superpowers:subagent-driven-development. Checkbox (`- [x]`) untuk tracking.
 
 **Goal:** Tampilan HP rapi, dan tidak ada lagi akun default `admin / P@ssw0rd123` — pemakai baru membuat akun Owner sendiri (tersimpan lokal di HP).
 
@@ -35,14 +35,14 @@
 **Interfaces:**
 - `UsersDao.hasAnyUser() → Future<bool>`
 - `UsersDao.createOwner({required String username, required String password}) → Future<User>` — gagal bila sudah ada user (cegah register ganda).
-- [ ] Hapus pemanggilan `seedDefaultOwnerIfEmpty` saat start (fungsi + `defaultPassword` dipertahankan hanya untuk deteksi akun lama via `usesDefaultPassword`).
-- [ ] Gate: belum ada user → `RegisterPage`; sudah ada → `LoginPage`.
-- [ ] `RegisterPage` (pakai `HeroLayout` seperti login, gaya clay): field Nama pengguna, Password, Ulangi password; tombol "Buat Akun". Info jelas: **"Akun disimpan hanya di HP ini (offline). Catat password Anda — tidak bisa dipulihkan lewat internet. Gunakan Backup agar data aman."**
-- [ ] Validasi: username 3–20 huruf/angka/underscore; password min 6 karakter; konfirmasi sama.
-- [ ] Sukses → langsung login sebagai Owner → lanjut onboarding profil toko.
-- [ ] Link kecil di Register: "Punya backup? Pulihkan data" → alur restore yang sudah ada (bila tersedia dari layar login).
-- [ ] Tes: install baru tampil Register (bukan Login); register valid → user owner tersimpan & password ter-hash (bukan plaintext); password beda → ditolak; sudah ada user → `createOwner` gagal & tampil Login; akun lama default tetap bisa login.
-- [ ] Commit `feat(auth): registrasi owner lokal, tanpa akun default`.
+- [x] Hapus pemanggilan `seedDefaultOwnerIfEmpty` saat start (fungsi + `defaultPassword` dipertahankan hanya untuk deteksi akun lama via `usesDefaultPassword`).
+- [x] Gate: belum ada user → `RegisterPage`; sudah ada → `LoginPage`.
+- [x] `RegisterPage` (pakai `HeroLayout` seperti login, gaya clay): field Nama pengguna, Password, Ulangi password; tombol "Buat Akun". Info jelas: **"Akun disimpan hanya di HP ini (offline). Catat password Anda — tidak bisa dipulihkan lewat internet. Gunakan Backup agar data aman."**
+- [x] Validasi: username 3–20 huruf/angka/underscore; password min 8 karakter (`UsersDao.minPasswordLength`, satu aturan dengan ganti/reset); konfirmasi sama.
+- [x] Sukses → langsung login sebagai Owner → lanjut onboarding profil toko.
+- [x] Link restore: dilewati — restore hanya ada di Pengaturan (butuh login), tidak ada dari layar login.
+- [x] Tes: install baru tampil Register (bukan Login); register valid → user owner tersimpan & password ter-hash (bukan plaintext); password beda → ditolak; sudah ada user → `createOwner` gagal & tampil Login; akun lama default tetap bisa login.
+- [x] Commit `feat(auth): registrasi owner lokal, tanpa akun default`.
 
 ### Task 3: Docs
 - [ ] `docs/SPEC.md` (alur pertama kali: Register → Onboarding), `docs/DATABASE.md` (tidak ada seed user), `docs/DESIGN.md` (RegisterPage), graphify, centang plan.

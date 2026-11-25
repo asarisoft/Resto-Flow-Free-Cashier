@@ -70,6 +70,7 @@ void main() {
 
   for (final size in const [Size(360, 640), Size(800, 1280), Size(1280, 800)]) {
     testWidgets('LoginPage hero layout no overflow on ${size.width.toInt()}x${size.height.toInt()}', (tester) async {
+      await UsersDao(db).seedDefaultOwnerIfEmpty();
       await pump(tester, size, const LoginPage());
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.takeException(), isNull);

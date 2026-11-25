@@ -1,0 +1,179 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import '../../core/services/daos/users_dao.dart';
+import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_icons.dart';
+import '../../core/theme/app_typography.dart';
+import '../../core/widgets/app_card.dart';
+import '../../core/widgets/hero_layout.dart';
+import '../../core/widgets/icon_badge.dart';
+import '../../core/widgets/password_field.dart';
+import '../../core/widgets/primary_button.dart';
+import 'auth_controller.dart';
+import 'login_page.dart';
+
+/// Belum ada user → Register; sudah ada → Login.
+class AuthGate extends ConsumerWidget {
+  const AuthGate({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return ref.watch(hasAnyUserProvider).when(
+          data: (has) => has ? const LoginPage() : const RegisterPage(),
+          loading: () => const Scaffold(backgroundColor: AppColors.background),
+          error: (_, __) => const LoginPage(),
+        );
+  }
+}
+
+class RegisterPage extends ConsumerStatefulWidget {
+  const RegisterPage({super.key});
+
+  @override
+  ConsumerState<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends ConsumerState<RegisterPage> {
+  final _username = TextEditingController();
+  final _password = TextEditingController();
+  final _confirm = TextEditingController();
+  bool _loading = false;
+  String? _usernameError;
+  String? _passwordError;
+  String? _confirmError;
+
+  static const _info = 'Akun disimpan hanya di HP ini (offline). Catat password Anda — '
+      'tidak bisa dipulihkan lewat internet. Gunakan Backup agar data aman.';
+
+  @override
+  void dispose() {
+    _username.dispose();
+    _password.dispose();
+    _confirm.dispose();
+    super.dispose();
+  }
+
+  Future<void> _submit() async {
+    final u = _username.text.trim();
+    final p = _password.text;
+    setState(() {
+      _usernameError = RegExp(r'^[A-Za-z0-9_]{3,20}$').hasMatch(u)
+          ? null
+          : 'Nama pengguna 3–20 karakter: huruf, angka, underscore';
+      _passwordError = p.length >= UsersDao.minPasswordLength
+          ? null
+          : 'Password minimal ${UsersDao.minPasswordLength} karakter';
+      _confirmError = p == _confirm.text ? null : 'Password tidak sama';
+    });
+    if (_usernameError != null || _passwordError != null || _confirmError != null) return;
+    setState(() => _loading = true);
+    try {
+      await ref.read(loginProvider).register(u, p);
+    } on StateError {
+      // Sudah ada akun (mis. balapan) → gate menampilkan Login.
+      ref.invalidate(hasAnyUserProvider);
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = AppTypography.textTheme;
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      body: SafeArea(
+        child: HeroLayout(
+          wideLeft: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Buat akun Owner', style: textTheme.displaySmall?.copyWith(color: AppColors.textPrimary)),
+              const SizedBox(height: 24),
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 400),
+                child: AppCard(padding: const EdgeInsets.all(24), child: _fields()),
+              ),
+            ],
+          ),
+          narrowChild: AppCard(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Buat akun Owner', style: textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary)),
+                const SizedBox(height: 16),
+                _fields(),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _fields() {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        TextField(
+          controller: _username,
+          textInputAction: TextInputAction.next,
+          decoration: InputDecoration(
+            labelText: 'Nama pengguna',
+            prefixIcon: const IconBadge(AppIcons.person),
+            errorText: _usernameError,
+            errorMaxLines: 2,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _FieldError(
+          error: _passwordError,
+          child: PasswordField(
+            controller: _password,
+            label: 'Password',
+            prefixIcon: AppIcons.lock,
+            textInputAction: TextInputAction.next,
+          ),
+        ),
+        const SizedBox(height: 16),
+        _FieldError(
+          error: _confirmError,
+          child: PasswordField(
+            controller: _confirm,
+            label: 'Ulangi password',
+            prefixIcon: AppIcons.lock,
+            textInputAction: TextInputAction.done,
+            onSubmitted: (_) => _loading ? null : _submit(),
+          ),
+        ),
+        const SizedBox(height: 16),
+        Text(_info, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+        const SizedBox(height: 24),
+        PrimaryButton(label: 'Buat Akun', loading: _loading, onPressed: _loading ? null : _submit),
+      ],
+    );
+  }
+}
+
+/// PasswordField belum punya errorText; tampilkan pesan tepat di bawahnya.
+class _FieldError extends StatelessWidget {
+  final String? error;
+  final Widget child;
+  const _FieldError({required this.error, required this.child});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        child,
+        if (error != null)
+          Padding(
+            padding: const EdgeInsets.only(top: 6, left: 12),
+            child: Text(error!, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.error)),
+          ),
+      ],
+    );
+  }
+}

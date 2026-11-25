@@ -45,6 +45,33 @@ class UsersDao {
         );
   }
 
+  static final _usernamePattern = RegExp(r'^[A-Za-z0-9_]{3,20}$');
+
+  Future<bool> hasAnyUser() async =>
+      (await (db.select(db.users)..limit(1)).get()).isNotEmpty;
+
+  /// Registrasi Owner pertama (install baru). Cek + insert dalam 1 transaksi;
+  /// gagal bila sudah ada user mana pun.
+  Future<User> createOwner({required String username, required String password}) async {
+    username = username.trim();
+    if (!_usernamePattern.hasMatch(username)) {
+      throw ArgumentError('username 3-20 karakter: huruf, angka, underscore');
+    }
+    _validatePasswordLength(password);
+    return db.transaction(() async {
+      if (await hasAnyUser()) throw StateError('akun sudah ada');
+      final salt = PasswordHasher.generateSalt();
+      return db.into(db.users).insertReturning(UsersCompanion.insert(
+            id: DateTime.now().microsecondsSinceEpoch.toString(),
+            username: username,
+            passwordHash: PasswordHasher.hash(password, salt),
+            salt: salt,
+            role: 'owner',
+            createdAt: DateTime.now(),
+          ));
+    });
+  }
+
   Future<User?> verify(String username, String password) async {
     final row = await (db.select(db.users)..where((u) => u.username.equals(username))).getSingleOrNull();
     if (row == null) return null;

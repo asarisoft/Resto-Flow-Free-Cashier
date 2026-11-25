@@ -8,6 +8,8 @@ final sessionServiceProvider = Provider<SessionService>((ref) => SessionService(
 
 final usersDaoProvider = Provider<UsersDao>((ref) => UsersDao(ref.watch(databaseProvider)));
 
+final hasAnyUserProvider = FutureProvider<bool>((ref) => ref.read(usersDaoProvider).hasAnyUser());
+
 class LoginController {
   final Ref ref;
   LoginController(this.ref);
@@ -19,6 +21,14 @@ class LoginController {
     await ref.read(sessionServiceProvider).save(user.id);
     ref.invalidate(currentUserProvider);
     return true;
+  }
+
+  /// Buat Owner pertama lalu langsung login. Password tidak disimpan di luar hash.
+  Future<void> register(String username, String password) async {
+    final user = await ref.read(usersDaoProvider).createOwner(username: username, password: password);
+    await ref.read(sessionServiceProvider).save(user.id);
+    ref.invalidate(hasAnyUserProvider);
+    ref.invalidate(currentUserProvider);
   }
 
   Future<void> logout() async {

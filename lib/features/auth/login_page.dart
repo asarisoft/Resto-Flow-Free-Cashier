@@ -31,7 +31,6 @@ class _LoginPageState extends ConsumerState<LoginPage> {
 
   Future<void> _loadUsers() async {
     final dao = ref.read(usersDaoProvider);
-    await dao.seedDefaultOwnerIfEmpty();
     final users = await dao.getAll();
     if (!mounted) return;
     setState(() {
