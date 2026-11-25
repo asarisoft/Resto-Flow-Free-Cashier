@@ -89,7 +89,7 @@ class _PosPageState extends ConsumerState<PosPage> {
   }
 
   Widget _searchBar(double horizontal) => Padding(
-        padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 0),
+        padding: EdgeInsets.fromLTRB(horizontal, 4, horizontal, 12),
         child: ProductSearchBar(
           value: _query,
           onChanged: (v) => setState(() => _query = v),
