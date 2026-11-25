@@ -83,7 +83,7 @@ void main() {
       (tester) async {
     await setup(tester);
     await tester.enterText(find.byType(TextFormField), '200000');
-    await tester.tap(find.widgetWithText(PrimaryButton, 'Buka Shift'));
+    await tester.tap(find.widgetWithText(PrimaryButton, 'Buka'));
     await tester.runAsync(() => Future.delayed(const Duration(milliseconds: 200)));
     for (var i = 0; i < 5; i++) {
       await tester.pump(const Duration(milliseconds: 200));
@@ -99,7 +99,7 @@ void main() {
     testWidgets('modal "$bad" ditolak, shift tidak dibuka', (tester) async {
       await setup(tester);
       await tester.enterText(find.byType(TextFormField), bad);
-      await tester.tap(find.widgetWithText(PrimaryButton, 'Buka Shift'));
+      await tester.tap(find.widgetWithText(PrimaryButton, 'Buka'));
       await tester.pump();
       expect(
         find.textContaining(bad.isEmpty ? 'Wajib diisi' : 'Harus angka'),

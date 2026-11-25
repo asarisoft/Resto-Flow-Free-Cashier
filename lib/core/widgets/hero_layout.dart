@@ -106,12 +106,16 @@ class HeroLayout extends StatelessWidget {
             ),
           ),
           const Positioned(top: 16, left: 16, child: _Brand()),
-          Padding(
-            padding: EdgeInsets.fromLTRB(16, heroH - 32, 16, 24),
-            child: Center(
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 400),
-                child: narrowChild,
+          // Tinggi min = layar: bila ada ruang sisa, isi di-center vertikal.
+          ConstrainedBox(
+            constraints: BoxConstraints(minHeight: c.maxHeight),
+            child: Padding(
+              padding: EdgeInsets.fromLTRB(16, heroH - 32, 16, 24),
+              child: Center(
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 400),
+                  child: narrowChild,
+                ),
               ),
             ),
           ),

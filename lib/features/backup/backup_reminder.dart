@@ -65,7 +65,9 @@ class BackupReminderBanner extends ConsumerWidget {
     }
 
     final phone = MediaQuery.sizeOf(context).width < 600;
-    return Container(
+    return SafeArea(
+      bottom: false,
+      child: Container(
       margin: phone
           ? const EdgeInsets.fromLTRB(12, 6, 12, 2)
           : const EdgeInsets.fromLTRB(16, 8, 16, 4),
@@ -95,6 +97,6 @@ class BackupReminderBanner extends ConsumerWidget {
           ),
         ],
       ),
-    );
+    ));
   }
 }

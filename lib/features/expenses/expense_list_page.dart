@@ -204,8 +204,8 @@ class _Summary extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            'Total pengeluaran · $periodLabel',
-            maxLines: 2,
+            'Total · $periodLabel',
+            maxLines: 1,
             overflow: TextOverflow.ellipsis,
             style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
           ),

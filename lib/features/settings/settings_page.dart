@@ -68,7 +68,10 @@ class SettingsPage extends ConsumerWidget {
               child: ListView(
                 // Ruang kanan/bawah untuk bayangan clay (offset 12, blur 24)
                 // agar tidak terpotong tepi list jadi sudut kotak.
-                padding: const EdgeInsets.fromLTRB(16, 16, 40, 40),
+                padding: MediaQuery.sizeOf(context).width < 600
+                    ? const EdgeInsets.fromLTRB(16, 16, 16, 40)
+                    : const EdgeInsets.fromLTRB(16, 16, 40, 40),
+                clipBehavior: Clip.none,
                 children: [
                   if (canManageSettings) ...[
                     AppCard(
@@ -115,15 +118,24 @@ class SettingsPage extends ConsumerWidget {
                               ),
                               const SizedBox(width: 12),
                               Expanded(
-                                child: Text(
-                                  printer.isConnected
-                                      ? 'Terhubung: ${printer.device?.name ?? printer.device?.address ?? '-'}'
-                                      : 'Bluetooth Thermal · Belum terhubung',
-                                  style: textTheme.bodyLarge?.copyWith(
-                                    color: printer.isConnected
-                                        ? AppColors.success
-                                        : null,
-                                  ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      'Bluetooth Thermal',
+                                      style: textTheme.bodyLarge,
+                                    ),
+                                    Text(
+                                      printer.isConnected
+                                          ? 'Terhubung: ${printer.device?.name ?? printer.device?.address ?? '-'}'
+                                          : 'Belum terhubung',
+                                      style: textTheme.bodySmall?.copyWith(
+                                        color: printer.isConnected
+                                            ? AppColors.success
+                                            : AppColors.textSecondary,
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
@@ -149,6 +161,7 @@ class SettingsPage extends ConsumerWidget {
                   if (canManageSettings) ...[
                     const SizedBox(height: 12),
                     AppCard(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(
@@ -172,6 +185,7 @@ class SettingsPage extends ConsumerWidget {
                     ),
                     const SizedBox(height: 12),
                     AppCard(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: ListTile(
                         contentPadding: EdgeInsets.zero,
                         leading: const Icon(
@@ -205,6 +219,7 @@ class SettingsPage extends ConsumerWidget {
                         MediaQuery.sizeOf(context).width <= 800) ...[
                       const SizedBox(height: 12),
                       AppCard(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(
@@ -228,6 +243,7 @@ class SettingsPage extends ConsumerWidget {
                     if (MediaQuery.sizeOf(context).width <= 800) ...[
                       const SizedBox(height: 12),
                       AppCard(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
                         child: ListTile(
                           contentPadding: EdgeInsets.zero,
                           leading: const Icon(
@@ -294,6 +310,7 @@ class SettingsPage extends ConsumerWidget {
                   ],
                   const SizedBox(height: 12),
                   AppCard(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
                       leading: const Icon(
@@ -316,6 +333,7 @@ class SettingsPage extends ConsumerWidget {
                   ),
                   const SizedBox(height: 12),
                   AppCard(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     child: ListTile(
                       contentPadding: EdgeInsets.zero,
                       title: Text(

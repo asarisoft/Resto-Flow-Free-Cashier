@@ -41,7 +41,8 @@ class PosPage extends ConsumerStatefulWidget {
 }
 
 class _PosPageState extends ConsumerState<PosPage> {
-  String _selectedCategory = 'All Menu';
+  static const _allCategory = 'Semua';
+  String _selectedCategory = _allCategory;
   String _query = '';
 
   @override
@@ -71,7 +72,7 @@ class _PosPageState extends ConsumerState<PosPage> {
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (products) {
           // Extract categories
-          final categories = ['All Menu'];
+          final categories = [_allCategory];
           for (final p in products) {
             if (p.category != null &&
                 p.category!.isNotEmpty &&
@@ -81,15 +82,15 @@ class _PosPageState extends ConsumerState<PosPage> {
           }
 
           // Filter products
-          final byCategory = _selectedCategory == 'All Menu'
+          final byCategory = _selectedCategory == _allCategory
               ? products
               : products.where((p) => p.category == _selectedCategory).toList();
           final filteredProducts = filterProductsByName(byCategory, _query);
 
           if (isWide) {
-            return _buildTabletLayout(categories, filteredProducts, cart);
+            return _buildTabletLayout(categories, filteredProducts, cart, products.isEmpty);
           } else {
-            return _buildMobileLayout(categories, filteredProducts, cart);
+            return _buildMobileLayout(categories, filteredProducts, cart, products.isEmpty);
           }
         },
       ),
@@ -116,6 +117,7 @@ class _PosPageState extends ConsumerState<PosPage> {
     List<String> categories,
     List<Product> products,
     List<TransactionItem> cart,
+    bool noProductsYet,
   ) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -180,6 +182,7 @@ class _PosPageState extends ConsumerState<PosPage> {
                   products: products,
                   cart: cart,
                   isWide: true,
+                  noProductsYet: noProductsYet,
                 ),
               ),
             ],
@@ -208,6 +211,7 @@ class _PosPageState extends ConsumerState<PosPage> {
     List<String> categories,
     List<Product> products,
     List<TransactionItem> cart,
+    bool noProductsYet,
   ) {
     return Column(
       children: [
@@ -215,10 +219,10 @@ class _PosPageState extends ConsumerState<PosPage> {
         _searchBar(12),
         // Horizontal Categories
         SizedBox(
-          height: 80,
+          height: 56,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 12),
             itemCount: categories.length,
             itemBuilder: (context, index) {
               final cat = categories[index];
@@ -235,7 +239,12 @@ class _PosPageState extends ConsumerState<PosPage> {
           ),
         ),
         Expanded(
-          child: _ProductGrid(products: products, cart: cart, isWide: false),
+          child: _ProductGrid(
+            products: products,
+            cart: cart,
+            isWide: false,
+            noProductsYet: noProductsYet,
+          ),
         ),
         // Minimal Cart Summary at bottom
         if (cart.isNotEmpty)
@@ -439,16 +448,22 @@ class _ProductGrid extends ConsumerWidget {
   final List<Product> products;
   final List<TransactionItem> cart;
   final bool isWide;
+  final bool noProductsYet;
 
   const _ProductGrid({
     required this.products,
     required this.cart,
     required this.isWide,
+    required this.noProductsYet,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    if (products.isEmpty) return const Center(child: Text(productNotFoundText));
+    if (products.isEmpty) {
+      return Center(
+        child: Text(noProductsYet ? productEmptyText : productNotFoundText),
+      );
+    }
     final isList = ref.watch(productViewModeProvider).valueOrNull ?? false;
     final padding = EdgeInsets.only(
       top: 16,

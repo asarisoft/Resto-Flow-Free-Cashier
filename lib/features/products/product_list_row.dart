@@ -11,6 +11,7 @@ import 'product_image.dart';
 
 /// Teks saat pencarian tidak ada hasil (Produk & POS).
 const productNotFoundText = 'Produk tidak ditemukan';
+const productEmptyText = 'Belum ada produk — tambah di menu Produk';
 
 /// Satu baris produk (mode list): foto kecil, nama, harga, chip stok/status.
 /// Parameter sama dengan `ProductCard`.

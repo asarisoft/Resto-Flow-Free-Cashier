@@ -60,6 +60,23 @@ class _OpenShiftCardState extends ConsumerState<OpenShiftCard> {
   @override
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
+    final narrow = MediaQuery.sizeOf(context).width < 600;
+    final cashField = TextFormField(
+      controller: _cashCtrl,
+      decoration: const InputDecoration(
+        labelText: 'Modal awal laci (Rp) *',
+        prefixIcon: IconBadge(AppIcons.wallet),
+        prefixText: 'Rp ',
+        hintText: '0',
+      ),
+      keyboardType: TextInputType.number,
+      style: textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
+      validator: (v) {
+        if (v == null || v.trim().isEmpty) return 'Wajib diisi';
+        if (parseShiftCash(v) == null) return 'Harus angka 0 atau lebih';
+        return null;
+      },
+    );
     return AppCard(
       child: Form(
         key: _formKey,
@@ -71,29 +88,28 @@ class _OpenShiftCardState extends ConsumerState<OpenShiftCard> {
               style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
-            TextFormField(
-              controller: _cashCtrl,
-              decoration: const InputDecoration(
-                labelText: 'Modal awal laci (Rp) *',
-                prefixIcon: IconBadge(AppIcons.wallet),
-                prefixText: 'Rp ',
-                hintText: '0',
+            if (narrow)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(child: cashField),
+                  const SizedBox(width: 8),
+                  SizedBox(
+                    width: 96,
+                    child: PrimaryButton(label: 'Buka', loading: _saving, onPressed: _save),
+                  ),
+                ],
+              )
+            else ...[
+              cashField,
+              const SizedBox(height: 12),
+              PrimaryButton(
+                label: 'Buka Shift',
+                icon: AppIcons.add,
+                loading: _saving,
+                onPressed: _save,
               ),
-              keyboardType: TextInputType.number,
-              style: textTheme.bodyLarge?.copyWith(color: AppColors.textPrimary),
-              validator: (v) {
-                if (v == null || v.trim().isEmpty) return 'Wajib diisi';
-                if (parseShiftCash(v) == null) return 'Harus angka 0 atau lebih';
-                return null;
-              },
-            ),
-            const SizedBox(height: 12),
-            PrimaryButton(
-              label: 'Buka Shift',
-              icon: AppIcons.add,
-              loading: _saving,
-              onPressed: _save,
-            ),
+            ],
           ],
         ),
       ),

@@ -4,8 +4,8 @@ import 'app_card.dart';
 
 /// Kartu filter: baris atas ([top], mis. chip periode) + baris [fields].
 /// Layar lebar: field sebaris, field TERAKHIR melebar mengisi sisa, Reset di ujung
-/// (tanpa baris/ruang kosong). Layar sempit (HP): [top] satu baris yang bisa
-/// digeser, [fields] dilipat di balik "Filter lainnya" (terbuka sendiri bila
+/// (tanpa baris/ruang kosong). Layar sempit (HP): [top] membungkus ke baris
+/// berikut, [fields] dilipat di balik "Filter lainnya" (terbuka sendiri bila
 /// ada filter aktif, yaitu [onReset] tidak null).
 class FilterPanel extends StatefulWidget {
   final Widget top;
@@ -41,7 +41,7 @@ class _FilterPanelState extends State<FilterPanel> {
             label: const Text('Reset filter'),
           );
     return AppCard(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: LayoutBuilder(
         builder: (_, c) {
           final wide = c.maxWidth >= FilterPanel._wide;
@@ -50,10 +50,7 @@ class _FilterPanelState extends State<FilterPanel> {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SingleChildScrollView(
-                  scrollDirection: Axis.horizontal,
-                  child: top,
-                ),
+                top,
                 if (onReset == null)
                   Align(
                     alignment: Alignment.centerLeft,
