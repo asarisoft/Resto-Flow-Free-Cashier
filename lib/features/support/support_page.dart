@@ -54,6 +54,13 @@ Widget _defaultWebBuilder(
   return WebViewWidget(controller: controller);
 }
 
+/// Hanya galat pada dokumen utama yang berarti gagal; resource lain (mis. favicon 404) diabaikan.
+bool isMainDocumentError(Uri? requestUri) {
+  if (requestUri == null) return false;
+  String norm(Uri u) => u.removeFragment().toString().replaceFirst(RegExp(r'/$'), '');
+  return norm(requestUri) == norm(Uri.parse('$remoteBaseUrl/'));
+}
+
 WebViewController _newController(VoidCallback onLoaded, VoidCallback onError) {
   return WebViewController()
     ..setJavaScriptMode(JavaScriptMode.disabled)
@@ -64,7 +71,10 @@ WebViewController _newController(VoidCallback onLoaded, VoidCallback onError) {
         if (e.isForMainFrame ?? true) onError();
       },
       onHttpError: (e) {
-        if ((e.response?.statusCode ?? 0) >= 400) onError();
+        if ((e.response?.statusCode ?? 0) >= 400 &&
+            isMainDocumentError(e.request?.uri)) {
+          onError();
+        }
       },
     ))
     ..loadRequest(Uri.parse('$remoteBaseUrl/'));

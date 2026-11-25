@@ -9,6 +9,7 @@ import '../../core/services/database_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/app_card.dart';
+import '../../core/widgets/icon_badge.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../models/resto_profile.dart';
 import '../../features/auth/auth_controller.dart';
@@ -72,6 +73,31 @@ class SettingsPage extends ConsumerWidget {
                     : const EdgeInsets.fromLTRB(16, 16, 40, 40),
                 clipBehavior: Clip.none,
                 children: [
+                  // HP: tab Dukung Developer tidak ada di bar bawah -> tile menonjol di atas.
+                  if (MediaQuery.sizeOf(context).width <= 800) ...[
+                    AppCard(
+                      color: AppColors.lilac,
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: ListTile(
+                        contentPadding: EdgeInsets.zero,
+                        leading: const IconBadge(AppIcons.heart),
+                        title: Text('Dukung Developer', style: textTheme.titleMedium),
+                        subtitle: Text(
+                          'Follow, request fitur & pesan aplikasi',
+                          style: textTheme.bodyMedium
+                              ?.copyWith(color: AppColors.textSecondary),
+                        ),
+                        trailing: const Icon(
+                          AppIcons.arrowRight,
+                          color: AppColors.textSecondary,
+                        ),
+                        onTap: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const SupportPage()),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                  ],
                   if (canManageSettings) ...[
                     AppCard(
                       child: Column(
@@ -233,30 +259,6 @@ class SettingsPage extends ConsumerWidget {
                           onTap: () => Navigator.of(context).push(
                             MaterialPageRoute(
                               builder: (_) => const UserListPage(),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                    // HP: tab Dukung Developer tidak ada di bar bawah.
-                    if (MediaQuery.sizeOf(context).width <= 800) ...[
-                      const SizedBox(height: 12),
-                      AppCard(
-                        padding: const EdgeInsets.symmetric(horizontal: 16),
-                        child: ListTile(
-                          contentPadding: EdgeInsets.zero,
-                          leading: const Icon(
-                            AppIcons.support,
-                            color: AppColors.textPrimary,
-                          ),
-                          title: Text('Dukung Developer', style: textTheme.bodyLarge),
-                          trailing: const Icon(
-                            AppIcons.arrowRight,
-                            color: AppColors.textSecondary,
-                          ),
-                          onTap: () => Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (_) => const SupportPage(),
                             ),
                           ),
                         ),

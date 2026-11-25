@@ -1,9 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kasir_resto/core/config/remote_config.dart';
 import 'package:kasir_resto/features/support/support_page.dart';
 import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
+  test('isMainDocumentError: hanya dokumen utama', () {
+    expect(isMainDocumentError(Uri.parse('$remoteBaseUrl/favicon.ico')), isFalse);
+    expect(isMainDocumentError(Uri.parse('$remoteBaseUrl/')), isTrue);
+    expect(isMainDocumentError(Uri.parse(remoteBaseUrl)), isTrue);
+    expect(isMainDocumentError(null), isFalse);
+  });
+
   testWidgets('web gagal dimuat -> konten lokal tampil', (tester) async {
     await tester.pumpWidget(MaterialApp(
       home: SupportPage(

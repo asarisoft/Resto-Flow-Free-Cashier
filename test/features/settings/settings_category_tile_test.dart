@@ -6,6 +6,8 @@ import 'package:kasir_resto/core/services/database.dart'
     hide Product, Transaction, TransactionItem, RestoProfile, Users, User;
 import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/features/auth/auth_controller.dart';
+import 'package:kasir_resto/core/theme/app_colors.dart';
+import 'package:kasir_resto/features/support/support_page.dart';
 import 'package:kasir_resto/features/categories/category_page.dart';
 import 'package:kasir_resto/features/settings/settings_page.dart';
 import 'package:kasir_resto/models/app_user.dart';
@@ -22,8 +24,9 @@ void main() {
         .save(RestoProfile(name: 'Warung A', createdAt: DateTime.now()));
   });
 
-  Future<void> pump(WidgetTester tester, String role) async {
-    tester.view.physicalSize = const Size(800, 1600);
+  Future<void> pump(WidgetTester tester, String role,
+      {Size size = const Size(800, 1600)}) async {
+    tester.view.physicalSize = size;
     tester.view.devicePixelRatio = 1.0;
     addTearDown(() async {
       await tester.pumpWidget(const SizedBox());
@@ -59,5 +62,28 @@ void main() {
   testWidgets('Kasir: tile Kategori tidak tampil', (tester) async {
     await pump(tester, 'kasir');
     expect(find.text('Kategori'), findsNothing);
+  });
+
+  double lum(Color a, Color b) {
+    final x = a.computeLuminance(), y = b.computeLuminance();
+    return (x > y ? x + .05 : y + .05) / (x > y ? y + .05 : x + .05);
+  }
+
+  testWidgets('HP: tile Dukung di atas Profil Resto, kontras ok, buka SupportPage',
+      (tester) async {
+    await pump(tester, 'owner', size: const Size(360, 800));
+    final tile = find.text('Dukung Developer');
+    expect(tile, findsOneWidget);
+    expect(find.text('Follow, request fitur & pesan aplikasi'), findsOneWidget);
+    expect(tester.getTopLeft(tile).dy,
+        lessThan(tester.getTopLeft(find.text('Profil Resto')).dy));
+    expect(lum(AppColors.textPrimary, AppColors.lilac), greaterThanOrEqualTo(4.5));
+    expect(lum(AppColors.textSecondary, AppColors.lilac), greaterThanOrEqualTo(4.5));
+
+    await tester.tap(tile);
+    for (var i = 0; i < 5; i++) {
+      await tester.pump(const Duration(milliseconds: 200));
+    }
+    expect(find.byType(SupportPage), findsOneWidget);
   });
 }
