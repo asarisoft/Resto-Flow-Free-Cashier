@@ -88,6 +88,27 @@ void main() {
     expect(find.text('Memuat…', skipOffstage: false), findsNothing);
   });
 
+  testWidgets('HP: transaksi BATAL tetap terlihat di kartu ciut', (tester) async {
+    await seed(1);
+    final sales = SalesDao(db);
+    final id = await sales.save(Transaction(
+      number: 2,
+      items: [TransactionItem(productId: 'p', name: 'Es', price: 5000, hpp: 0)],
+      subtotal: 5000,
+      total: 5000,
+      paid: 5000,
+      paymentMethod: 'cash',
+      profit: 2500,
+      createdAt: DateTime.now(),
+    ));
+    await sales.voidTransaction(id: id, actorRole: 'owner', username: 'admin', reason: 'salah input');
+    await pump(tester, phone);
+    await tester.scrollUntilVisible(find.byType(AppDataTable<Transaction>), 300,
+        scrollable: find.byType(Scrollable).first);
+    expect(find.textContaining('BATAL', findRichText: true), findsOneWidget);
+    expect(find.text('Status'), findsNothing); // kartu masih ciut
+  });
+
   testWidgets('HP: filter lipat tampil ringkasan, ketuk membuka', (tester) async {
     await pump(tester, phone);
     expect(find.text('Filter · Bulan ini'), findsOneWidget);

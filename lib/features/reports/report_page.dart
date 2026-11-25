@@ -163,7 +163,20 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                                 subtitle: 'Ubah atau reset filter',
                               ),
                         columns: [
-                          AppColumn(label: 'No.', minWidth: 80, primary: true, cell: (t) => Text(t.number == null ? '-' : '#${t.number}')),
+                          AppColumn(label: 'No.', minWidth: 80, primary: true, cell: (t) {
+                            final no = t.number == null ? '-' : '#${t.number}';
+                            // BATAL tetap terlihat di kartu HP yang ciut.
+                            return t.isVoid
+                                ? Text.rich(TextSpan(children: [
+                                    TextSpan(text: no),
+                                    TextSpan(
+                                        text: ' · BATAL',
+                                        style: textTheme.labelSmall?.copyWith(
+                                            color: AppColors.error,
+                                            fontWeight: FontWeight.w700)),
+                                  ]))
+                                : Text(no);
+                          }),
                           AppColumn(
                             label: 'Status',
                             minWidth: 140,
