@@ -124,8 +124,8 @@
 - [x] Catat di `docs/SPEC.md` (bagian Distribusi)
 
 ### Task 2: Matikan Android Auto Backup
-- [ ] `android:allowBackup="false"` (+ `android:fullBackupContent="false"`)
-- [ ] Tes: uninstall → install → DB kosong, seed admin muncul
+- [x] `android:allowBackup="false"` (+ `android:fullBackupContent="false"`)
+- [x] Tes: install baru → DB kosong, halaman Register muncul (tanpa seed admin) — sudah dicover `test/features/auth/register_test.dart` 'install baru tampil Register, bukan Login'
 
 ### Task 3: Tolak downgrade DB
 - [ ] `beforeOpen`: `versionBefore > schemaVersion` → error terkontrol + layar pesan
