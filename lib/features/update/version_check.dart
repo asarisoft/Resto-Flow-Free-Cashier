@@ -76,12 +76,13 @@ final currentVersionCodeProvider = FutureProvider<int>((ref) async {
   return int.parse(info.buildNumber);
 });
 
-/// Ambil version.json; error apa pun / timeout 5 dtk -> null (offline-first).
+/// Ambil version.json; error apa pun / timeout 3 dtk -> null (offline-first).
+/// Dicek di layar loading awal, jadi batas tunggu dibuat pendek.
 final remoteVersionProvider = FutureProvider<RemoteVersion?>((ref) async {
   try {
     final res = await http
         .get(Uri.parse('$remoteBaseUrl/version.json'))
-        .timeout(const Duration(seconds: 5));
+        .timeout(const Duration(seconds: 3));
     if (res.statusCode != 200) return null;
     return RemoteVersion.tryParse(jsonDecode(res.body));
   } catch (_) {

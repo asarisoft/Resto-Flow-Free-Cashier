@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/widgets/app_logo.dart';
 import '../../core/widgets/hero_layout.dart';
 import '../../core/widgets/primary_button.dart';
 import '../shifts/shift_providers.dart';
@@ -153,7 +154,10 @@ class UpdateGate extends ConsumerWidget {
         action: SnackBarAction(label: 'Pasang', onPressed: updater.complete),
       ));
     });
-    final d = ref.watch(updateDecisionProvider).valueOrNull;
+    final async = ref.watch(updateDecisionProvider);
+    // Cek versi dulu di layar loading awal, sebelum Login/Home tampil.
+    if (async.isLoading && !async.hasValue) return const UpdateCheckSplash();
+    final d = async.valueOrNull;
     if (d != null && d.status == UpdateStatus.required) {
       final shiftOpen = ref.watch(openShiftProvider).valueOrNull != null;
       if (shiftOpen && ref.watch(forceUpdateDismissedProvider)) return child;
@@ -165,5 +169,31 @@ class UpdateGate extends ConsumerWidget {
       );
     }
     return child;
+  }
+}
+
+/// Layar loading awal selama version.json dicek (maks 3 dtk).
+class UpdateCheckSplash extends StatelessWidget {
+  const UpdateCheckSplash({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Material(
+      color: AppColors.background,
+      child: Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            AppLogo(size: 88),
+            SizedBox(height: 24),
+            SizedBox(
+              width: 24,
+              height: 24,
+              child: CircularProgressIndicator(strokeWidth: 2.5, color: AppColors.primary),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

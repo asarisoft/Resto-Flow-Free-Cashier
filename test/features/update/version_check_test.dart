@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -111,6 +112,19 @@ void main() {
     expect(find.text('Update Sekarang'), findsOneWidget);
     expect(find.text('Halaman Login'), findsNothing);
     expect(find.byType(BackButton), findsNothing);
+  });
+
+  testWidgets('saat cek versi -> loading awal dulu, Login belum tampil', (tester) async {
+    final c = Completer<UpdateDecision>();
+    await tester.pumpWidget(app(updateDecisionProvider.overrideWith((ref) => c.future)));
+    await tester.pump();
+    expect(find.byType(UpdateCheckSplash), findsOneWidget);
+    expect(find.text('Halaman Login'), findsNothing);
+
+    c.complete(const UpdateDecision(UpdateStatus.ok));
+    await tester.pumpAndSettle();
+    expect(find.byType(UpdateCheckSplash), findsNothing);
+    expect(find.text('Halaman Login'), findsOneWidget);
   });
 
   testWidgets('fetch gagal -> login tetap tampil', (tester) async {
