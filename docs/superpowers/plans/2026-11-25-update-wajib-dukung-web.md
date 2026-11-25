@@ -47,10 +47,10 @@
 - `enum UpdateStatus { ok, optional, required }`
 - `UpdateStatus decideUpdate(int current, RemoteVersion? remote)` — null → ok; current < min → required; current < latest → optional; else ok.
 - `versionCheckProvider` (FutureProvider) — fetch `$baseUrl/version.json`, timeout 5 dtk, error apa pun → null.
-- [ ] Tes `decideUpdate`: (3,{min5,latest7})→required; (5,..)→optional; (7,..)→ok; (3,null)→ok. Tes `tryParse`: field hilang / string bukan int / bukan map → null.
-- [ ] Widget test: status required → `ForceUpdatePage` tampil, tidak ada tombol kembali, tombol "Update Sekarang"; fetch error → halaman login tampil.
-- [ ] `ForceUpdatePage` clay: logo, judul "Update wajib", `message`, tombol "Update Sekarang" → in-app update (Task 4) atau fallback buka `https://play.google.com/store/apps/details?id=id.asdev.kasirkita`.
-- [ ] Commit `feat(update): cek versi minimal dari version.json`.
+- [x] Tes `decideUpdate`: (3,{min5,latest7})→required; (5,..)→optional; (7,..)→ok; (3,null)→ok. Tes `tryParse`: field hilang / string bukan int / bukan map → null.
+- [x] Widget test: status required → `ForceUpdatePage` tampil, tidak ada tombol kembali, tombol "Update Sekarang"; fetch error → halaman login tampil.
+- [x] `ForceUpdatePage` clay: logo, judul "Update wajib", `message`, tombol "Update Sekarang" → in-app update (Task 4) atau fallback buka `https://play.google.com/store/apps/details?id=id.asdev.kasirkita`.
+- [x] Commit `feat(update): cek versi minimal dari version.json`.
 
 ### Task 4: In-app update Play Store
 **Files:** `lib/features/update/in_app_updater.dart`, pemanggil di gate Task 3.
