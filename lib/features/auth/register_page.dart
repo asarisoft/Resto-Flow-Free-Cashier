@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/daos/users_dao.dart';
+import '../../core/services/database.dart' show isDatabaseTooNew;
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/theme/app_typography.dart';
@@ -10,6 +11,7 @@ import '../../core/widgets/icon_badge.dart';
 import '../../core/widgets/password_field.dart';
 import '../../core/widgets/primary_button.dart';
 import 'auth_controller.dart';
+import 'database_too_new_page.dart';
 import 'login_page.dart';
 
 /// Belum ada user → Register; sudah ada → Login.
@@ -21,7 +23,9 @@ class AuthGate extends ConsumerWidget {
     return ref.watch(hasAnyUserProvider).when(
           data: (has) => has ? const LoginPage() : const RegisterPage(),
           loading: () => const Scaffold(backgroundColor: AppColors.background),
-          error: (_, __) => const LoginPage(),
+          error: (e, _) => isDatabaseTooNew(e)
+              ? const DatabaseTooNewPage()
+              : const LoginPage(),
         );
   }
 }

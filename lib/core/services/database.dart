@@ -166,6 +166,22 @@ class ActivityLogs extends Table {
   Set<Column> get primaryKey => {id};
 }
 
+/// DB di disk dibuat oleh versi app yang lebih baru (user_version > schemaVersion).
+/// DB tidak dibuka & tidak diubah; user diminta update app.
+class DatabaseTooNewException implements Exception {
+  final int found;
+  final int supported;
+  const DatabaseTooNewException(this.found, this.supported);
+  @override
+  String toString() =>
+      'DatabaseTooNewException: skema $found > didukung $supported';
+}
+
+/// Error dari isolate DB dibungkus `DriftRemoteException` (hanya teks) → cek juga teksnya.
+bool isDatabaseTooNew(Object e) =>
+    e is DatabaseTooNewException ||
+    e.toString().startsWith('DatabaseTooNewException');
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dir = await getApplicationDocumentsDirectory();
@@ -196,6 +212,10 @@ class AppDatabase extends _$AppDatabase {
   MigrationStrategy get migration => MigrationStrategy(
         onUpgrade: (m, from, to) async {},
         beforeOpen: (details) async {
+          final before = details.versionBefore;
+          if (before != null && before > schemaVersion) {
+            throw DatabaseTooNewException(before, schemaVersion);
+          }
           await customStatement('PRAGMA foreign_keys = ON');
         },
       );

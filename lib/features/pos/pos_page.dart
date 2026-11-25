@@ -937,29 +937,16 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _row('Subtotal', _subtotal, textTheme),
-              Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _discCtrl,
-                      decoration: InputDecoration(
-                        labelText: _percentMode ? 'Diskon (%)' : 'Diskon (Rp)',
-                        prefixText: _percentMode ? null : 'Rp ',
-                        suffixText: _percentMode ? '%' : null,
-                        hintText: '0',
-                      ),
-                      keyboardType: TextInputType.number,
-                      inputFormatters: [
-                        FilteringTextInputFormatter.digitsOnly,
-                        if (_percentMode) LengthLimitingTextInputFormatter(3),
-                      ],
-                      onChanged: (_) => setState(() {}),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  Padding(
-                    padding: const EdgeInsets.only(top: 8),
+              TextField(
+                controller: _discCtrl,
+                decoration: InputDecoration(
+                  labelText: _percentMode ? 'Diskon (%)' : 'Diskon (Rp)',
+                  prefixText: _percentMode ? null : 'Rp ',
+                  hintText: '0',
+                  // Toggle Rp|% di dalam kolom (satu kotak, satu tinggi).
+                  suffixIconConstraints: const BoxConstraints(),
+                  suffixIcon: Padding(
+                    padding: const EdgeInsets.only(right: 4),
                     child: ChoiceSegment<bool>(
                       value: _percentMode,
                       options: const [(false, 'Rp'), (true, '%')],
@@ -970,7 +957,13 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                       }),
                     ),
                   ),
+                ),
+                keyboardType: TextInputType.number,
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
+                  if (_percentMode) LengthLimitingTextInputFormatter(3),
                 ],
+                onChanged: (_) => setState(() {}),
               ),
               if (_percentMode && _discount > 0)
                 Padding(

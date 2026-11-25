@@ -128,8 +128,8 @@
 - [x] Tes: install baru → DB kosong, halaman Register muncul (tanpa seed admin) — sudah dicover `test/features/auth/register_test.dart` 'install baru tampil Register, bukan Login'
 
 ### Task 3: Tolak downgrade DB
-- [ ] `beforeOpen`: `versionBefore > schemaVersion` → error terkontrol + layar pesan
-- [ ] Tes: DB `user_version=99` → app tidak membuka, pesan muncul
+- [x] `beforeOpen`: `versionBefore > schemaVersion` → error terkontrol + layar pesan
+- [x] Tes: DB `user_version=99` → app tidak membuka, pesan muncul
 
 ### Task 4: Snapshot & tes migrasi Drift
 - [ ] `drift_dev schema dump` untuk v4 (dan rekonstruksi v1–v3 dari git kalau perlu)
