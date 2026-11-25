@@ -118,9 +118,12 @@ void main() {
     expect(find.text('Metode bayar'), findsOneWidget);
   });
 
-  testWidgets('tablet 1280x800: filter selalu terbuka', (tester) async {
+  testWidgets('tablet 1280x800: filter lipat, default tertutup', (tester) async {
     await pump(tester, const Size(1280, 800));
+    expect(find.text('Filter · Bulan ini'), findsOneWidget);
+    expect(find.text('Metode bayar'), findsNothing);
+    await tester.tap(find.text('Filter · Bulan ini'));
+    await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Metode bayar'), findsOneWidget);
-    expect(find.textContaining('Filter ·'), findsNothing);
   });
 }

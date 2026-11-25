@@ -133,8 +133,8 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
   Tandai `primary` kolom yang paling dibutuhkan sekilas (mis. Laporan: No., Tanggal, Total).
 - `AppDataTable` memuat `pageSize` (25) baris dulu, lalu menambah batch saat scroll induk < 300 dp dari ujung; reset saat
   daftar baris berubah (filter). Tidak ada tombol halaman.
-- `FilterPanel` (< 600 dp) → lipat, default tertutup: header "Filter · <summary>" (summary = label periode) + chevron;
-  ketuk membuka chip periode, field, dan Reset. Tablet selalu terbuka.
+- `FilterPanel` (semua lebar) → lipat, default tertutup: header "Filter · <summary>" (summary = label periode) + chevron;
+  ketuk membuka chip periode, field, dan Reset (tablet: field sebaris).
 - Bar bawah maks 5 tab (label 11 sp). Pengguna dibuka dari Pengaturan di HP; sidebar tablet tetap 6.
 - Kartu ringkasan Laporan 2 kolom; Pengeluaran 2 kartu sebaris; angka besar `FittedBox` (menyusut, tidak terpotong).
 - Kartu produk lebih pendek (`productGridDelegatePhone`, rasio 0,95). Banner backup satu baris.

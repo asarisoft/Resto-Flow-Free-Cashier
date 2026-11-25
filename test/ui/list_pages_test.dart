@@ -43,6 +43,12 @@ void main() {
     for (var i = 0; i < 6; i++) {
       await tester.pump(const Duration(milliseconds: 200));
     }
+    // Filter default tertutup di semua lebar: buka dulu.
+    final header = find.textContaining('Filter');
+    if (header.evaluate().isNotEmpty) {
+      await tester.tap(header.first);
+      await tester.pump(const Duration(milliseconds: 300));
+    }
   }
 
   group('Pengeluaran', () {
@@ -67,7 +73,7 @@ void main() {
     testWidgets('filter panel is compact on a wide screen (no wasted rows)', (tester) async {
       await pump(tester, const ExpenseListPage());
       final h = tester.getSize(find.byType(FilterPanel)).height;
-      expect(h, lessThanOrEqualTo(146), reason: 'panel height $h');
+      expect(h, lessThanOrEqualTo(146 + 56), reason: 'panel height $h');
       // Reset tidak makan baris sendiri saat filter default.
       expect(find.text('Reset filter'), findsNothing);
     });

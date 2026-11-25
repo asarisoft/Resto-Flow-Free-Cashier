@@ -90,6 +90,8 @@ void main() {
     });
     final todayL = label(today.add(const Duration(hours: 1)), today.add(const Duration(hours: 2)));
     final oldL = label(lastMonth, lastMonth.add(const Duration(hours: 8)));
+    await tester.tap(find.textContaining('Filter'));
+    await settle(tester);
     await tester.tap(find.byKey(const ValueKey('chip-Hari ini')));
     await settle(tester);
     expect(find.text(todayL), findsOneWidget);

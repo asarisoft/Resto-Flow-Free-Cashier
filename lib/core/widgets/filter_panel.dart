@@ -4,9 +4,9 @@ import '../theme/app_typography.dart';
 import 'app_card.dart';
 
 /// Kartu filter: baris atas ([top], mis. chip periode) + baris [fields].
-/// Layar lebar: field sebaris, field TERAKHIR melebar mengisi sisa, Reset di ujung
-/// (tanpa baris/ruang kosong). HP (< 600 dp): panel LIPAT, default tertutup,
-/// header "Filter · [summary]" + chevron; ketuk untuk membuka [top] + [fields].
+/// Panel LIPAT di semua lebar, default tertutup: header "Filter · [summary]" +
+/// chevron; ketuk membuka [top] + [fields]. Layar lebar (>= 600 dp): field
+/// sebaris, field TERAKHIR melebar, Reset di ujung. HP: field bertumpuk.
 class FilterPanel extends StatefulWidget {
   final Widget top;
   final List<Widget> fields;
@@ -49,65 +49,60 @@ class _FilterPanelState extends State<FilterPanel> {
       child: LayoutBuilder(
         builder: (_, c) {
           final wide = c.maxWidth >= FilterPanel._wide;
-          if (!wide) {
-            final s = widget.summary;
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Semantics(
-                  button: true,
-                  expanded: _open,
-                  label: _open ? 'Sembunyikan filter' : 'Tampilkan filter',
-                  excludeSemantics: true,
+          final s = widget.summary;
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Semantics(
+                button: true,
+                expanded: _open,
+                label: _open ? 'Sembunyikan filter' : 'Tampilkan filter',
+                excludeSemantics: true,
+                onTap: () => setState(() => _open = !_open),
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(12),
                   onTap: () => setState(() => _open = !_open),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () => setState(() => _open = !_open),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 48),
-                      child: Row(
-                        children: [
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              s == null || s.isEmpty ? 'Filter' : 'Filter · $s',
-                              overflow: TextOverflow.ellipsis,
-                              style: AppTypography.textTheme.titleSmall,
-                            ),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(minHeight: 48),
+                    child: Row(
+                      children: [
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            s == null || s.isEmpty ? 'Filter' : 'Filter · $s',
+                            overflow: TextOverflow.ellipsis,
+                            style: AppTypography.textTheme.titleSmall,
                           ),
-                          Icon(_open ? AppIcons.chevronUp : AppIcons.chevronDown),
-                        ],
-                      ),
+                        ),
+                        Icon(_open ? AppIcons.chevronUp : AppIcons.chevronDown),
+                      ],
                     ),
                   ),
                 ),
-                if (_open) ...[
-                  const SizedBox(height: 8),
-                  top,
+              ),
+              if (_open) ...[
+                const SizedBox(height: 8),
+                top,
+                if (wide) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      for (var i = 0; i < fields.length; i++) ...[
+                        if (i > 0) const SizedBox(width: 12),
+                        if (i == fields.length - 1)
+                          Expanded(child: fields[i])
+                        else
+                          fields[i],
+                      ],
+                      if (reset != null) ...[const SizedBox(width: 12), reset],
+                    ],
+                  ),
+                ] else ...[
                   for (final f in fields) ...[const SizedBox(height: 12), f],
                   if (reset != null)
                     Align(alignment: Alignment.centerRight, child: reset),
                 ],
               ],
-            );
-          }
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              top,
-              const SizedBox(height: 12),
-              Row(
-                children: [
-                  for (var i = 0; i < fields.length; i++) ...[
-                    if (i > 0) const SizedBox(width: 12),
-                    if (i == fields.length - 1)
-                      Expanded(child: fields[i])
-                    else
-                      fields[i],
-                  ],
-                  if (reset != null) ...[const SizedBox(width: 12), reset],
-                ],
-              ),
             ],
           );
         },
