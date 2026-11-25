@@ -18,7 +18,7 @@
 ### 1. Token gerak bersama
 - [x] Satu file konstanta durasi & kurva (pegas teredam / `Curves.easeOutCubic`), dipakai semua animasi
 - [x] Hormati `MediaQuery.disableAnimations` (durasi 0 kalau aktif)
-- [ ] Catat di `docs/DESIGN.md` bagian Animasi
+- [x] Catat di `docs/DESIGN.md` bagian Animasi
 
 ### 2. Keranjang & tambah item
 - [x] Tambah item: umpan balik singkat (badge keranjang "pop" kecil) + `HapticFeedback.selectionClick()`
@@ -32,8 +32,8 @@
 - [x] Pindah halaman pakai transisi Material 3 yang konsisten (shared axis / fade-through), satu aturan untuk semua rute
 
 ### 5. Cek akhir
-- [ ] Uji di HP kasir murah (frame drop?) — animasi berat dibuang
-- [ ] Update `docs/DESIGN.md` (bagian Animasi) + graphify bila struktur berubah
+- [ ] Uji di HP kasir murah (frame drop?) — animasi berat dibuang (manual)
+- [x] Update `docs/DESIGN.md` (bagian Animasi) + graphify bila struktur berubah
 
 ## Referensi
 - Prinsip gerak: `emilkowalski/skills` → `apple-design` (pegas, gestur, sheet)

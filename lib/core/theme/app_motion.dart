@@ -1,4 +1,3 @@
-import 'package:flutter/animation.dart';
 import 'package:flutter/widgets.dart';
 
 /// Token gerak bersama. Singkat (kasir: cepat > cantik); semua durasi
