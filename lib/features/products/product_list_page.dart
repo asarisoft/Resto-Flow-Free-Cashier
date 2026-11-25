@@ -125,9 +125,9 @@ class _ProductGrid extends ConsumerWidget {
                   ),
                 )
               : GridView.builder(
-            padding: const EdgeInsets.all(16),
+            // Klip default (konten tidak menimpa header); padding lega agar bayangan clay muat.
+            padding: const EdgeInsets.fromLTRB(16, 16, 24, 28),
             gridDelegate: productGridDelegateFor(context),
-            clipBehavior: Clip.none,
             itemCount: products.length,
             itemBuilder: (_, i) => ProductCard(
               product: products[i],

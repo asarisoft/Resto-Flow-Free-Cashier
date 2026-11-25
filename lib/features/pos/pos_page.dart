@@ -497,7 +497,6 @@ class _ProductGrid extends ConsumerWidget {
     return GridView.builder(
       padding: padding,
       gridDelegate: productGridDelegateFor(context),
-      clipBehavior: Clip.none,
       itemCount: products.length,
       itemBuilder: (context, index) {
         final product = products[index];
