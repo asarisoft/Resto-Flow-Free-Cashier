@@ -81,7 +81,7 @@ class _ProductListPageState extends ConsumerState<ProductListPage> {
           return Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(16, 8, 16, 0),
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 12),
                 child: ProductSearchBar(
                   value: _query,
                   onChanged: (v) => setState(() => _query = v),
