@@ -88,7 +88,7 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | `TapArea`       | Ripple + Semantics tombol (pengganti `GestureDetector`) |
 | `ChoiceSegment` | Pilihan 1-dari-N (58/80 mm, Hari Ini/Bulan Ini): wadah `inset`, segmen terpilih = kotak oranye gradasi `primaryLight→primary` teks putih, tinggi ≥ 48 dp |
 | `BarChart`       | Grafik batang sederhana (tanpa dependency chart): label sumbu bawah, batang tertinggi ditandai aksen, tap/long-press → SnackBar tanggal + nominal, scroll horizontal |
-| `AppDataTable`  | Tabel standar: header, baris berpembatas, angka rata kanan, scroll horizontal di layar sempit, infinite scroll (25 baris pertama, batch berikutnya otomatis saat mendekati ujung, indikator "Memuat…"). Dipakai Pengeluaran, Transaksi, Pengguna |
+| `AppDataTable`  | Tabel standar: header, baris berpembatas, angka rata kanan, scroll horizontal di layar sempit, infinite scroll (25 baris pertama, batch berikutnya otomatis saat mendekati ujung, indikator "Memuat…"). Dipakai Pengeluaran, Transaksi, Pengguna, Riwayat Shift |
 | `FilterPanel`   | Kartu kontrol filter + "Reset filter" (muncul saat filter aktif). HP: lipat, header "Filter · <summary>" |
 | `PeriodFilterBar`| Chip clay kecil (radius 14, `compact`, tinggi ≥ 48 dp; terpilih = `textPrimary` + teks putih): Hari ini / Bulan ini / Bulan lalu / Semua / Pilih tanggal (rentang) |
 | `SearchField`   | Kolom cari dengan ikon + tombol hapus               |

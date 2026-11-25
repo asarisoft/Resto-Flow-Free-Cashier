@@ -17,6 +17,8 @@ import '../reports/report_providers.dart';
 import '../settings/settings_providers.dart';
 import 'open_shift_card.dart';
 import 'shift_calc.dart';
+import 'shift_detail.dart';
+import 'shift_history_page.dart';
 import '../activity_log/activity_log_providers.dart';
 import 'shift_providers.dart';
 
@@ -64,7 +66,15 @@ class ShiftPage extends ConsumerWidget {
                     );
                   }
                   return Column(
-                    children: [for (final s in closed) _ShiftHistoryRow(shift: s)],
+                    children: [
+                      for (final s in closed.take(5)) _ShiftHistoryRow(shift: s),
+                      TextButton(
+                        onPressed: () => Navigator.of(context).push(
+                          MaterialPageRoute(builder: (_) => const ShiftHistoryPage()),
+                        ),
+                        child: const Text('Lihat semua'),
+                      ),
+                    ],
                   );
                 },
               ),
@@ -140,7 +150,8 @@ class _ShiftHistoryRow extends StatelessWidget {
     final diff = (shift.countedCash ?? 0) - (shift.expectedCash ?? 0);
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
-      child: AppCard(
+      child: AppCardButton(
+        onTap: () => showShiftDetail(context, shift),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

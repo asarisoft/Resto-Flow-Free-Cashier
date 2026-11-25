@@ -350,7 +350,12 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 - Akses: tombol "Shift Kasir" di AppBar POS (mobile) & header POS (tablet). Terbuka untuk
   Owner & Kasir.
 - Halaman `ShiftPage`: kartu status shift (terbuka/belum) + tombol **Buka Shift** / **Tutup Shift**,
-  lalu riwayat shift (daftar sederhana).
+  lalu 5 shift selesai terakhir + tombol **Lihat semua** → `ShiftHistoryPage`.
+- `ShiftHistoryPage` ("Riwayat Shift"): `FilterPanel` + `PeriodFilterBar` (default Bulan ini, filter `openedAt`),
+  `AppDataTable` (infinite scroll; kartu HP: Jam & Selisih). Tap baris (juga di ShiftPage) → `showShiftDetail`
+  (dialog lebar / bottom sheet HP): omzet tunai/non-tunai, jumlah transaksi, pengeluaran, kas seharusnya,
+  laci, selisih — dihitung dengan query & `computeShiftRecap` yang sama dengan tutup shift; shift selesai
+  memakai `expectedCash`/`countedCash` tersimpan.
 - **Buka shift**: input modal awal laci (int ≥ 0). Maksimal 1 shift terbuka — buka lagi ditolak.
 - **Tutup shift**: input uang di laci → hitung rekap → dialog rekap + tombol Cetak.
 - Rekap (rentang `openedAt..closedAt`): omzet per metode bayar, total pengeluaran,
