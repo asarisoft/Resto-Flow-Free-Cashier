@@ -435,7 +435,7 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 - Alamat, nama item, dan footer boleh multi-baris: dipecah per baris (`\n`), dibungkus per kata
   agar tiap baris ≤ lebar kertas, footer/alamat di-center per baris.
 - Form profil (Pengaturan Awal & Edit Profil) menampilkan **Preview Nota** langsung (`ReceiptPreview`),
-  ikut berubah saat teks/ukuran kertas diubah.
+  ikut berubah saat teks/ukuran kertas diubah. Logo (bila aktif) tampil hitam-putih di atas teks, lebar ±60%; kotak selebar teks asli.
 
 Contoh struk:
 ```

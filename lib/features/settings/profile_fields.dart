@@ -13,6 +13,8 @@ class ProfileFields extends StatelessWidget {
   final TextEditingController footer;
   final int paperWidth;
   final ValueChanged<int> onPaperWidth;
+  final bool useLogo;
+  final String? logoPath;
 
   const ProfileFields({
     super.key,
@@ -22,6 +24,8 @@ class ProfileFields extends StatelessWidget {
     required this.footer,
     required this.paperWidth,
     required this.onPaperWidth,
+    this.useLogo = false,
+    this.logoPath,
   });
 
   String? _opt(TextEditingController c) => c.text.trim().isEmpty ? null : c.text.trim();
@@ -32,6 +36,8 @@ class ProfileFields extends StatelessWidget {
         phone: _opt(phone),
         footerNote: _opt(footer),
         paperWidth: paperWidth,
+        useLogo: useLogo,
+        logoPath: logoPath,
         createdAt: DateTime(2026),
       );
 
@@ -88,6 +94,7 @@ class ProfileFields extends StatelessWidget {
         Center(
           child: SingleChildScrollView(
             scrollDirection: Axis.horizontal,
+            padding: const EdgeInsets.symmetric(vertical: 24),
             child: ListenableBuilder(
               listenable: Listenable.merge([name, address, phone, footer]),
               builder: (_, __) => ReceiptPreview(profile: _profile()),

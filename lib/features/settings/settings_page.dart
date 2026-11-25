@@ -548,6 +548,9 @@ class _EditProfileDialogState extends ConsumerState<_EditProfileDialog> {
           footer: _footerCtrl,
           paperWidth: _paperWidth,
           onPaperWidth: (v) => setState(() => _paperWidth = v),
+          useLogo: _pickedLogo != null ||
+              (!_removeLogo && widget.profile.useLogo),
+          logoPath: _pickedLogo?.path ?? (_removeLogo ? null : _logoPath),
         ),
       ],
     );
