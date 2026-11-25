@@ -86,6 +86,8 @@ class AppTheme {
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
+        // Label tidak melayang di atas border: jadi placeholder dalam field.
+        floatingLabelBehavior: FloatingLabelBehavior.never,
         filled: true,
         fillColor: AppColors.inset,
         border: OutlineInputBorder(

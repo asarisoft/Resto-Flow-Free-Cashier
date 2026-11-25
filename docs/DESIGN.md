@@ -51,6 +51,7 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | `xl`  | 32 dp |
 
 - Padding default halaman: 16 dp.
+- Input: tanpa label melayang (`floatingLabelBehavior: never` di `InputDecorationTheme`). `labelText` tampil sebagai placeholder dalam field dan hilang saat terisi (tetap terbaca screen reader); dropdown terpilih hanya menampilkan nilainya. Jangan pakai `FloatingLabelBehavior.auto/always` per-field.
 - Radius: kartu 20, tombol 20, input 16, chip/segmented 14, dialog 24.
 - Divider: `color: #DDD7C8, height: 1`.
 
