@@ -63,11 +63,19 @@ void main() {
 
     await tester.tap(find.text('Bayar'));
     await tester.pump(const Duration(milliseconds: 500));
+    await tester.pump(const Duration(milliseconds: 500)); // sheet bayar naik
+    // Sheet bayar bisa di-scroll di HP kecil: geser dulu sampai tombol terlihat.
+    await tester.ensureVisible(find.text('Uang pas'));
+    await tester.pump();
     await tester.tap(find.text('Uang pas'));
     await tester.pump(const Duration(milliseconds: 200));
     await tester.tap(find.text('Simpan & Cetak'));
     await tester.pump(const Duration(milliseconds: 400));
     await tester.pump(const Duration(milliseconds: 600));
+    // Tanda centang sukses (~320 ms) sebelum sheet bayar menutup.
+    for (var i = 0; i < 10; i++) {
+      await tester.pump(const Duration(milliseconds: 100));
+    }
 
     expect(find.text('Rincian Pesanan'), findsNothing); // sheet tertutup
     expect(find.text('Pembayaran'), findsNothing); // dialog tertutup

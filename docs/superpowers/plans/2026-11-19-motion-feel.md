@@ -25,8 +25,8 @@
 - [x] Angka total berubah halus (count-up singkat, tetap `int` rupiah, tabular figures)
 
 ### 3. Pembayaran
-- [ ] Detail pesanan / pembayaran memakai **modal bottom sheet** (Material 3) dengan geser-tutup
-- [ ] Transaksi berhasil: `HapticFeedback.mediumImpact()` + tanda centang singkat sebelum struk
+- [x] Detail pesanan / pembayaran memakai **modal bottom sheet** (Material 3) dengan geser-tutup — pembayaran di lebar <600 dp (`showCheckout`); dialog detail transaksi Laporan tidak diubah
+- [x] Transaksi berhasil: `HapticFeedback.mediumImpact()` + tanda centang singkat sebelum struk
 
 ### 4. Transisi layar
 - [ ] Pindah halaman pakai transisi Material 3 yang konsisten (shared axis / fade-through), satu aturan untuk semua rute

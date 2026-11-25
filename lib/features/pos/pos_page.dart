@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/theme/app_motion.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/amount_text.dart';
 import '../../core/widgets/pop_on_change.dart';
@@ -716,7 +717,7 @@ class _CartPanel extends ConsumerWidget {
   }
 
   void _checkout(BuildContext context, WidgetRef ref) {
-    showDialog(context: context, builder: (_) => const CheckoutDialog());
+    showCheckout(context);
   }
 
   /// Simpan keranjang sebagai pesanan terbuka (bayar nanti).
@@ -889,8 +890,23 @@ class _NoteDialogState extends State<_NoteDialog> {
   }
 }
 
+/// Buka pembayaran: bottom sheet di HP (geser-tutup), dialog di tablet.
+Future<void> showCheckout(BuildContext context) {
+  if (MediaQuery.of(context).size.width >= 600) {
+    return showDialog(context: context, builder: (_) => const CheckoutDialog());
+  }
+  return showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,
+    useSafeArea: true,
+    builder: (_) => const CheckoutDialog(asSheet: true),
+  );
+}
+
 class CheckoutDialog extends ConsumerStatefulWidget {
-  const CheckoutDialog({super.key});
+  /// true = isi untuk modal bottom sheet (HP), false = AlertDialog.
+  final bool asSheet;
+  const CheckoutDialog({super.key, this.asSheet = false});
 
   @override
   ConsumerState<CheckoutDialog> createState() => _CheckoutDialogState();
@@ -901,6 +917,7 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
   final _discCtrl = TextEditingController();
   String _method = 'cash';
   bool _saving = false;
+  bool _done = false;
 
   @override
   void dispose() {
@@ -932,11 +949,9 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
     final isWide = MediaQuery.of(context).size.width >= 600;
-    return AlertDialog(
-      title: const Text('Pembayaran'),
-      content: SizedBox(
-        width: isWide ? 400 : double.maxFinite,
-        child: SingleChildScrollView(
+    final body = _done
+        ? _doneView(context)
+        : SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -1024,26 +1039,71 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                 ),
             ],
           ),
+        );
+    final actions = _done
+        ? <Widget>[]
+        : [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Batal'),
+            ),
+            FilledButton(
+              onPressed: _saving || _total <= 0 ? null : _save,
+              child: _saving
+                  ? const SizedBox(
+                      width: 18,
+                      height: 18,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Text('Simpan & Cetak'),
+            ),
+          ];
+    if (widget.asSheet) {
+      return Padding(
+        padding: EdgeInsets.fromLTRB(
+          24,
+          16,
+          24,
+          16 + MediaQuery.of(context).viewInsets.bottom,
         ),
-      ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Batal'),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text('Pembayaran', style: textTheme.titleLarge),
+            const SizedBox(height: 12),
+            Flexible(child: body),
+            const SizedBox(height: 12),
+            Wrap(
+              alignment: WrapAlignment.end,
+              spacing: 8,
+              runSpacing: 8,
+              children: actions,
+            ),
+          ],
         ),
-        FilledButton(
-          onPressed: _saving || _total <= 0 ? null : _save,
-          child: _saving
-              ? const SizedBox(
-                  width: 18,
-                  height: 18,
-                  child: CircularProgressIndicator(strokeWidth: 2),
-                )
-              : const Text('Simpan & Cetak'),
-        ),
-      ],
+      );
+    }
+    return AlertDialog(
+      title: const Text('Pembayaran'),
+      content: SizedBox(width: isWide ? 400 : double.maxFinite, child: body),
+      actions: actions,
     );
   }
+
+  /// Tanda centang singkat setelah transaksi tersimpan.
+  Widget _doneView(BuildContext context) => Center(
+    child: TweenAnimationBuilder<double>(
+      tween: Tween(begin: 0, end: 1),
+      duration: AppMotion.of(context, AppMotion.normal),
+      curve: AppMotion.pop,
+      builder: (_, v, child) => Transform.scale(scale: v, child: child),
+      child: const Padding(
+        padding: EdgeInsets.symmetric(vertical: 24),
+        child: Icon(AppIcons.checkCircle, size: 72, color: AppColors.success),
+      ),
+    ),
+  );
 
   Widget _row(String label, int amount, TextTheme tt, {bool bold = false}) {
     return Padding(
@@ -1172,6 +1232,14 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
 
       notif.clear();
       ref.read(resumedOrderProvider.notifier).state = null;
+      if (mounted) {
+        HapticFeedback.mediumImpact();
+        final wait = AppMotion.of(context, AppMotion.slow);
+        if (wait > Duration.zero) {
+          setState(() => _done = true);
+          await Future<void>.delayed(wait);
+        }
+      }
       if (mounted) {
         Navigator.pop(context);
         ScaffoldMessenger.of(context).showSnackBar(
