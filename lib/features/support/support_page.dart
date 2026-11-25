@@ -67,7 +67,7 @@ WebViewController _newController(VoidCallback onLoaded, VoidCallback onError) {
         if ((e.response?.statusCode ?? 0) >= 400) onError();
       },
     ))
-    ..loadRequest(Uri.parse('$remoteBaseUrl/dukung.html'));
+    ..loadRequest(Uri.parse('$remoteBaseUrl/'));
 }
 
 /// Dukung Developer: halaman web; gagal muat/offline -> [SupportFallback].
