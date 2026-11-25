@@ -81,7 +81,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
           constraints: const BoxConstraints(maxWidth: 1040),
           child: ListView(
             controller: _scroll,
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.all(AppDataTable.gutter(context)),
             children: [
               FilterPanel(
                 summary: _filter.period.label,
@@ -175,7 +175,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                                 subtitle: 'Ubah atau reset filter',
                               ),
                         columns: [
-                          AppColumn(label: 'No.', minWidth: 80, primary: true, cell: (t) {
+                          AppColumn(label: 'No.', minWidth: 64, primary: true, cell: (t) {
                             final no = t.number == null ? '-' : '#${t.number}';
                             // BATAL tetap terlihat di kartu HP yang ciut.
                             return t.isVoid
@@ -191,7 +191,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                           }),
                           AppColumn(
                             label: 'Status',
-                            minWidth: 140,
+                            minWidth: 100,
                             cell: (t) => t.isVoid
                                 ? Column(
                                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -215,20 +215,20 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                             label: 'Tanggal',
                             primary: true,
                             flex: 2,
-                            minWidth: 150,
+                            minWidth: 140,
                             cell: (t) => Text(DateFormat('dd/MM/yyyy HH:mm').format(t.createdAt)),
                           ),
-                          AppColumn(label: 'Item', minWidth: 70, numeric: true, cell: (t) => Text('${t.items.length}')),
+                          AppColumn(label: 'Item', minWidth: 56, numeric: true, cell: (t) => Text('${t.items.length}')),
                           AppColumn(
                             label: 'Metode',
-                            minWidth: 100,
+                            minWidth: 84,
                             cell: (t) => Text(paymentLabel(t.paymentMethod)),
                           ),
                           AppColumn(
                             label: 'Total',
                             primary: true,
                             flex: 2,
-                            minWidth: 130,
+                            minWidth: 110,
                             numeric: true,
                             cell: (t) => AmountText(
                               amount: t.total,
@@ -238,7 +238,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                           AppColumn(
                             label: 'Laba',
                             flex: 2,
-                            minWidth: 120,
+                            minWidth: 96,
                             numeric: true,
                             cell: (t) => AmountText(
                               amount: t.profit,
@@ -249,7 +249,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                           ),
                           AppColumn(
                             label: '',
-                            minWidth: 64,
+                            minWidth: 56,
                             numeric: true,
                             cell: (t) => IconButton(
                               tooltip: 'Cetak ulang',

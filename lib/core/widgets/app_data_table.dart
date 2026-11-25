@@ -41,6 +41,12 @@ class AppDataTable<T> extends StatefulWidget {
   /// Lebar di bawah ini → mode kartu (HP).
   static const cardBreakpoint = 600.0;
 
+  /// Gutter horizontal halaman yang memuat tabel/kartu clay: >= 24 dp di layar
+  /// lebar agar highlight bayangan (-6,-6, blur 16 ≈ 22 dp) tidak terpotong
+  /// tepi viewport ListView.
+  static double gutter(BuildContext context) =>
+      MediaQuery.sizeOf(context).width >= cardBreakpoint ? 24 : 16;
+
   const AppDataTable({
     super.key,
     required this.columns,
