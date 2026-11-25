@@ -144,7 +144,8 @@ class _ProductGrid extends ConsumerWidget {
           child: isList
               ? ListView.builder(
                   controller: controller,
-                  padding: const EdgeInsets.all(16),
+                  // Bawah lega: kartu terakhir bisa di-scroll ke atas tombol melayang.
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, ScrollToTopButton.clearanceWithFab),
                   itemCount: products.length,
                   itemBuilder: (_, i) => ProductListRow(
                     product: products[i],
@@ -155,7 +156,7 @@ class _ProductGrid extends ConsumerWidget {
               : GridView.builder(
             controller: controller,
             // Klip default (konten tidak menimpa header); padding lega agar bayangan clay muat.
-            padding: const EdgeInsets.fromLTRB(16, 16, 24, 28),
+            padding: const EdgeInsets.fromLTRB(16, 16, 24, ScrollToTopButton.clearanceWithFab),
             gridDelegate: productGridDelegateFor(context),
             itemCount: products.length,
             itemBuilder: (_, i) => ProductCard(
