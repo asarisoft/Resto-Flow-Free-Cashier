@@ -149,6 +149,13 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 - **Lebih sempit**: gambar 220 dp di atas form; halaman bisa scroll saat keyboard muncul.
 - Logo kotak clay `peach` 84×84 radius 28. Judul "Halo, selamat datang!", subjudul "Masuk untuk mulai jualan hari ini".
 
+## Layout Registrasi (RegisterPage)
+
+- Memakai `HeroLayout` + `AppCard` seperti Login. Judul "Buat akun Owner".
+- Field: Nama pengguna, Password, Ulangi password (`PasswordField`); pesan error merah di bawah field.
+- Teks info (bodySmall, `textSecondary`): "Akun disimpan hanya di HP ini (offline). Catat password Anda — tidak bisa dipulihkan lewat internet. Gunakan Backup agar data aman."
+- Tombol `PrimaryButton` "Buat Akun". `AuthGate` memilih Register/Login.
+
 ## Prinsip
 
 - Light theme only (tanpa dark mode).

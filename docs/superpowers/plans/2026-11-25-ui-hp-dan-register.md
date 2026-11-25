@@ -45,5 +45,5 @@
 - [x] Commit `feat(auth): registrasi owner lokal, tanpa akun default`.
 
 ### Task 3: Docs
-- [ ] `docs/SPEC.md` (alur pertama kali: Register → Onboarding), `docs/DATABASE.md` (tidak ada seed user), `docs/DESIGN.md` (RegisterPage), graphify, centang plan.
-- [ ] Commit `docs: registrasi lokal & ui hp`.
+- [x] `docs/SPEC.md` (alur pertama kali: Register → Onboarding), `docs/DATABASE.md` (tidak ada seed user), `docs/DESIGN.md` (RegisterPage), graphify, centang plan.
+- [x] Commit `docs: registrasi lokal & ui hp`.

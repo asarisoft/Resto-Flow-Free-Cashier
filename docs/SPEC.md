@@ -83,8 +83,8 @@
 Akses dikontrol di level provider/guard — bukan hanya disembunyikan dari sidebar. Navigasi langsung juga ditolak.
 
 ### 2.3 Happy Path
-1. Install app → muncul halaman login dengan user default `admin` / `P@ssw0rd123`
-2. Pertama login → onboarding: isi nama resto, alamat, telp, footer struk, pilih ukuran kertas
+1. Install app → halaman Registrasi: buat akun Owner (nama pengguna + password), tersimpan lokal di HP
+2. Setelah registrasi (langsung login) → onboarding: isi nama resto, alamat, telp, footer struk, pilih ukuran kertas
 3. Tambah produk (nama, harga jual, HPP, kategori, foto, ready toggle)
 4. Buka Kasir → tambah produk ke keranjang → "Bayar" → pilih metode → simpan → print struk
 5. Buka Laporan → lihat omzet hari ini / bulan
@@ -133,6 +133,7 @@ lib/
 ├── features/
 │   ├── auth/
 │   │   ├── login_page.dart     # pilih user + password
+│   │   ├── register_page.dart  # AuthGate + registrasi Owner pertama
 │   │   └── auth_controller.dart
 │   ├── onboarding/
 │   │   └── onboarding_page.dart
@@ -215,8 +216,12 @@ Ringkasan tabel: `Products`, `Transactions`, `TransactionItems`, `Users`, `Resto
 - Owner bawaan (`UsersDao.defaultPassword`): selama password belum diganti, masuk ke home memunculkan dialog
   "Ganti password bawaan" yang wajib diselesaikan (tanpa Batal, tidak bisa ditutup).
 
-### Seed Default
-- DB kosong → buat user `admin` / `P@ssw0rd123` / role `owner` / `active=true`
+### Registrasi Owner (install baru)
+- Tidak ada seed user. Router `/login` → `AuthGate`: belum ada user → `RegisterPage`, sudah ada → `LoginPage`
+- Field: Nama pengguna (3–20 huruf/angka/underscore), Password (min 8, `UsersDao.minPasswordLength`), Ulangi password
+- `UsersDao.createOwner`: validasi, salt + `PasswordHasher`, cek-ada-user + insert dalam 1 transaksi; gagal (`StateError`) bila sudah ada user
+- Sukses → langsung login sebagai Owner → onboarding
+- Install lama dengan akun `admin` default tetap jalan (`seedDefaultOwnerIfEmpty`/`defaultPassword` hanya untuk tes & deteksi akun lama)
 
 ---
 

@@ -94,7 +94,7 @@ Catatan (`note`) dicetak di struk (satu baris `- <catatan>` di bawah item) dan d
 | `active`       | BOOLEAN    | NOT NULL, default true      | false = tidak bisa login        |
 | `createdAt`    | DATETIME   | NOT NULL                    |                                 |
 
-Seed default: `admin` / `P@ssw0rd123` / `owner` / `active=true`.
+Tidak ada seed user. Owner pertama dibuat lewat halaman Registrasi (`UsersDao.createOwner`). Install lama yang sudah punya `admin` default tidak berubah.
 
 ### `RestoProfiles`
 
