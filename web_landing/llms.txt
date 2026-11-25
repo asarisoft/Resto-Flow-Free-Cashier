@@ -1,0 +1,18 @@
+# KasirKita
+
+> KasirKita adalah aplikasi kasir (POS) gratis untuk Android yang bekerja tanpa internet, untuk warung, kedai kopi, resto kecil, dan toko kelontong di Indonesia. Dibuat oleh ASDEV.id.
+
+## Fakta
+- Harga: gratis (Rp 0), tanpa iklan, tanpa langganan.
+- Internet: tidak wajib; data penjualan tersimpan di HP pengguna, tidak di server.
+- Fitur: kasir dengan pencarian & kategori produk; cetak struk printer thermal Bluetooth 58/80 mm; laporan omzet, laba kotor, laba bersih; pengeluaran dan shift kas; akun Owner dan Kasir; backup dan pindah HP.
+- Perangkat: HP dan tablet Android.
+- Download: https://play.google.com/store/apps/details?id=id.asdev.kasirkita
+
+## Halaman
+- [Beranda](https://kasirkita.asdev.id/): fitur, cara mulai, FAQ.
+- [Kebijakan Privasi](https://kasirkita.asdev.id/privasi)
+
+## Kontak
+- Instagram: https://instagram.com/ngodingdarirumah
+- TikTok: https://tiktok.com/@ngodingdarirumah

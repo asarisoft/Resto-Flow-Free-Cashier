@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="theme-color" content="#FBF4EA">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<title>KasirKita: Aplikasi Kasir Gratis &amp; Offline untuk UMKM</title>
+<meta name="description" content="KasirKita adalah aplikasi kasir gratis dan offline untuk warung, cafe, dan resto kecil. Catat penjualan, cetak struk Bluetooth, dan lihat laporan untung harian.">
+<link rel="canonical" href="https://kasirkita.asdev.id/">
+<meta property="og:type" content="website"><meta property="og:title" content="KasirKita: Aplikasi Kasir Gratis &amp; Offline untuk UMKM"><meta property="og:description" content="Kasir gratis untuk warung &amp; cafe. Bisa offline, data aman di HP."><meta property="og:url" content="https://kasirkita.asdev.id/"><meta property="og:image" content="https://kasirkita.asdev.id/og.png"><meta property="og:locale" content="id_ID"><meta name="twitter:card" content="summary_large_image">
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[
+{"@type":"Organization","@id":"https://asdev.id/#org","name":"ASDEV.id","url":"https://asdev.id","sameAs":["https://instagram.com/ngodingdarirumah","https://tiktok.com/@ngodingdarirumah"]},
+{"@type":"SoftwareApplication","@id":"https://kasirkita.asdev.id/#app","name":"KasirKita","description":"Aplikasi kasir (POS) gratis dan offline untuk UMKM: warung, cafe, resto kecil, dan toko kelontong.","applicationCategory":"BusinessApplication","operatingSystem":"Android","inLanguage":"id","offers":{"@type":"Offer","price":"0","priceCurrency":"IDR"},"publisher":{"@id":"https://asdev.id/#org"},"downloadUrl":"https://play.google.com/store/apps/details?id=id.asdev.kasirkita","featureList":["Kasir dengan pencarian dan kategori produk","Cetak struk printer thermal Bluetooth 58 mm dan 80 mm","Laporan omzet, laba kotor, laba bersih","Pencatatan pengeluaran dan shift kas","Akun Owner dan Kasir","Backup dan pindah HP","Bekerja tanpa internet"]},
+{"@type":"HowTo","name":"Cara mulai pakai KasirKita","step":[{"@type":"HowToStep","name":"Install gratis","text":"Unduh KasirKita dari Google Play."},{"@type":"HowToStep","name":"Buat akun Owner","text":"Isi nama pengguna, password, dan profil toko. Akun tersimpan di HP."},{"@type":"HowToStep","name":"Isi menu dan mulai jualan","text":"Tambah produk dan kategori, lalu catat penjualan pertama."}]},
+{"@type":"FAQPage","mainEntity":[
+{"@type":"Question","name":"Apakah KasirKita benar gratis?","acceptedAnswer":{"@type":"Answer","text":"Ya. Semua fitur KasirKita bisa dipakai tanpa biaya dan tanpa iklan."}},
+{"@type":"Question","name":"Apakah KasirKita perlu internet?","acceptedAnswer":{"@type":"Answer","text":"Tidak untuk jualan. Internet hanya dipakai untuk cek versi terbaru dan membuka halaman Dukung Developer."}},
+{"@type":"Question","name":"Di mana data KasirKita disimpan?","acceptedAnswer":{"@type":"Answer","text":"Di HP pengguna sendiri. Data penjualan tidak disimpan di server."}},
+{"@type":"Question","name":"Bagaimana cara pindah HP di KasirKita?","acceptedAnswer":{"@type":"Answer","text":"Buat backup di HP lama, salin filenya, lalu pilih Pulihkan dari Backup saat pertama membuka app di HP baru."}},
+{"@type":"Question","name":"Printer apa yang didukung KasirKita?","acceptedAnswer":{"@type":"Answer","text":"Printer thermal Bluetooth ukuran kertas 58 mm atau 80 mm."}},
+{"@type":"Question","name":"Bisa request fitur KasirKita?","acceptedAnswer":{"@type":"Answer","text":"Bisa. Kirim pesan ke Instagram @ngodingdarirumah."}}]}
+]}</script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Work+Sans:wght@400;500;600&display=swap">
+<style>
+/* Layout: satu kolom lebar 1120, seksi bergantian warna clay; hero 2 kolom (teks | HP), menumpuk di HP. */
+:root{
+  --bg:#FBF4EA; --surface:#FFFFFF; --inset:#F4E9DA; --fg:#2A211B; --sub:#5E5349;
+  --peach:#FFD9C7; --mint:#CFF1DE; --butter:#FFE9B0; --lilac:#E6D5FB; --sky:#D6E9FB;
+  --accent:#C2410C; --accent-l:#E8622A; --ink:#2A211B; --on-ink:#FBF4EA;
+  --sh:rgba(140,106,74,.28); --hi:rgba(255,255,255,.85);
+  --display:"Outfit",system-ui,sans-serif; --body:"Work Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--bg:#1E1914;--surface:#2A231D;--inset:#352C24;--fg:#F3EADF;--sub:#CBBFB2;--sh:rgba(0,0,0,.45);--hi:rgba(255,255,255,.04);--peach:#4A3026;--mint:#22382C;--butter:#3F3520;--lilac:#342A45;--sky:#22303D;--accent:#FF8A57;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#1E1914;--surface:#2A231D;--inset:#352C24;--fg:#F3EADF;--sub:#CBBFB2;--sh:rgba(0,0,0,.45);--hi:rgba(255,255,255,.04);--peach:#4A3026;--mint:#22382C;--butter:#3F3520;--lilac:#342A45;--sky:#22303D;--accent:#FF8A57;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}
+img{max-width:100%}
+body{background:var(--bg);color:var(--fg);font:16px/1.6 var(--body)}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--display);line-height:1.1;margin:0;text-wrap:balance}
+h2{font-size:clamp(1.7rem,4vw,2.5rem);font-weight:800}
+.eyebrow{font:600 .78rem var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.clay{background:var(--surface);border-radius:28px;box-shadow:10px 14px 28px var(--sh),-6px -6px 14px var(--hi),inset 2px 2px 0 var(--hi)}
+.btn{display:inline-flex;align-items:center;gap:10px;height:56px;padding:0 24px;border-radius:28px;background:linear-gradient(180deg,var(--accent-l),#C2410C);color:#fff;font:700 1rem var(--display);text-decoration:none;box-shadow:0 10px 20px rgba(194,65,12,.32),inset 0 2px 0 rgba(255,255,255,.25)}
+.btn:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+.btn svg{width:22px;height:22px}
+.btn.ghost{background:var(--surface);color:var(--fg);box-shadow:6px 8px 16px var(--sh),-4px -4px 10px var(--hi)}
+/* nav */
+nav{display:flex;align-items:center;justify-content:space-between;padding-block:18px}
+.brand{display:flex;align-items:center;gap:10px;font:700 1.25rem var(--display);color:var(--fg);text-decoration:none}
+.brand img{width:40px;height:40px;border-radius:12px}
+nav .links{display:flex;gap:22px;align-items:center}
+nav .links a{color:var(--sub);text-decoration:none;font-weight:500}
+nav .links a.btn{color:#fff;height:44px;padding:0 18px}
+@media (max-width:720px){nav .links a:not(.btn){display:none}}
+/* hero */
+.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center;padding-block:24px 64px}
+.hero h1{font-size:clamp(2.4rem,6vw,4.2rem);font-weight:800;letter-spacing:-.01em}
+.hero h1 em{font-style:normal;color:var(--accent)}
+.hero p.sub{font-size:1.15rem;color:var(--sub);margin:18px 0 26px;max-width:44ch}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.trust{display:flex;gap:8px;flex-wrap:wrap;margin-top:22px}
+.trust span{background:var(--inset);border-radius:999px;padding:6px 12px;font:600 .82rem var(--body);color:var(--sub)}
+.stage{position:relative;aspect-ratio:1/1;border-radius:36px;background:var(--lilac) url(img/login_hero.webp) 78% 100%/auto 88% no-repeat;box-shadow:inset 6px 6px 16px var(--hi),inset -8px -10px 20px rgba(120,90,160,.18)}
+.phone{position:absolute;width:42%;aspect-ratio:1080/2400;border-radius:30px;background:#1d1714;padding:7px;box-shadow:0 22px 40px rgba(40,25,15,.35)}
+.phone img{width:100%;height:100%;object-fit:cover;border-radius:24px;display:block}
+.stage .phone{left:-5%;bottom:-8%;width:34%;transform:rotate(-6deg)}
+.float{position:absolute;border-radius:18px;padding:10px 14px;font:600 .85rem var(--display);color:var(--ink);background:#fff;box-shadow:0 10px 22px rgba(60,40,20,.2);white-space:nowrap}
+.float b{display:block;font-size:1.1rem}
+.float.f1{right:-3%;top:8%}.float.f2{right:-3%;bottom:6%}
+.float .up{color:#15803D}
+@media (max-width:860px){.hero{grid-template-columns:1fr}.stage{max-width:520px;width:100%;margin:0 auto}}
+/* sections */
+section{padding-block:72px}
+.head{max-width:640px;margin-bottom:36px;display:grid;gap:10px}
+.head p{color:var(--sub);margin:0}
+.pain{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.pain .clay{padding:26px;display:grid;gap:10px}
+.pain .x{font:600 .95rem var(--body);color:var(--sub);text-decoration:line-through;text-decoration-color:var(--accent)}
+.pain h3{font-size:1.25rem}
+.pain p{margin:0;color:var(--sub)}
+@media (max-width:860px){.pain{grid-template-columns:1fr}}
+.feats{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.feat{border-radius:28px;padding:24px;display:grid;gap:8px;align-content:start;box-shadow:8px 12px 24px var(--sh),-5px -5px 12px var(--hi),inset 2px 2px 0 var(--hi)}
+.feat .ic{width:48px;height:48px;border-radius:16px;background:var(--surface);display:grid;place-items:center;box-shadow:inset 2px 2px 4px var(--hi),3px 4px 8px var(--sh)}
+.feat .ic svg{width:24px;height:24px;stroke:var(--accent)}
+.feat h3{font-size:1.15rem;margin-top:6px}
+.feat p{margin:0;color:var(--sub);font-size:.95rem}
+@media (max-width:860px){.feats{grid-template-columns:1fr 1fr}}
+@media (max-width:540px){.feats{grid-template-columns:1fr}}
+.show{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:end}
+.show figure{margin:0;display:grid;gap:14px;justify-items:center}
+.show .phone{position:relative;width:min(220px,100%)}
+.show figcaption{font:600 1rem var(--display);text-align:center}
+@media (max-width:720px){.show{grid-template-columns:1fr}}
+.tablet{display:grid;grid-template-columns:.8fr 1.2fr;gap:36px;align-items:center}
+.tab{border-radius:22px;background:#1d1714;padding:9px;box-shadow:0 24px 44px rgba(40,25,15,.3)}
+.tab img{width:100%;display:block;border-radius:15px}
+.tabs{position:relative}
+.tabs .tab+.tab{position:absolute;width:62%;right:-3%;bottom:-14%}
+@media (max-width:860px){.tablet{grid-template-columns:1fr}.tabs{margin-bottom:60px}}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;counter-reset:s}
+.step{padding:26px;display:grid;gap:8px}
+.step .n{width:44px;height:44px;border-radius:50%;background:var(--accent);color:#fff;display:grid;place-items:center;font:800 1.2rem var(--display);box-shadow:0 6px 12px rgba(194,65,12,.3)}
+.step p{margin:0;color:var(--sub)}
+@media (max-width:860px){.steps{grid-template-columns:1fr}}
+.faq{display:grid;gap:12px;max-width:780px}
+details{padding:18px 22px}
+summary{cursor:pointer;font:600 1.05rem var(--display);list-style:none;display:flex;justify-content:space-between;gap:12px}
+summary::after{content:"+";color:var(--accent);font-size:1.4rem;line-height:1}
+details[open] summary::after{content:"−"}
+details p{margin:10px 0 0;color:var(--sub)}
+.final{background:var(--ink);color:var(--on-ink);border-radius:36px;padding:48px clamp(20px,5vw,56px);display:grid;grid-template-columns:1.3fr .7fr;gap:24px;align-items:center;position:relative;overflow:hidden}
+.final h2{color:#FBF4EA}.final p{color:#D8CCBE;margin:12px 0 24px}
+.final img{width:100%;max-width:260px;justify-self:end;border-radius:24px}
+@media (max-width:720px){.final{grid-template-columns:1fr}.final img{justify-self:start;max-width:160px}}
+footer{padding-block:40px;color:var(--sub);font-size:.92rem}
+footer .row{display:flex;flex-wrap:wrap;gap:16px 28px;justify-content:space-between;align-items:center}
+footer a{color:var(--sub)}
+footer .links{display:flex;gap:18px;flex-wrap:wrap}
+.band{background:var(--inset)}
+dialog#soon{border:0;padding:0;border-radius:28px;background:var(--surface);color:var(--fg);max-width:min(440px,calc(100vw - 32px));box-shadow:0 30px 60px rgba(30,20,10,.35)}
+dialog#soon::backdrop{background:rgba(42,33,27,.55);backdrop-filter:blur(3px)}
+.soon-in{padding:32px 24px 24px;display:grid;gap:12px;justify-items:center;text-align:center;position:relative}
+.soon-in img{border-radius:16px}
+.soon-in h2{font-size:1.4rem}
+.soon-in p{margin:0;color:var(--sub)}
+.soon-act{display:grid;gap:10px;width:100%;margin-top:8px}
+.soon-act .btn{justify-content:center;height:50px}
+.soon-x{position:absolute;top:10px;right:12px;width:40px;height:40px;border:0;border-radius:50%;background:var(--inset);color:var(--fg);font-size:1.4rem;cursor:pointer}
+.tldr{padding:28px;display:grid;gap:12px}
+.tldr p{margin:0;max-width:70ch}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:6px 0 0}
+.facts div{background:var(--inset);border-radius:16px;padding:10px 14px}
+.facts dt{font:600 .75rem var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
+.facts dd{margin:2px 0 0;font:700 1rem var(--display)}
+.featwrap{display:grid;grid-template-columns:1.4fr .6fr;gap:32px;align-items:start}
+.feats{grid-template-columns:repeat(2,1fr)}
+.feat{cursor:pointer;transition:transform .25s,box-shadow .25s;outline:none}
+.feat:hover{transform:translateY(-3px)}
+.feat.on{box-shadow:0 0 0 3px var(--accent),8px 12px 24px var(--sh)}
+.feat:focus-visible{box-shadow:0 0 0 3px var(--accent)}
+.preview{position:sticky;top:90px;display:grid;justify-items:center;gap:12px}
+.preview .phone,.story-phone .phone{position:relative;width:min(240px,100%)}
+.phone img{transition:opacity .3s}
+.hint{margin:0;color:var(--sub);font-size:.85rem;text-align:center}
+@media (max-width:860px){.featwrap{grid-template-columns:1fr}.preview{position:static;order:-1}.preview .phone{width:180px}}
+@media (max-width:540px){.feats{grid-template-columns:1fr}}
+.story{display:grid;grid-template-columns:1fr 1fr;gap:40px;align-items:center;min-height:70vh}
+.beats{list-style:none;padding:0;margin:0;display:grid;gap:14px;counter-reset:b}
+.beat{counter-increment:b;padding:18px 20px 18px 64px;border-radius:22px;position:relative;cursor:pointer;color:var(--sub);transition:background .3s,color .3s}
+.beat::before{content:counter(b);position:absolute;left:18px;top:18px;width:32px;height:32px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font:800 1rem var(--display);color:var(--accent)}
+.beat b{display:block;font:700 1.2rem var(--display);color:var(--fg)}
+.beat.on{background:var(--surface);color:var(--fg);box-shadow:8px 12px 24px var(--sh)}
+.beat.on::before{background:var(--accent);color:#fff}
+.story-phone{display:grid;justify-items:center}
+@media (max-width:860px){.story{grid-template-columns:1fr}.story-phone{order:-1}.story-phone .phone{width:180px}}
+@media (prefers-reduced-motion:no-preference){.stage .phone{transition:transform .6s cubic-bezier(.2,.8,.2,1)}.stage:hover .phone{transform:rotate(-3deg) translateY(-6px)}}
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <nav>
+    <a class="brand" href="#top"><img loading="lazy" decoding="async" src="img/app_logo.webp" alt="">KasirKita</a>
+    <div class="links"><a href="#fitur">Fitur</a><a href="#faq">FAQ</a><a class="btn" href="#unduh">Unduh gratis</a></div>
+  </nav>
+
+
+<header class="hero" id="top" role="banner">
+    <div>
+      <span class="eyebrow">Aplikasi kasir untuk UMKM</span>
+      <h1 style="margin-top:12px">Kasir <em>gratis</em> untuk warung &amp; cafe</h1>
+      <p class="sub">Catat penjualan, cetak struk, dan lihat untung harian. Tetap jalan tanpa internet, data aman di HP Anda.</p>
+      <div class="cta">
+        <a class="btn js-play" href="https://play.google.com/store/apps/details?id=id.asdev.kasirkita" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 2.5v19l10-9.5L4 2.5zm11.4 8.1L6.6 2.2l11.2 6.4-2.4 2zm0 2.8 2.4 2-11.2 6.4 8.8-8.4zm3.6-3.4 2.6 1.5c.6.4.6 1.2 0 1.6L19 14.5l-2.7-2.5 2.7-2.6z"/></svg>Download di Google Play</a>
+        <a class="btn ghost" href="#fitur">Lihat fitur</a>
+      </div>
+      <div class="trust"><span>100% gratis</span><span>Tanpa iklan</span><span>Bisa offline</span><span>HP &amp; tablet</span></div>
+    </div>
+    <div class="stage" aria-hidden="true">
+      <div class="float f1" data-speed="-40">Omzet bulan ini<b class="count" data-to="37487650">Rp 37.487.650</b></div>
+      <div class="float f2" data-speed="30">Laba bersih <span class="up">▲</span><b class="count" data-to="11495650">Rp 11.495.650</b></div>
+      <div class="phone" data-speed="-25"><img src="img/p4.jpg" alt="Laporan omzet KasirKita" fetchpriority="high"></div>
+    </div>
+  </header>
+</div>
+
+<section class="band" id="apa-itu" style="padding-block:40px">
+  <div class="wrap">
+    <div class="clay tldr">
+      <h2 style="font-size:1.4rem">Apa itu KasirKita?</h2>
+      <p><strong>KasirKita adalah aplikasi kasir (POS) gratis untuk Android yang bekerja tanpa internet.</strong> Cocok untuk warung, kedai kopi, resto kecil, dan toko kelontong. Dibuat oleh ASDEV.id.</p>
+      <dl class="facts">
+        <div><dt>Harga</dt><dd>Rp 0, tanpa iklan</dd></div>
+        <div><dt>Internet</dt><dd>Tidak wajib</dd></div>
+        <div><dt>Data</dt><dd>Tersimpan di HP</dd></div>
+        <div><dt>Printer</dt><dd>Thermal Bluetooth 58/80 mm</dd></div>
+        <div><dt>Perangkat</dt><dd>HP &amp; tablet Android</dd></div>
+      </dl>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">Kenapa KasirKita</span><h2>Jualan jadi rapi tanpa ribet</h2></div>
+    <div class="pain">
+      <div class="clay"><span class="x">Catat di buku, sering selisih</span><h3>Semua transaksi tercatat otomatis</h3><p>Pilih menu, bayar, struk keluar. Rekap harian sudah jadi.</p></div>
+      <div class="clay"><span class="x">Aplikasi kasir bayar bulanan</span><h3>Gratis, tanpa langganan</h3><p>Semua fitur bisa dipakai tanpa biaya bulanan.</p></div>
+      <div class="clay"><span class="x">Internet mati, kasir berhenti</span><h3>Tetap jalan tanpa internet</h3><p>Data disimpan di HP. Sinyal hilang, jualan tetap lanjut.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="fitur">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">Fitur</span><h2>Semua yang dibutuhkan kasir harian</h2><p>Dibuat untuk warung, kedai kopi, resto kecil, dan toko kelontong.</p></div>
+    <div class="featwrap"><div class="feats" role="tablist" aria-label="Fitur">
+      <div class="feat on" data-img="img/p1.jpg" style="background:var(--peach)"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg></div><h3>Kasir cepat</h3><p>Cari produk, filter kategori, tambah jumlah dengan tombol + −.</p></div>
+      <div class="feat" data-img="img/p3.jpg" style="background:var(--butter)"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M6 9V3h12v6"/><rect x="3" y="9" width="18" height="8" rx="2"/><path d="M7 14h10v7H7z"/></svg></div><h3>Struk Bluetooth</h3><p>Cetak ke printer thermal 58 mm atau 80 mm, lengkap dengan logo toko.</p></div>
+      <div class="feat" data-img="img/p4.jpg" style="background:var(--mint)"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M4 20V10M10 20V4M16 20v-7M22 20H2"/></svg></div><h3>Laporan untung</h3><p>Omzet, laba kotor, laba bersih, dan grafik harian atau bulanan.</p></div>
+      <div class="feat" data-img="img/p5.jpg" style="background:var(--sky)"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M8 8h8M8 12h8M8 16h5"/></svg></div><h3>Pengeluaran &amp; shift</h3><p>Catat belanja bahan, buka dan tutup shift dengan hitungan kas.</p></div>
+      <div class="feat" data-img="img/p2.jpg" style="background:var(--lilac)"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20c.8-3.5 3.4-5.5 6.5-5.5s5.7 2 6.5 5.5"/><circle cx="17.5" cy="9" r="2.5"/><path d="M17 14.5c2.4.2 4 1.8 4.5 4.5"/></svg></div><h3>Owner &amp; Kasir</h3><p>Tambah akun kasir. Laporan dan pengaturan hanya untuk Owner.</p></div>
+      <div class="feat" data-img="img/p6.jpg" style="background:var(--peach)"><div class="ic"><svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><path d="M12 3 4 6v6c0 4.5 3.4 8 8 9 4.6-1 8-4.5 8-9V6l-8-3z"/><path d="m9 12 2 2 4-4"/></svg></div><h3>Backup &amp; pindah HP</h3><p>Simpan backup ke file, lalu pulihkan di HP baru dalam beberapa langkah.</p></div>
+    </div>
+    <div class="preview"><div class="phone"><img id="featImg" src="img/p1.jpg" alt="Tampilan fitur terpilih"></div><p class="hint">Klik fitur untuk melihat tampilannya</p></div></div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="story" id="story">
+      <div class="story-text">
+        <div class="head" style="margin-bottom:24px"><span class="eyebrow">Lihat langsung</span><h2>Satu transaksi, 3 langkah</h2></div>
+        <ol class="beats">
+          <li class="beat on" data-img="img/p1.jpg"><b>Pilih menu</b><span>Cari produk atau pilih dari kategori.</span></li>
+          <li class="beat" data-img="img/p2.jpg"><b>Bayar</b><span>Atur jumlah, lalu bayar tunai atau non-tunai.</span></li>
+          <li class="beat" data-img="img/p3.jpg"><b>Cetak struk</b><span>Struk keluar dari printer Bluetooth, transaksi masuk laporan.</span></li>
+        </ol>
+      </div>
+      <div class="story-phone"><div class="phone"><img id="storyImg" src="img/p1.jpg" alt="Langkah transaksi"></div></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap tablet">
+    <div class="head" style="margin:0"><span class="eyebrow">Tablet</span><h2>Layar lega untuk meja kasir</h2><p>Di tablet, menu dan rincian pesanan tampil berdampingan. Cocok ditaruh di meja kasir cafe atau resto.</p></div>
+    <div class="tabs">
+      <div class="tab"><img loading="lazy" decoding="async" src="img/t1.jpg" alt="Halaman kasir di tablet"></div>
+      <div class="tab" id="tab2"><img loading="lazy" decoding="async" src="img/t3.jpg" alt="Laporan di tablet"></div>
+    </div>
+  </div>
+</section>
+
+<section class="band">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">Mulai dalam 3 langkah</span><h2>Siap jualan hari ini</h2></div>
+    <div class="steps">
+      <div class="clay step"><span class="n">1</span><h3>Install gratis</h3><p>Unduh KasirKita dari Google Play.</p></div>
+      <div class="clay step"><span class="n">2</span><h3>Buat akun Owner</h3><p>Isi nama pengguna, password, dan profil toko. Akun tersimpan di HP.</p></div>
+      <div class="clay step"><span class="n">3</span><h3>Isi menu, mulai jualan</h3><p>Tambah produk dan kategori, lalu catat penjualan pertama.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <div class="head"><span class="eyebrow">FAQ</span><h2>Pertanyaan yang sering muncul</h2></div>
+    <div class="faq">
+      <details class="clay" open><summary>Apakah KasirKita benar gratis?</summary><p>Ya. Semua fitur bisa dipakai tanpa biaya dan tanpa iklan.</p></details>
+      <details class="clay"><summary>Apakah KasirKita perlu internet?</summary><p>Tidak untuk jualan. Internet hanya dipakai untuk cek versi terbaru dan membuka halaman Dukung Developer.</p></details>
+      <details class="clay"><summary>Di mana data KasirKita disimpan?</summary><p>Di HP Anda sendiri. Kami tidak menyimpan data penjualan Anda di server.</p></details>
+      <details class="clay"><summary>Bagaimana cara pindah HP?</summary><p>Buat backup di HP lama, salin filenya, lalu pilih "Pulihkan dari Backup" saat pertama membuka app di HP baru.</p></details>
+      <details class="clay"><summary>Printer apa yang bisa dipakai?</summary><p>Printer thermal Bluetooth ukuran kertas 58 mm atau 80 mm.</p></details>
+      <details class="clay"><summary>Bisa request fitur?</summary><p>Bisa. Kirim pesan ke Instagram @ngodingdarirumah.</p></details>
+    </div>
+  </div>
+</section>
+
+<section id="unduh" style="padding-top:24px">
+  <div class="wrap">
+    <div class="final">
+      <div><h2>Mulai catat penjualan hari ini</h2><p>Gratis, bisa offline, dan data tetap di HP Anda.</p>
+        <a class="btn js-play" href="https://play.google.com/store/apps/details?id=id.asdev.kasirkita" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M4 2.5v19l10-9.5L4 2.5zm11.4 8.1L6.6 2.2l11.2 6.4-2.4 2zm0 2.8 2.4 2-11.2 6.4 8.8-8.4zm3.6-3.4 2.6 1.5c.6.4.6 1.2 0 1.6L19 14.5l-2.7-2.5 2.7-2.6z"/></svg>Download di Google Play</a></div>
+      <img loading="lazy" decoding="async" src="img/app_logo.webp" alt="Logo KasirKita">
+    </div>
+  </div>
+</section>
+
+
+<footer>
+  <div class="wrap row">
+    <div>© 2026 KasirKita oleh <a href="https://asdev.id">ASDEV.id</a></div>
+    <div class="links"><a href="/privasi">Kebijakan Privasi</a><a href="https://instagram.com/ngodingdarirumah">Instagram</a><a href="https://tiktok.com/@ngodingdarirumah">TikTok</a><a href="https://kasirkita.asdeveloper-id.workers.dev/">Dukung Developer</a></div>
+  </div>
+</footer>
+
+<dialog id="soon" aria-labelledby="soonTitle">
+  <div class="soon-in">
+    <img src="img/app_logo.webp" alt="" width="56" height="56">
+    <h2 id="soonTitle">Sedang ditinjau Google Play</h2>
+    <p>KasirKita sedang dalam proses review. Follow kami untuk kabar rilis, atau kirim DM supaya dikabari saat sudah bisa diunduh.</p>
+    <div class="soon-act">
+      <a class="btn" href="https://ig.me/m/ngodingdarirumah" rel="noopener">DM Instagram</a>
+      <a class="btn ghost" href="https://instagram.com/ngodingdarirumah" rel="noopener">Follow @ngodingdarirumah</a>
+      <a class="btn ghost" href="https://tiktok.com/@ngodingdarirumah" rel="noopener">TikTok</a>
+    </div>
+    <button type="button" class="soon-x" id="soonClose" aria-label="Tutup">×</button>
+  </div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/lenis@1.1.13/dist/lenis.min.js"></script>
+<script>
+(function(){
+  // Ganti ke true setelah app tayang di Google Play.
+  var PLAY_LIVE=false;
+  var dlg=document.getElementById('soon');
+  if(!PLAY_LIVE&&dlg&&dlg.showModal){
+    document.querySelectorAll('.js-play').forEach(function(a){ a.addEventListener('click',function(e){ e.preventDefault(); dlg.showModal(); }); });
+    document.getElementById('soonClose').addEventListener('click',function(){ dlg.close(); });
+    dlg.addEventListener('click',function(e){ if(e.target===dlg) dlg.close(); });
+  }
+  // Ganti gambar HP dengan fade singkat.
+  function swap(img,src){ if(!img||img.getAttribute('src')===src) return; img.style.opacity=0; setTimeout(function(){img.src=src; img.style.opacity=1;},180); }
+
+  // Fitur: klik/enter kartu -> ganti preview.
+  var feats=document.querySelectorAll('.feat'), fImg=document.getElementById('featImg');
+  feats.forEach(function(f){
+    f.tabIndex=0; f.setAttribute('role','tab');
+    function pick(){ feats.forEach(function(x){x.classList.remove('on'); x.setAttribute('aria-selected','false');}); f.classList.add('on'); f.setAttribute('aria-selected','true'); swap(fImg,f.dataset.img); }
+    f.addEventListener('click',pick);
+    f.addEventListener('keydown',function(e){ if(e.key==='Enter'||e.key===' '){e.preventDefault();pick();} });
+  });
+
+  // Cerita transaksi: klik langkah -> ganti HP.
+  var beats=document.querySelectorAll('.beat'), sImg=document.getElementById('storyImg');
+  function setBeat(i){ beats.forEach(function(b,j){b.classList.toggle('on',i===j);}); swap(sImg,beats[i].dataset.img); }
+  beats.forEach(function(b,i){ b.addEventListener('click',function(){setBeat(i);}); });
+
+  var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(reduce||!window.gsap||!window.ScrollTrigger) return;
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Smooth scroll (Lenis) + tautan anchor meluncur.
+  if(window.Lenis){
+    var lenis=new Lenis({lerp:0.1});
+    lenis.on('scroll',ScrollTrigger.update);
+    gsap.ticker.add(function(t){lenis.raf(t*1000);}); gsap.ticker.lagSmoothing(0);
+    document.querySelectorAll('a[href^="#"]').forEach(function(a){ a.addEventListener('click',function(e){ var t=document.querySelector(a.getAttribute('href')); if(t){e.preventDefault(); lenis.scrollTo(t,{offset:-20});} }); });
+  }
+
+  // Parallax hero.
+  document.querySelectorAll('[data-speed]').forEach(function(el){
+    gsap.to(el,{y:+el.dataset.speed,ease:'none',scrollTrigger:{trigger:'.hero',start:'top top',end:'bottom top',scrub:true}});
+  });
+
+  // Counter angka rupiah.
+  document.querySelectorAll('.count').forEach(function(el){
+    var o={v:0}, to=+el.dataset.to;
+    gsap.to(o,{v:to,duration:1.6,ease:'power2.out',delay:.3,onUpdate:function(){el.textContent='Rp '+Math.round(o.v).toLocaleString('id-ID');}});
+  });
+
+  // Reveal ringan (tetap terlihat, hanya geser naik).
+  gsap.utils.toArray('.pain .clay, .feat, .step, details, .final').forEach(function(el,i){
+    gsap.from(el,{y:28,duration:.7,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 92%'}});
+  });
+
+  // Langkah transaksi ikut scroll (desktop).
+  ScrollTrigger.matchMedia({'(min-width: 861px)':function(){
+    ScrollTrigger.create({trigger:'#story',start:'top 15%',end:'+=900',pin:true,scrub:true,onUpdate:function(s){ setBeat(Math.min(2,Math.floor(s.progress*3))); }});
+  }});
+
+  // Tablet kedua menggeser masuk.
+  gsap.from('#tab2',{x:80,rotate:4,ease:'none',scrollTrigger:{trigger:'.tabs',start:'top 85%',end:'center 45%',scrub:true}});
+})();
+</script>
+
+</body>
+</html>
