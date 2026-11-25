@@ -46,7 +46,10 @@ class ProductListRow extends StatelessWidget {
       child: DecoratedBox(
         decoration: ClayDecoration.box(radius: 16, compact: true).copyWith(
           border: cartQty > 0
-              ? Border.all(color: AppColors.primary, width: 2)
+              ? Border.all(
+                  color: AppColors.primary.withValues(alpha: 0.45),
+                  width: 1.5,
+                )
               : null,
         ),
         child: ConstrainedBox(
@@ -132,6 +135,7 @@ class ProductListRow extends StatelessWidget {
                   bottom: 0,
                   child: Center(
                     child: QtyStepper(
+                      compact: true,
                       value: cartQty,
                       onChanged: onQtyChanged!,
                       name: product.name,

@@ -24,6 +24,7 @@ import 'open_order_dialogs.dart';
 import 'pos_providers.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/qty_stepper.dart';
+import '../../core/widgets/clay_chip.dart';
 import '../../core/widgets/tap_area.dart';
 import '../products/product_card.dart';
 import '../products/product_list_row.dart';
@@ -221,21 +222,20 @@ class _PosPageState extends ConsumerState<PosPage> {
         _searchBar(12),
         // Horizontal Categories
         SizedBox(
-          height: 56,
-          child: ListView.builder(
+          height: 48,
+          child: ListView.separated(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             itemCount: categories.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 8),
             itemBuilder: (context, index) {
               final cat = categories[index];
-              final isSelected = cat == _selectedCategory;
-              return Padding(
-                padding: const EdgeInsets.only(right: 8.0),
-                child: _CategoryCard(
-                  label: cat,
-                  isSelected: isSelected,
-                  onTap: () => setState(() => _selectedCategory = cat),
-                ),
+              return ClayChip(
+                label: cat,
+                height: 40,
+                selected: cat == _selectedCategory,
+                selectedColor: AppColors.primary,
+                onTap: () => setState(() => _selectedCategory = cat),
               );
             },
           ),

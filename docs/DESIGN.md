@@ -84,16 +84,17 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | `AppImage`      | Wrapper `Image.file` + placeholder ikon              |
 | `ProductCard`   | Kartu produk SATU bentuk untuk POS & halaman Produk: foto penuh lebar (cover), nama 1 baris, harga + chip. Grid: `productGridDelegate` (maks 220 dp, rasio 0.8) |
 | `AppFormDialog` | Dialog form standar (lebar 560 dp, field berjarak 16, [Batal][Simpan] sebaris di bawah). SEMUA form tambah/ubah (produk, pengeluaran, pengguna, profil) memakai ini — tidak ada form halaman penuh |
-| `QtyStepper`    | Tombol − qty +, target sentuh ≥ 48 dp; `name` opsional → tooltip/label "Kurangi/Tambah <nama>". Dipakai keranjang + `ProductCard`/`ProductListRow` di POS (HP atau mode list) saat produk sudah di keranjang; "−" pada baris terakhir produk (qty 1 → hapus), "+" lewat `_add` (cek stok). Tablet grid tanpa stepper |
+| `QtyStepper`    | Tombol − qty +, target sentuh ≥ 48 dp; `compact` (kartu/baris produk) = satu kapsul clay "− 2 +" tampak 36 dp; `name` opsional → tooltip/label "Kurangi/Tambah <nama>". Dipakai keranjang + `ProductCard`/`ProductListRow` di POS (HP atau mode list) saat produk sudah di keranjang; "−" pada baris terakhir produk (qty 1 → hapus), "+" lewat `_add` (cek stok). Tablet grid tanpa stepper |
 | `TapArea`       | Ripple + Semantics tombol (pengganti `GestureDetector`) |
 | `ChoiceSegment` | Pilihan 1-dari-N (58/80 mm, Hari Ini/Bulan Ini): wadah `inset`, segmen terpilih = kotak oranye gradasi `primaryLight→primary` teks putih, tinggi ≥ 48 dp |
 | `BarChart`       | Grafik batang sederhana (tanpa dependency chart): label sumbu bawah, batang tertinggi ditandai aksen, tap/long-press → SnackBar tanggal + nominal, scroll horizontal |
 | `AppDataTable`  | Tabel standar: header, baris berpembatas, angka rata kanan, scroll horizontal di layar sempit, infinite scroll (25 baris pertama, batch berikutnya otomatis saat mendekati ujung, indikator "Memuat…"). Dipakai Pengeluaran, Transaksi, Pengguna, Riwayat Shift |
 | `FilterPanel`   | Kartu kontrol filter + "Reset filter" (muncul saat filter aktif). HP: lipat, header "Filter · <summary>" |
 | `PeriodFilterBar`| Chip clay kecil (radius 14, `compact`, tinggi ≥ 48 dp; terpilih = `textPrimary` + teks putih): Hari ini / Bulan ini / Bulan lalu / Semua / Pilih tanggal (rentang) |
+| `ClayChip`      | Chip clay (radius 14, `compact`), tinggi tampak bisa diatur, area sentuh ≥ 48 dp; terpilih = `selectedColor` + teks putih. Dipakai `PeriodFilterBar` & tab kategori POS di HP (tinggi 40, terpilih `primary`, jarak 8). Tablet: tab kategori garis bawah |
 | `SearchField`   | Kolom cari dengan ikon + tombol hapus               |
 | `ProductSearchBar` | `SearchField` "Cari produk" + tombol ikon grid/list (tooltip + Semantics, ≥ 48 dp). Dipakai Produk & POS |
-| `ProductListRow` | Baris produk mode list: foto 48 dp, nama, harga, `ReadyChip`; clay compact radius 16, tinggi ≥ 64 dp; parameter sama dengan `ProductCard` |
+| `ProductListRow` | Baris produk mode list: foto 48 dp, nama, harga, `ReadyChip`; clay compact radius 16, tinggi ≥ 64 dp; parameter sama dengan `ProductCard`; di keranjang: border tipis `primary` 45% 1,5 dp (bukan oranye tebal) |
 | `ForceUpdatePage` | Layar update wajib (`features/update/`): `AppCard` tengah (maks 420 dp) berisi `AppLogo`, judul "Update wajib", pesan, `PrimaryButton` "Update Sekarang"; tanpa tombol kembali (`PopScope`) |
 | `ReceiptPreview`| Preview nota monospace (teks sama dengan yang dicetak) di form profil |
 

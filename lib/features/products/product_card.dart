@@ -153,10 +153,7 @@ class ProductCard extends StatelessWidget {
           right: 0,
           bottom: 62,
           child: Center(
-            child: DecoratedBox(
-              decoration: ClayDecoration.box(radius: 28, compact: true),
-              child: QtyStepper(value: cartQty, onChanged: onQtyChanged!, name: product.name),
-            ),
+            child: QtyStepper(compact: true, value: cartQty, onChanged: onQtyChanged!, name: product.name),
           ),
         ),
       ],

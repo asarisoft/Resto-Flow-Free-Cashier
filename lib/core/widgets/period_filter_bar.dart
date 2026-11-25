@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import '../theme/app_colors.dart';
 import '../theme/app_icons.dart';
-import '../theme/app_typography.dart';
-import '../theme/clay.dart';
+import 'clay_chip.dart';
 import '../utils/period.dart';
 
 /// Pilihan periode: Hari ini / Bulan ini / Bulan lalu / Semua / rentang tanggal.
@@ -52,12 +50,12 @@ class PeriodFilterBar extends StatelessWidget {
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
         for (final p in _presets)
-          _PeriodChip(
+          ClayChip(
             label: PeriodSelection(p).label,
             selected: value.preset == p,
             onTap: () => onChanged(PeriodSelection(p)),
           ),
-        _PeriodChip(
+        ClayChip(
           icon: AppIcons.calendar,
           label: isCustom && r != null
               ? '${fmt.format(r.start)} – ${fmt.format(r.end)}'
@@ -66,68 +64,6 @@ class PeriodFilterBar extends StatelessWidget {
           onTap: () => _pickRange(context),
         ),
       ],
-    );
-  }
-}
-
-/// Chip clay kecil, tinggi >= 48 dp. Terpilih = gelap, teks putih.
-class _PeriodChip extends StatelessWidget {
-  final String label;
-  final IconData? icon;
-  final bool selected;
-  final VoidCallback onTap;
-
-  const _PeriodChip({required this.label, required this.selected, required this.onTap, this.icon});
-
-  @override
-  Widget build(BuildContext context) {
-    final fg = selected ? Colors.white : AppColors.textPrimary;
-    final radius = BorderRadius.circular(14);
-    return Semantics(
-      button: true,
-      selected: selected,
-      excludeSemantics: true,
-      label: label,
-      onTap: onTap,
-      child: DecoratedBox(
-        key: ValueKey('chip-$label'),
-        decoration: ClayDecoration.box(
-          color: selected ? AppColors.textPrimary : AppColors.surface,
-          radius: 14,
-          compact: true,
-        ),
-        child: Material(
-          type: MaterialType.transparency,
-          borderRadius: radius,
-          clipBehavior: Clip.antiAlias,
-          child: InkWell(
-            onTap: onTap,
-            borderRadius: radius,
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(minHeight: 48),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (icon != null) ...[
-                      Icon(icon, size: AppIcons.sm, color: fg),
-                      const SizedBox(width: 8),
-                    ],
-                    Text(
-                      label,
-                      style: AppTypography.textTheme.bodyMedium?.copyWith(
-                        color: fg,
-                        fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-      ),
     );
   }
 }
