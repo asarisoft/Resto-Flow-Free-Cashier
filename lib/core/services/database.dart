@@ -199,6 +199,9 @@ class AppDatabase extends _$AppDatabase {
   /// In-memory database for unit tests.
   AppDatabase.forTest() : super(NativeDatabase.memory());
 
+  /// Database di atas executor/koneksi tertentu (tes migrasi Drift).
+  AppDatabase.withExecutor(super.e);
+
   /// Database backed by a specific file (used by backup/restore & migration tests).
   AppDatabase.forFile(File file) : super(NativeDatabase.createInBackground(file));
 

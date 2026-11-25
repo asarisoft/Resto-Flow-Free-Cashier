@@ -28,3 +28,6 @@ Tanpa file ini, build release memakai debug signing (hanya untuk uji lokal).
   - `latest_version_code`: versionCode rilis terbaru.
   - `min_version_code`: versionCode minimal; app di bawahnya terkunci sampai update.
   - Naikkan `min_version_code` HANYA setelah versi baru live di Play Store.
+
+## 5. Checklist rilis
+- [ ] Ubah skema = `schemaVersion++` + blok `if (from < N)` + `dart run drift_dev schema dump lib/core/services/database.dart drift_schemas/` + `dart run drift_dev schema generate drift_schemas/ test/generated_migrations/` + `flutter test test/migration_test.dart` lulus.

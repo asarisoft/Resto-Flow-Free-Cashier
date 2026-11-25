@@ -132,10 +132,10 @@
 - [x] Tes: DB `user_version=99` → app tidak membuka, pesan muncul
 
 ### Task 4: Snapshot & tes migrasi Drift
-- [ ] `drift_dev schema dump` untuk v4 (dan rekonstruksi v1–v3 dari git kalau perlu)
-- [ ] `drift_dev schema generate` → tes migrasi tiap versi → v terbaru
-- [ ] Tes data: isi transaksi/produk di vN-1 → migrasi → nominal int & relasi utuh
-- [ ] Tambah ke checklist rilis: "ubah skema = schemaVersion++ + dump + tes"
+- [x] `drift_dev schema dump` untuk skema terbaru (= v1; riwayat v2–v4 sudah di-reset, tidak ada yang direkonstruksi) → `drift_schemas/drift_schema_v1.json`
+- [x] `drift_dev schema generate` → tes migrasi tiap versi → v terbaru
+- [x] Tes data: isi transaksi/produk di vN-1 → migrasi → nominal int & relasi utuh
+- [x] Tambah ke checklist rilis (`docs/RELEASE.md` §5): "ubah skema = schemaVersion++ + dump + tes"
 
 ### Task 5: Restore yang sadar versi
 - [ ] Manifest: `backupFormat`, `applicationId`, `appVersion` dari `package_info_plus`
