@@ -203,8 +203,18 @@ Counters ──(receipt number)──► Transactions.number
 
 ## Migrasi
 
-- **v1** = skema rilis pertama (semua tabel termasuk `Users`, `Expenses`, `Categories`). Riwayat v1–v4 masa dev dihapus karena belum pernah rilis.
-- Ubah skema: `schemaVersion++` + satu blok `if (from < N) { ... }` di `onUpgrade`. Jangan ubah blok lama.
-- Migrasi forward-only: jangan pernah turunkan `schemaVersion` atau drop data user.
-- Detail aturan & rencana: `docs/superpowers/plans/2026-11-19-migration-distribution.md` §2.
+### Aturan (berlaku selamanya)
+1. **Hanya maju, bertahap:** rilis yang ubah skema → `schemaVersion++` (`AppDatabase.currentSchemaVersion`) + satu blok `if (from < N) { ... }` di `onUpgrade`. Jangan ubah/hapus blok lama.
+2. **Aditif dulu:** tambah tabel/kolom (kolom baru nullable atau `withDefault`). Rename/hapus kolom → `TableMigration` Drift, bukan `DROP`.
+3. **Tidak ada migrasi destruktif.** Data lama dikonversi, bukan dibuang.
+4. **Satu transaksi:** `onUpgrade` atomik (jangan `COMMIT` manual).
+5. **Snapshot tiap versi:** `dart run drift_dev schema dump lib/core/services/database.dart drift_schemas/` lalu `dart run drift_dev schema generate drift_schemas/ test/generated_migrations/`. `test/migration_test.dart` otomatis menguji tiap versi lama → terbaru (skema valid + nominal int & relasi utuh).
+6. **Downgrade ditolak:** `beforeOpen` melempar `DatabaseTooNewException` bila `user_version` > `schemaVersion`; DB tidak diubah, UI tampil layar "Update aplikasi dulu".
+7. **Salinan sebelum migrasi:** `PreMigrationGuard` (dipanggil di `main()` sebelum DB dibuka) menyalin DB ke `<docs>/backups/pre_migration_v<old>.sqlite`; dihapus setelah 2 start sukses.
 
+### Riwayat versi skema
+| Versi | Perubahan |
+|-------|-----------|
+| v1 | Skema rilis pertama: semua tabel di atas (`Products`, `Transactions`, `TransactionItems`, `Users`, `RestoProfiles`, `Counters`, `Expenses`, `Categories`, `Shifts`, `ActivityLogs`). Riwayat v1–v4 masa dev di-reset sebelum rilis (2026-11-19). |
+
+Backup/restore lintas versi: lihat `docs/SPEC.md` §9. Rencana lengkap: `docs/superpowers/plans/2026-11-19-migration-distribution.md`.

@@ -154,9 +154,9 @@
 - [x] Tampilkan versi app + skema di Pengaturan
 
 ### Task 8: Dokumen & panduan
-- [ ] `docs/SPEC.md`: bagian Distribusi & Update (§4, §5 ringkas) + panduan user
-- [ ] `docs/DATABASE.md`: aturan migrasi (§2) + tabel riwayat versi skema (v1…v4, apa yang berubah)
-- [ ] Checklist rilis: versionCode naik, build release-signed, tes migrasi lulus, tes restore lintas versi lulus
+- [x] `docs/SPEC.md`: bagian Distribusi & Update (§4, §5 ringkas) + panduan user
+- [x] `docs/DATABASE.md`: aturan migrasi (§2) + tabel riwayat versi skema (v1…v4, apa yang berubah)
+- [x] Checklist rilis: versionCode naik, build release-signed, tes migrasi lulus, tes restore lintas versi lulus
 
 ---
 

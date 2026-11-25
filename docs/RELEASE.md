@@ -30,4 +30,9 @@ Tanpa file ini, build release memakai debug signing (hanya untuk uji lokal).
   - Naikkan `min_version_code` HANYA setelah versi baru live di Play Store.
 
 ## 5. Checklist rilis
-- [ ] Ubah skema = `schemaVersion++` + blok `if (from < N)` + `dart run drift_dev schema dump lib/core/services/database.dart drift_schemas/` + `dart run drift_dev schema generate drift_schemas/ test/generated_migrations/` + `flutter test test/migration_test.dart` lulus.
+- [ ] `versionCode` (angka setelah `+` di `pubspec.yaml`) naik.
+- [ ] Build release-signed (`key.properties` ada; cek `apksigner verify --print-certs` bukan debug).
+- [ ] Ubah skema = `schemaVersion++` + blok `if (from < N)` + `dart run drift_dev schema dump lib/core/services/database.dart drift_schemas/` + `dart run drift_dev schema generate drift_schemas/ test/generated_migrations/`.
+- [ ] `flutter test test/migration_test.dart` lulus (migrasi tiap versi lama → terbaru).
+- [ ] `flutter test test/features/backup` lulus (restore lintas versi: lebih lama OK, lebih baru ditolak, DB rusak rollback).
+- [ ] Install timpa versi sebelumnya di device: data utuh (manual).

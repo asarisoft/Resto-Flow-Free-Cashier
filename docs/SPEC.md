@@ -593,6 +593,23 @@ Ringkasan urutan:
 
 ## 14. Distribusi & Update
 
+### Fase APK manual
 - APK/AAB yang dibagikan **wajib release-signed** (`android/key.properties` + keystore di luar repo, lihat `docs/RELEASE.md`). Jangan bagikan APK debug.
 - `applicationId` `id.asdev.kasirkita` tidak boleh berubah. `versionCode` (angka setelah `+` di `pubspec.yaml`) harus naik tiap rilis.
-- Keystore sama dipakai selamanya (APK manual → Play Store lewat "Use existing app signing key"). Hilang key = user harus uninstall = data hilang.
+- Keystore sama dipakai selamanya. Hilang key = user harus uninstall = data hilang. Simpan keystore + password di 2 tempat aman.
+- `android:allowBackup="false"`: install ulang selalu mulai dari DB kosong (Register); backup resmi hanya lewat ZIP.
+- Pengaturan menampilkan versi app + skema DB untuk support.
+
+### Fase Play Store
+- `applicationId` sama. Play App Signing: pilih **"Use existing app signing key"** (upload keystore yang sama) → APK manual & Play punya signature sama, user bisa update tanpa uninstall.
+- `versionCode` di Play harus > versionCode APK manual terakhir. Setelah di Play, berhenti membagikan APK manual.
+
+### Keamanan data saat update
+- DB di disk dibuat versi lebih baru (`user_version` > skema app) → DB tidak dibuka, layar "Update aplikasi dulu".
+- Sebelum migrasi: salinan `backups/pre_migration_v<old>.sqlite`, dihapus setelah 2 start sukses.
+- Restore: tolak backup skema lebih baru, auto-backup `pre_restore_<tgl>.zip` (maks 3), rollback bila DB hasil restore gagal dibuka (lihat §9).
+
+### Panduan user (kirim bersama APK)
+- **Update:** langsung install APK baru, **jangan uninstall**.
+- **Muncul "App tidak terinstal / konflik paket":** Backup → **Simpan ke Download** → uninstall → install → Restore.
+- Pindah HP: Backup di HP lama → pindahkan file zip → Restore di HP baru.
