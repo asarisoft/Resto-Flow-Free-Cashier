@@ -46,7 +46,7 @@
   - Cari emulator yang menyala (`adb devices`), atau terima argumen `phone`/`tablet`/`all`.
   - Aktifkan status bar demo → `flutter drive --driver=test_driver/integration_test.dart --target=integration_test/screenshots_test.dart -d <id> --dart-define=SCREENSHOT_MODE=true` → matikan demo mode.
   - Akhiri dengan daftar file yang dihasilkan.
-- [ ] **C5. Verifikasi** jalankan sekali di emulator HP & tablet, cek semua PNG ada & ukuran benar; perbaiki layar yang gagal.
+- [x] **C5. Verifikasi** jalankan sekali di emulator HP & tablet, cek semua PNG ada & ukuran benar; perbaiki layar yang gagal.
 - [x] **C6. Sambungkan ke editor** salin hasil ke `store_assets/public/screenshots/android/...` sesuai urutan slide (opsional flag `--to-editor`).
 - [x] **C7. Docs** README singkat di header skrip, update `docs/SPEC.md` (bagian rilis) dan `~/.agents/workflows/rilis-playstore.md` langkah 5.
 - [ ] **C8. Commit** 1 commit per tugas besar (C1–C3, C4–C6, C7). Tanpa push sampai user minta.
