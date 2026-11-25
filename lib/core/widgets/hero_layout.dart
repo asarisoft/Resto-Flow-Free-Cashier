@@ -29,6 +29,9 @@ class HeroLayout extends StatelessWidget {
   /// bawah baris brand, baru isi scroll di dalam panel.
   final bool narrowCollapsible;
 
+  /// Lapisan warna transparan di atas gambar hero (mis. merah untuk peringatan).
+  final Color? heroTint;
+
   const HeroLayout({
     super.key,
     required this.wideLeft,
@@ -38,6 +41,7 @@ class HeroLayout extends StatelessWidget {
     this.narrowStyle = HeroNarrowStyle.sheet,
     this.narrowFooter,
     this.narrowCollapsible = false,
+    this.heroTint,
   });
 
   static const _wideBreakpoint = 900.0;
@@ -63,7 +67,7 @@ class HeroLayout extends StatelessWidget {
         borderRadius: BorderRadius.circular(32),
         child: Stack(
           children: [
-            const Positioned.fill(child: _HeroImage()),
+            Positioned.fill(child: _HeroImage(tint: heroTint)),
             Align(
               alignment: Alignment.centerLeft,
               child: SizedBox(
@@ -124,7 +128,7 @@ class HeroLayout extends StatelessWidget {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Positioned(top: 0, left: 0, right: 0, height: heroH, child: const _HeroImage(round: true)),
+        Positioned(top: 0, left: 0, right: 0, height: heroH, child: _HeroImage(round: true, tint: heroTint)),
         const Positioned(top: 16, left: 16, child: _Brand(size: 40)),
         SingleChildScrollView(
           padding: EdgeInsets.fromLTRB(16, heroH - _cardOverlap, 16, 16 + bottomInset),
@@ -170,6 +174,7 @@ class HeroLayout extends StatelessWidget {
         heroH: heroH,
         bottomInset: bottomInset,
         action: narrowAction,
+        heroTint: heroTint,
         child: narrowChild,
       );
     }
@@ -181,7 +186,7 @@ class HeroLayout extends StatelessWidget {
           left: 0,
           right: 0,
           height: heroH,
-          child: const _HeroImage(),
+          child: _HeroImage(tint: heroTint),
         ),
         const Positioned(top: 16, left: 16, child: _Brand(size: 40)),
         Positioned(
@@ -243,7 +248,9 @@ class _CollapsibleSheet extends StatefulWidget {
   final double bottomInset;
   final Widget? action;
   final Widget child;
+  final Color? heroTint;
   const _CollapsibleSheet({
+    this.heroTint,
     required this.heroH,
     required this.bottomInset,
     required this.action,
@@ -272,7 +279,7 @@ class _CollapsibleSheetState extends State<_CollapsibleSheet> {
     return Stack(
       fit: StackFit.expand,
       children: [
-        Positioned(top: 0, left: 0, right: 0, height: widget.heroH, child: const _HeroImage()),
+        Positioned(top: 0, left: 0, right: 0, height: widget.heroH, child: _HeroImage(tint: widget.heroTint)),
         ListenableBuilder(
           listenable: _ctrl,
           builder: (context, _) {
@@ -390,16 +397,20 @@ class _Brand extends StatelessWidget {
 /// Gambar dekoratif: dinding kosong di kiri, karakter di kanan.
 class _HeroImage extends StatelessWidget {
   final bool round; // sudut bawah radius 28 (HP gaya kartu)
-  const _HeroImage({this.round = false});
+  final Color? tint;
+  const _HeroImage({this.round = false, this.tint});
 
   @override
   Widget build(BuildContext context) {
-    final img = Image.asset(
+    final asset = Image.asset(
       'assets/images/login_hero.webp',
       fit: BoxFit.cover,
       alignment: Alignment.centerRight,
       excludeFromSemantics: true,
     );
+    final img = tint == null
+        ? asset
+        : Stack(fit: StackFit.expand, children: [asset, ColoredBox(color: tint!)]);
     return round
         ? ClipRRect(
             borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)), child: img)

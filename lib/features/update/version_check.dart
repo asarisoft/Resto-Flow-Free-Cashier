@@ -8,28 +8,57 @@ import '../../core/config/remote_config.dart';
 
 enum UpdateStatus { ok, optional, required }
 
+enum UpdateLevel { info, critical }
+
+String _clip(Object? v, int max) {
+  if (v is! String) return '';
+  final t = v.trim();
+  return t.length > max ? t.substring(0, max) : t;
+}
+
 class RemoteVersion {
   final int minVersionCode;
   final int latestVersionCode;
   final String message;
+  final UpdateLevel level;
+  final String title;
+  final String changesTitle;
+  final List<String> changes;
 
   const RemoteVersion({
     required this.minVersionCode,
     required this.latestVersionCode,
     required this.message,
+    this.level = UpdateLevel.info,
+    this.title = '',
+    this.changesTitle = '',
+    this.changes = const [],
   });
 
   /// Field hilang / tipe salah / bukan map -> null (dianggap tidak ada update).
+  /// Field tambahan opsional: salah tipe -> default; teks dipotong (teks polos).
   static RemoteVersion? tryParse(Object? json) {
     if (json is! Map) return null;
     final min = json['min_version_code'];
     final latest = json['latest_version_code'];
     if (min is! int || latest is! int) return null;
-    final msg = json['message'];
+    final raw = json['changes'];
+    final changes = raw is List
+        ? raw
+            .whereType<String>()
+            .map((e) => _clip(e, 80))
+            .where((e) => e.isNotEmpty)
+            .take(5)
+            .toList()
+        : <String>[];
     return RemoteVersion(
       minVersionCode: min,
       latestVersionCode: latest,
-      message: msg is String ? msg : '',
+      message: _clip(json['message'], 300),
+      level: json['level'] == 'critical' ? UpdateLevel.critical : UpdateLevel.info,
+      title: _clip(json['title'], 60),
+      changesTitle: _clip(json['changes_title'], 40),
+      changes: changes,
     );
   }
 }
@@ -60,14 +89,24 @@ final remoteVersionProvider = FutureProvider<RemoteVersion?>((ref) async {
   }
 });
 
-/// Hasil keputusan + pesan. Gagal apa pun -> ok.
-final updateDecisionProvider =
-    FutureProvider<({UpdateStatus status, String message})>((ref) async {
+/// Hasil keputusan + isi layar update. Gagal apa pun -> ok.
+class UpdateDecision {
+  final UpdateStatus status;
+  final RemoteVersion? remote;
+  const UpdateDecision(this.status, [this.remote]);
+
+  String get message => remote?.message ?? '';
+}
+
+final updateDecisionProvider = FutureProvider<UpdateDecision>((ref) async {
   try {
     final remote = await ref.watch(remoteVersionProvider.future);
     final current = await ref.watch(currentVersionCodeProvider.future);
-    return (status: decideUpdate(current, remote), message: remote?.message ?? '');
+    return UpdateDecision(decideUpdate(current, remote), remote);
   } catch (_) {
-    return (status: UpdateStatus.ok, message: '');
+    return const UpdateDecision(UpdateStatus.ok);
   }
 });
+
+/// Info versi app terpasang (nama + build). Bisa dioverride di tes.
+final packageInfoProvider = FutureProvider<PackageInfo>((ref) => PackageInfo.fromPlatform());

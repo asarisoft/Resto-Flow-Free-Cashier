@@ -12,6 +12,7 @@ class AppColors {
   static const onPrimary = Color(0xFFFFFFFF); // White text on orange
   static const success = Color(0xFF15803D);
   static const error = Color(0xFFB91C1C);
+  static const errorSoft = Color(0xFFFEE2E2); // latar chip/kotak peringatan
   static const warning = Color(0xFFB45309);
   static const textPrimary = Color(0xFF2A211B);
   static const textSecondary = Color(0xFF5E5349);

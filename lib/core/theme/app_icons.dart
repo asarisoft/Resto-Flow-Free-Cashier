@@ -44,6 +44,8 @@ class AppIcons {
   static const IconData viewGrid = LucideIcons300.layoutGrid;
   static const IconData viewList = LucideIcons300.list;
   static const IconData filterReset = LucideIcons300.filterX;
+  static const IconData alert = LucideIcons300.triangleAlert;
+  static const IconData sparkles = LucideIcons300.sparkles;
   static const IconData checkCircle = LucideIcons300.circleCheck;
   static const IconData cart = LucideIcons300.shoppingCart;
   static const IconData refresh = LucideIcons300.refreshCw;

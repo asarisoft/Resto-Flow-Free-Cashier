@@ -18,6 +18,7 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | Tint             | `peach` `mint` `sky` `lilac` | `#FFD9C7` `#C9F2DD` `#CFE7FF` `#E3DAFF` | Kartu ringkasan, placeholder foto |
 | Bayangan clay    | `clayShadow`      | `#4D54408C` | Bayangan gelap luar kartu |
 | Success / Danger / Warning | `success` `error` `warning` | `#15803D` `#B91C1C` `#B45309` | Status |
+| Danger soft | `errorSoft` | `#FEE2E2` | Latar chip/kotak peringatan (layar Update Wajib critical) |
 
 **Aturan:** teks oranye **dilarang** di atas kartu bertint — di tint pakai `textPrimary`/`textSecondary`
 (dijaga `app_colors_contrast_test`). Ikon status di atas tint boleh (non-teks, ≥ 3:1).
