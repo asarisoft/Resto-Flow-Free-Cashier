@@ -16,8 +16,8 @@
 ## Bagian
 
 ### 1. Token gerak bersama
-- [ ] Satu file konstanta durasi & kurva (pegas teredam / `Curves.easeOutCubic`), dipakai semua animasi
-- [ ] Hormati `MediaQuery.disableAnimations` (durasi 0 kalau aktif)
+- [x] Satu file konstanta durasi & kurva (pegas teredam / `Curves.easeOutCubic`), dipakai semua animasi
+- [x] Hormati `MediaQuery.disableAnimations` (durasi 0 kalau aktif)
 - [ ] Catat di `docs/DESIGN.md` bagian Animasi
 
 ### 2. Keranjang & tambah item
