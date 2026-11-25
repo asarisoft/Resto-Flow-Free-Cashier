@@ -35,11 +35,12 @@ void main() {
       tester.view.reset();
     });
     await tester.runAsync(() async {
-      for (final e in [('p1', 'Kopi Susu', 18000), ('p2', 'Kopi Hitam', 12000), ('p3', 'Mie Ayam', 15000)]) {
+      for (final e in [('p1', 'Kopi Susu', 18000, 'Minuman'), ('p2', 'Kopi Hitam', 12000, 'Minuman'), ('p3', 'Mie Ayam', 15000, 'Makanan')]) {
         await ProductsDao(db).add(Product(
           id: e.$1,
           name: e.$2,
           price: e.$3,
+          category: e.$4,
           createdAt: DateTime(2026),
           updatedAt: DateTime(2026),
         ));
@@ -62,6 +63,28 @@ void main() {
     expect(find.text('Kopi Susu'), findsOneWidget);
     expect(find.text('Kopi Hitam'), findsOneWidget);
     expect(find.text('Mie Ayam'), findsNothing);
+  });
+
+  testWidgets('Produk: chip kategori memfilter, digabung dengan cari nama', (tester) async {
+    await setup(tester, const ProductListPage());
+    expect(find.text('Mie Ayam'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('chip-Minuman')));
+    await tester.pump();
+    expect(find.text('Kopi Susu'), findsOneWidget);
+    expect(find.text('Mie Ayam'), findsNothing);
+
+    // Gabung dengan cari: kategori Makanan + "kopi" → kosong.
+    await tester.tap(find.byKey(const ValueKey('chip-Makanan')));
+    await tester.pump();
+    await tester.enterText(find.byType(TextField), 'kopi');
+    await tester.pump();
+    expect(find.text('Produk tidak ditemukan'), findsOneWidget);
+
+    await tester.tap(find.byKey(const ValueKey('chip-Semua')));
+    await tester.pump();
+    expect(find.text('Mie Ayam'), findsNothing); // masih ada cari "kopi"
+    expect(find.text('Kopi Hitam'), findsOneWidget);
   });
 
   testWidgets('Produk: tidak ada hasil tampil "Produk tidak ditemukan"', (tester) async {

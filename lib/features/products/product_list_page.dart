@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
+import '../../core/widgets/category_filter_bar.dart';
 import '../../core/widgets/empty_state.dart';
 import '../../core/widgets/scroll_to_top_button.dart';
 import '../../models/product.dart';
@@ -25,6 +26,7 @@ class ProductListPage extends ConsumerStatefulWidget {
 
 class _ProductListPageState extends ConsumerState<ProductListPage> {
   String _query = '';
+  String _category = allCategoryLabel;
   final _scroll = ScrollController();
 
   @override
@@ -72,7 +74,10 @@ class _ProductListPageState extends ConsumerState<ProductListPage> {
               ),
             );
           }
-          final shown = filterProductsByName(products, _query);
+          final categories = productCategories(products);
+          // Kategori terpilih sudah hilang dari data (mis. produk diedit) → balik ke Semua.
+          final category = categories.contains(_category) ? _category : allCategoryLabel;
+          final shown = filterProductsByName(filterProductsByCategory(products, category), _query);
           return Column(
             children: [
               Padding(
@@ -83,6 +88,11 @@ class _ProductListPageState extends ConsumerState<ProductListPage> {
                   isList: isList,
                   onToggleView: () => ref.read(productViewModeProvider.notifier).toggle(),
                 ),
+              ),
+              CategoryFilterBar(
+                categories: categories,
+                selected: category,
+                onSelected: (c) => setState(() => _category = c),
               ),
               Expanded(
                 child: shown.isEmpty

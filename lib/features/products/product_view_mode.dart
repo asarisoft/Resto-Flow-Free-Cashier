@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../core/widgets/category_filter_bar.dart';
 import '../../models/product.dart';
 
 const _prefsKey = 'product_view_list';
@@ -29,3 +30,19 @@ List<Product> filterProductsByName(List<Product> products, String query) {
   if (q.isEmpty) return products;
   return products.where((p) => p.name.toLowerCase().contains(q)).toList();
 }
+
+/// Daftar kategori untuk filter: "Semua" + kategori unik (urutan kemunculan).
+List<String> productCategories(List<Product> products) {
+  final cats = <String>[allCategoryLabel];
+  for (final p in products) {
+    final c = p.category;
+    if (c != null && c.isNotEmpty && !cats.contains(c)) cats.add(c);
+  }
+  return cats;
+}
+
+/// Saring per kategori; [allCategoryLabel] = semua produk.
+List<Product> filterProductsByCategory(List<Product> products, String category) =>
+    category == allCategoryLabel
+        ? products
+        : products.where((p) => p.category == category).toList();

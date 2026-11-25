@@ -25,7 +25,7 @@ import 'pos_providers.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/qty_stepper.dart';
 import '../../core/widgets/adaptive_sheet.dart';
-import '../../core/widgets/clay_chip.dart';
+import '../../core/widgets/category_filter_bar.dart';
 import '../../core/widgets/tap_area.dart';
 import '../products/product_card.dart';
 import '../products/product_list_row.dart';
@@ -45,8 +45,7 @@ class PosPage extends ConsumerStatefulWidget {
 }
 
 class _PosPageState extends ConsumerState<PosPage> {
-  static const _allCategory = 'Semua';
-  String _selectedCategory = _allCategory;
+  String _selectedCategory = allCategoryLabel;
   String _query = '';
 
   @override
@@ -75,20 +74,8 @@ class _PosPageState extends ConsumerState<PosPage> {
         loading: () => const Center(child: CircularProgressIndicator()),
         error: (e, _) => Center(child: Text('Error: $e')),
         data: (products) {
-          // Extract categories
-          final categories = [_allCategory];
-          for (final p in products) {
-            if (p.category != null &&
-                p.category!.isNotEmpty &&
-                !categories.contains(p.category)) {
-              categories.add(p.category!);
-            }
-          }
-
-          // Filter products
-          final byCategory = _selectedCategory == _allCategory
-              ? products
-              : products.where((p) => p.category == _selectedCategory).toList();
+          final categories = productCategories(products);
+          final byCategory = filterProductsByCategory(products, _selectedCategory);
           final filteredProducts = filterProductsByName(byCategory, _query);
 
           if (isWide) {
@@ -162,23 +149,11 @@ class _PosPageState extends ConsumerState<PosPage> {
               ),
               const SizedBox(height: 16),
               const _ShiftGate(horizontalPadding: 24),
-              // Horizontal Categories
-              SizedBox(
-                height: 50,
-                child: ListView.builder(
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.symmetric(horizontal: 24),
-                  itemCount: categories.length,
-                  itemBuilder: (context, index) {
-                    final cat = categories[index];
-                    final isSelected = cat == _selectedCategory;
-                    return _CategoryCard(
-                      label: cat,
-                      isSelected: isSelected,
-                      onTap: () => setState(() => _selectedCategory = cat),
-                    );
-                  },
-                ),
+              CategoryFilterBar(
+                wide: true,
+                categories: categories,
+                selected: _selectedCategory,
+                onSelected: (c) => setState(() => _selectedCategory = c),
               ),
               // Main Products
               Expanded(
@@ -221,25 +196,10 @@ class _PosPageState extends ConsumerState<PosPage> {
       children: [
         const _ShiftGate(horizontalPadding: 12),
         _searchBar(12),
-        // Horizontal Categories
-        SizedBox(
-          height: 48,
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            padding: const EdgeInsets.symmetric(horizontal: 12),
-            itemCount: categories.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 8),
-            itemBuilder: (context, index) {
-              final cat = categories[index];
-              return ClayChip(
-                label: cat,
-                height: 40,
-                selected: cat == _selectedCategory,
-                selectedColor: AppColors.primary,
-                onTap: () => setState(() => _selectedCategory = cat),
-              );
-            },
-          ),
+        CategoryFilterBar(
+          categories: categories,
+          selected: _selectedCategory,
+          onSelected: (c) => setState(() => _selectedCategory = c),
         ),
         Expanded(
           child: _ProductGrid(
@@ -382,45 +342,6 @@ class _ShiftGate extends ConsumerWidget {
       child: SingleChildScrollView(
         padding: EdgeInsets.fromLTRB(horizontalPadding, 8, horizontalPadding, 8),
         child: child,
-      ),
-    );
-  }
-}
-
-class _CategoryCard extends StatelessWidget {
-  final String label;
-  final bool isSelected;
-  final VoidCallback onTap;
-
-  const _CategoryCard({
-    required this.label,
-    required this.isSelected,
-    required this.onTap,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return TapArea(
-      label: label,
-      onTap: onTap,
-      child: Container(
-        margin: const EdgeInsets.only(right: 24),
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        decoration: BoxDecoration(
-          border: Border(
-            bottom: BorderSide(
-              color: isSelected ? AppColors.primary : Colors.transparent,
-              width: 3,
-            ),
-          ),
-        ),
-        child: Text(
-          label,
-          style: AppTypography.textTheme.titleMedium?.copyWith(
-            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-            color: isSelected ? AppColors.primary : AppColors.textPrimary,
-          ),
-        ),
       ),
     );
   }
