@@ -10,8 +10,8 @@
 - Download: https://play.google.com/store/apps/details?id=id.asdev.kasirkita
 
 ## Halaman
-- [Beranda](https://kasirkita.asdev.id/): fitur, cara mulai, FAQ.
-- [Kebijakan Privasi](https://kasirkita.asdev.id/privasi)
+- [Beranda](https://kasirkitaweb.pages.dev/): fitur, cara mulai, FAQ.
+- [Kebijakan Privasi](https://kasirkitaweb.pages.dev/privasi)
 
 ## Kontak
 - Instagram: https://instagram.com/ngodingdarirumah

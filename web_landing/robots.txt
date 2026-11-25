@@ -10,4 +10,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://kasirkita.asdev.id/sitemap.xml
+Sitemap: https://kasirkitaweb.pages.dev/sitemap.xml
