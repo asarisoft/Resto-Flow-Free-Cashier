@@ -81,7 +81,9 @@ class _ReportPageState extends ConsumerState<ReportPage> {
           constraints: const BoxConstraints(maxWidth: 1040),
           child: ListView(
             controller: _scroll,
-            padding: EdgeInsets.all(AppDataTable.gutter(context)),
+            padding: EdgeInsets.fromLTRB(
+                AppDataTable.gutter(context), AppDataTable.gutter(context),
+                AppDataTable.gutter(context), ScrollToTopButton.clearance),
             children: [
               FilterPanel(
                 summary: _filter.period.label,
@@ -253,6 +255,9 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                             numeric: true,
                             cell: (t) => IconButton(
                               tooltip: 'Cetak ulang',
+                              iconSize: 20,
+                              visualDensity: VisualDensity.compact,
+                              constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
                               icon: const Icon(AppIcons.print),
                               onPressed: () => _reprint(t),
                             ),

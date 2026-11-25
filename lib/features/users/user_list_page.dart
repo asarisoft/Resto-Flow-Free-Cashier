@@ -159,7 +159,10 @@ class _ResetPasswordAction extends ConsumerWidget {
     final actor = ref.watch(currentUserProvider).valueOrNull;
     return IconButton(
       tooltip: 'Reset password ${user.username}',
-      icon: const Icon(AppIcons.key, size: AppIcons.md),
+      iconSize: 20,
+      visualDensity: VisualDensity.compact,
+      constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+      icon: const Icon(AppIcons.key, size: 20),
       onPressed: actor == null
           ? null
           : () => showDialog(

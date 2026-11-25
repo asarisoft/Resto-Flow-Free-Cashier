@@ -68,7 +68,9 @@ class _ShiftHistoryPageState extends ConsumerState<ShiftHistoryPage> {
         constraints: const BoxConstraints(maxWidth: 960),
         child: ListView(
           controller: _scroll,
-          padding: EdgeInsets.all(AppDataTable.gutter(context)),
+          padding: EdgeInsets.fromLTRB(
+              AppDataTable.gutter(context), AppDataTable.gutter(context),
+              AppDataTable.gutter(context), ScrollToTopButton.clearance),
           children: [
             FilterPanel(
               summary: _period.label,

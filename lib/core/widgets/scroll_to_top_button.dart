@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import '../theme/app_colors.dart';
 import '../theme/app_icons.dart';
 import '../theme/app_motion.dart';
@@ -13,6 +14,13 @@ class ScrollToTopButton extends StatefulWidget {
   final ScrollController controller;
   /// Jarak di bawah tombol saat tampil (mis. di atas FAB lain).
   final double bottomGap;
+  /// Padding bawah daftar agar baris terakhir bisa di-scroll di atas tombol:
+  /// dua tombol bulat (48+8, 48) + 16.
+  static const clearance = 56.0 + 48 + 16;
+
+  /// Sama, plus FAB "Tambah" di bawahnya (12 jarak + 48 tinggi).
+  static const clearanceWithFab = clearance + 12 + 48 + 8;
+
   const ScrollToTopButton(
       {super.key, required this.controller, this.bottomGap = 0});
 
@@ -23,6 +31,21 @@ class ScrollToTopButton extends StatefulWidget {
 class _ScrollToTopButtonState extends State<ScrollToTopButton> {
   bool _showUp = false;
   bool _showDown = false;
+  bool _scrolling = false;
+  ScrollPosition? _pos;
+
+  void _onScrolling() {
+    final s = _pos?.isScrollingNotifier.value ?? false;
+    if (!mounted || s == _scrolling) return;
+    // Bisa terpicu saat layout (clamp posisi): tunda ke frame berikut.
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.idle) {
+      setState(() => _scrolling = s);
+    } else {
+      SchedulerBinding.instance.addPostFrameCallback((_) {
+        if (mounted) setState(() => _scrolling = _pos?.isScrollingNotifier.value ?? false);
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -42,6 +65,7 @@ class _ScrollToTopButtonState extends State<ScrollToTopButton> {
 
   @override
   void dispose() {
+    _pos?.isScrollingNotifier.removeListener(_onScrolling);
     widget.controller.removeListener(_onScroll);
     super.dispose();
   }
@@ -50,6 +74,10 @@ class _ScrollToTopButtonState extends State<ScrollToTopButton> {
     final c = widget.controller;
     if (!mounted || !c.hasClients || !c.position.hasContentDimensions) return;
     final p = c.position;
+    if (p != _pos) {
+      _pos?.isScrollingNotifier.removeListener(_onScrolling);
+      _pos = p..isScrollingNotifier.addListener(_onScrolling);
+    }
     final up = p.pixels > p.viewportDimension;
     final down = p.extentAfter > _nearEnd;
     if (up != _showUp || down != _showDown) {
@@ -76,7 +104,11 @@ class _ScrollToTopButtonState extends State<ScrollToTopButton> {
     // Ukuran konten bisa berubah tanpa event scroll (data dimuat): cek ulang.
     WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
     final c = widget.controller;
-    return Column(
+    // Redup saat daftar sedang di-scroll agar tidak menutupi konten.
+    return AnimatedOpacity(
+      opacity: _scrolling ? 0.35 : 1,
+      duration: AppMotion.of(context, AppMotion.fast),
+      child: Column(
       mainAxisSize: MainAxisSize.min,
       children: [
         _RoundButton(
@@ -94,7 +126,7 @@ class _ScrollToTopButtonState extends State<ScrollToTopButton> {
           onTap: () => _go(c.position.maxScrollExtent),
         ),
       ],
-    );
+    ));
   }
 }
 
@@ -134,6 +166,9 @@ class _RoundButton extends StatelessWidget {
                       color: AppColors.surface,
                       radius: 24,
                       compact: true,
+                    ).copyWith(
+                      border: Border.all(
+                          color: AppColors.primary.withValues(alpha: 0.35)),
                     ),
                     child: TapArea(
                       label: tooltip,
@@ -141,7 +176,7 @@ class _RoundButton extends StatelessWidget {
                       borderRadius: BorderRadius.circular(24),
                       child: Center(
                         child: Icon(icon,
-                            size: AppIcons.md, color: AppColors.textPrimary),
+                            size: AppIcons.md, color: AppColors.primary),
                       ),
                     ),
                   ),

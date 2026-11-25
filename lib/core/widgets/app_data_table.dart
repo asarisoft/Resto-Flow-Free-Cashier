@@ -41,11 +41,15 @@ class AppDataTable<T> extends StatefulWidget {
   /// Lebar di bawah ini → mode kartu (HP).
   static const cardBreakpoint = 600.0;
 
-  /// Gutter horizontal halaman yang memuat tabel/kartu clay: >= 24 dp di layar
-  /// lebar agar highlight bayangan (-6,-6, blur 16 ≈ 22 dp) tidak terpotong
-  /// tepi viewport ListView.
+  /// Gutter halaman yang memuat tabel/kartu clay: 36 dp di layar lebar, >=
+  /// jangkauan bayangan clay terbesar (offset 12 + blur 24 = 36; lihat
+  /// `ClayDecoration`) agar tidak terpotong tepi viewport ListView.
+  static const wideGutter = 36.0;
   static double gutter(BuildContext context) =>
-      MediaQuery.sizeOf(context).width >= cardBreakpoint ? 24 : 16;
+      MediaQuery.sizeOf(context).width >= cardBreakpoint ? wideGutter : 16;
+
+  /// Tinggi minimum baris mode tabel (seragam di semua halaman).
+  static const rowHeight = 56.0;
 
   const AppDataTable({
     super.key,
@@ -112,10 +116,10 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
     // Bila konten belum memenuhi layar, lanjutkan memuat setelah frame ini.
     if (remaining > 0) WidgetsBinding.instance.addPostFrameCallback((_) => _check());
 
-    Widget cellBox(AppColumn<T> c, Widget child) => Expanded(
+    Widget cellBox(AppColumn<T> c, Widget child, {double vPad = 12}) => Expanded(
       flex: c.flex,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        padding: EdgeInsets.symmetric(horizontal: 16, vertical: vPad),
         child: Align(
           alignment: c.numeric ? Alignment.centerRight : Alignment.centerLeft,
           child: child,
@@ -147,8 +151,13 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
         decoration: const BoxDecoration(
           border: Border(top: BorderSide(color: AppColors.border)),
         ),
-        child: Row(
-          children: [for (final c in widget.columns) cellBox(c, c.cell(r))],
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: AppDataTable.rowHeight),
+          child: Row(
+            children: [
+              for (final c in widget.columns) cellBox(c, c.cell(r), vPad: 4),
+            ],
+          ),
         ),
       );
       if (widget.onRowTap == null) return row;

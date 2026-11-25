@@ -114,7 +114,7 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
         constraints: const BoxConstraints(maxWidth: 960),
         child: ListView(
           controller: _scroll,
-          padding: EdgeInsets.fromLTRB(AppDataTable.gutter(context), 16, AppDataTable.gutter(context), 96),
+          padding: EdgeInsets.fromLTRB(AppDataTable.gutter(context), 16, AppDataTable.gutter(context), ScrollToTopButton.clearanceWithFab),
           children: [
             FilterPanel(
               summary: _filter.period.label,
