@@ -59,6 +59,15 @@ void main() {
     expect(find.byType(CategoryPage), findsOneWidget);
   });
 
+  testWidgets('List pengaturan memakai klip (tidak menimpa header)', (tester) async {
+    for (final size in const [Size(800, 1600), Size(1200, 800), Size(400, 800)]) {
+      await pump(tester, 'owner', size: size);
+      final list = tester.widget<ListView>(find.byType(ListView).first);
+      expect(list.clipBehavior, isNot(Clip.none));
+      await tester.pumpWidget(const SizedBox());
+    }
+  });
+
   testWidgets('Kasir: tile Kategori tidak tampil', (tester) async {
     await pump(tester, 'kasir');
     expect(find.text('Kategori'), findsNothing);

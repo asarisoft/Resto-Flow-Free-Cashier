@@ -68,12 +68,12 @@ class SettingsPage extends ConsumerWidget {
             child: ConstrainedBox(
               constraints: const BoxConstraints(maxWidth: 760),
               child: ListView(
-                // Ruang kanan/bawah untuk bayangan clay (offset 12, blur 24)
-                // agar tidak terpotong tepi list jadi sudut kotak.
+                // Klip default (hardEdge) agar konten tidak menimpa header;
+                // padding cukup besar supaya bayangan clay (offset 12, blur 24)
+                // tetap muat di dalam klip.
                 padding: MediaQuery.sizeOf(context).width < 600
-                    ? const EdgeInsets.fromLTRB(16, 16, 16, 40)
-                    : const EdgeInsets.fromLTRB(16, 16, 40, 40),
-                clipBehavior: Clip.none,
+                    ? const EdgeInsets.fromLTRB(16, 20, 16, 40)
+                    : const EdgeInsets.fromLTRB(24, 24, 40, 40),
                 children: [
                   // HP: tab Dukung Developer tidak ada di bar bawah -> tile menonjol di atas.
                   if (MediaQuery.sizeOf(context).width <= 800) ...[
