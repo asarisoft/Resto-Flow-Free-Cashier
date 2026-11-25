@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kasir_resto/core/services/daos/users_dao.dart';
 import 'package:kasir_resto/core/services/database.dart';
 import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/services/session_service.dart';
 import 'package:kasir_resto/core/theme/app_typography.dart';
 import 'package:kasir_resto/features/auth/login_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../helpers/seed.dart';
 
 bool _isHero(Widget w) =>
     w is Image && w.image is AssetImage && (w.image as AssetImage).assetName.endsWith('login_hero.webp');
@@ -27,7 +27,7 @@ void main() {
   });
 
   Future<void> pumpLoginPage(WidgetTester tester) async {
-    await UsersDao(db).seedDefaultOwnerIfEmpty(); // akun lama (legacy) untuk tes login
+    await seedDefaultOwnerIfEmpty(db); // akun lama (legacy) untuk tes login
     await tester.pumpWidget(
       ProviderScope(
         overrides: [databaseProvider.overrideWithValue(db)],

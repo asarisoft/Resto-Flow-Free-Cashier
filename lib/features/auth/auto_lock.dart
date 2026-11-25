@@ -9,16 +9,13 @@ import '../../core/theme/app_icons.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/password_field.dart';
 import 'auth_controller.dart';
+import 'login_throttle.dart';
 
 /// Pilihan menit idle di Pengaturan (0 = nonaktif).
 const autoLockChoices = [0, 1, 5, 10, 15, 30];
 
 /// Detik per tick pemeriksa idle. Presisi kunci ±[autoLockTickSeconds] detik.
 const autoLockTickSeconds = 10;
-
-/// Gagal buka kunci berturut-turut sebelum jeda, dan lama jedanya.
-const maxUnlockAttempts = 5;
-const unlockCooldown = Duration(seconds: 30);
 
 const _prefsKey = 'auto_lock_minutes';
 
@@ -207,15 +204,10 @@ class _LockBody extends ConsumerStatefulWidget {
 
 class _LockBodyState extends ConsumerState<_LockBody> {
   final _pw = TextEditingController();
-  int _failed = 0;
   bool _checking = false;
   bool _coolingDown = false;
   String? _error;
   Timer? _cooldownTimer;
-
-  // Disimpan agar menutup paksa app tidak memberi percobaan baru.
-  static const _failKey = 'unlock_failed_count';
-  static const _untilKey = 'unlock_cooldown_until_ms';
 
   @override
   void initState() {
@@ -224,34 +216,20 @@ class _LockBodyState extends ConsumerState<_LockBody> {
   }
 
   Future<void> _restore() async {
-    final prefs = await SharedPreferences.getInstance();
-    final until = prefs.getInt(_untilKey);
-    final remaining = until == null
-        ? Duration.zero
-        : DateTime.fromMillisecondsSinceEpoch(until).difference(DateTime.now());
-    if (!mounted) return;
-    setState(() {
-      _failed = prefs.getInt(_failKey) ?? 0;
-      if (remaining > Duration.zero) {
-        _startCooldown(remaining > unlockCooldown ? unlockCooldown : remaining);
-        _error = 'Terlalu banyak percobaan. Coba lagi sebentar.';
-      }
-    });
+    final user = ref.read(currentUserProvider).valueOrNull;
+    if (user == null) return;
+    final left = await ref.read(loginThrottleProvider).remaining(user.username);
+    if (!mounted || left == null) return;
+    setState(() => _lock(left));
   }
 
-  void _startCooldown(Duration d) {
+  void _lock(Duration d) {
     _coolingDown = true;
+    _error = lockMessage(d);
     _cooldownTimer?.cancel();
     _cooldownTimer = Timer(d, () {
-      SharedPreferences.getInstance().then((p) => p.remove(_untilKey));
       if (mounted) setState(() => _coolingDown = false);
     });
-  }
-
-  Future<void> _persist({DateTime? until}) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt(_failKey, _failed);
-    if (until != null) await prefs.setInt(_untilKey, until.millisecondsSinceEpoch);
   }
 
   @override
@@ -268,29 +246,31 @@ class _LockBodyState extends ConsumerState<_LockBody> {
       _checking = true;
       _error = null;
     });
-    final ok = await ref.read(unlockVerifierProvider)(user.username, _pw.text);
+    final throttle = ref.read(loginThrottleProvider);
+    bool? ok;
+    Duration? locked;
+    try {
+      ok = await throttle.attempt(user.username, () async {
+        final r = await ref.read(unlockVerifierProvider)(user.username, _pw.text);
+        return r ? true : null;
+      });
+      if (ok == null) locked = await throttle.remaining(user.username);
+    } on LoginLockedException catch (e) {
+      locked = e.remaining;
+    }
     if (!mounted) return;
-    if (ok) {
-      _failed = 0;
-      await _persist();
+    if (ok == true) {
       ref.read(lockedProvider.notifier).state = false;
       return;
     }
-    _failed++;
     _pw.clear();
-    DateTime? until;
-    if (_failed >= maxUnlockAttempts) {
-      _failed = 0;
-      until = DateTime.now().add(unlockCooldown);
-      _startCooldown(unlockCooldown);
-    }
-    await _persist(until: until);
-    if (!mounted) return;
     setState(() {
       _checking = false;
-      _error = _coolingDown
-          ? 'Terlalu banyak percobaan. Coba lagi ${unlockCooldown.inSeconds} detik.'
-          : 'Password salah';
+      if (locked != null) {
+        _lock(locked);
+      } else {
+        _error = 'Password salah';
+      }
     });
   }
 

@@ -16,6 +16,7 @@ import 'package:kasir_resto/models/expense.dart';
 import 'package:kasir_resto/models/transaction.dart';
 import 'package:kasir_resto/models/transaction_item.dart';
 import 'package:kasir_resto/features/users/users_providers.dart';
+import '../helpers/seed.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -173,7 +174,7 @@ void main() {
 
   group('Pengguna', () {
     testWidgets('is a table with role and status columns', (tester) async {
-      await UsersDao(db).seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(db);
       await UsersDao(db).add(username: 'budi', password: 'password1', role: 'kasir');
       await pump(tester, const UserListPage());
       for (final h in ['Username', 'Role', 'Status', 'Aktif']) {
@@ -186,7 +187,7 @@ void main() {
     });
 
     testWidgets('last active owner cannot be switched off (snackbar)', (tester) async {
-      await UsersDao(db).seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(db);
       await pump(tester, const UserListPage());
       await tester.tap(find.byType(Switch));
       await tester.pump(const Duration(milliseconds: 400));

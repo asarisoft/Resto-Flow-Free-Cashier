@@ -221,7 +221,8 @@ Ringkasan tabel: `Products`, `Transactions`, `TransactionItems`, `Users`, `Resto
 - Field: Nama pengguna (3–20 huruf/angka/underscore), Password (min 8, `UsersDao.minPasswordLength`), Ulangi password
 - `UsersDao.createOwner`: validasi, salt + `PasswordHasher`, cek-ada-user + insert dalam 1 transaksi; gagal (`StateError`) bila sudah ada user
 - Sukses → langsung login sebagai Owner → onboarding
-- Install lama dengan akun `admin` default tetap jalan (`seedDefaultOwnerIfEmpty`/`defaultPassword` hanya untuk tes & deteksi akun lama)
+- Install lama dengan akun `admin` default tetap jalan (`defaultPassword`/`usesDefaultPassword` hanya untuk deteksi akun lama; seed `seedDefaultOwnerIfEmpty` dihapus dari app, adanya di `test/helpers/seed.dart`)
+- Pembatas percobaan (`LoginThrottle`, dipakai login & buka kunci, per username; username tak dikenal diperlakukan sama): 5 gagal beruntun → kunci 30 dtk, lalu 60, 120, … maks 1 jam; sukses mereset; saat kunci `verify` tidak dipanggil ("Terlalu banyak percobaan. Coba lagi dalam N detik/menit"). Disimpan di tabel `counters` (kunci `throttle:fails|level|until:<username>`), tanpa perubahan skema.
 
 ---
 
@@ -386,8 +387,8 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
   dan sudah login.
 - Layar kunci menutup seluruh app termasuk dialog; tombol Back tidak menembus. Keranjang & pesanan
   terbuka tetap utuh. Buka kunci = password user yang sedang login (`UsersDao.verify`).
-- 5 kali salah berturut-turut → jeda 30 detik. Hitungan & akhir jeda disimpan di `shared_preferences`
-  (menutup paksa app tidak memberi percobaan baru). "Ganti pengguna (logout)" tersedia di layar kunci;
+- Percobaan salah dibatasi `LoginThrottle` yang sama dengan login (tersimpan di DB: tahan tutup-paksa app,
+  logout lalu login tetap terkunci). "Ganti pengguna (logout)" tersedia di layar kunci;
   keranjang tidak dikosongkan oleh logout.
 
 ### 7.13 Menu Terlaris & Jam Ramai (Owner, di Laporan)
@@ -436,7 +437,7 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 
 ### 7.17 Update Wajib & In-App Update
 - Saat start, `UpdateGate` (membungkus app di `main.dart`) ambil `$remoteBaseUrl/version.json` (`min_version_code`, `latest_version_code`, `message`), timeout 5 dtk, bandingkan dengan versionCode (`package_info_plus` buildNumber).
-- `current < min` → `ForceUpdatePage` (terkunci, tanpa kembali, tombol "Update Sekarang" → `in_app_update` immediate; gagal → buka Play Store). `current < latest` → flexible update + SnackBar "Update siap — Pasang". Selain itu app normal.
+- `current < min` → `ForceUpdatePage` (terkunci, tanpa kembali, tombol "Update Sekarang" → `in_app_update` immediate; gagal → buka Play Store; bila shift terbuka ada tombol teks "Lanjut sementara" untuk sesi app ini saja, tidak disimpan, supaya shift bisa ditutup). `current < latest` → flexible update + SnackBar "Update siap — Pasang". Selain itu app normal.
 - Offline / JSON rusak / timeout / error apa pun → TIDAK terkunci (offline-first).
 - Base URL & link Play Store: `lib/core/config/remote_config.dart`. Naikkan versi & `version.json`: lihat `docs/RELEASE.md`.
 - Package/applicationId: `id.asdev.kasirkita` (tidak boleh berubah). Release signing via `android/key.properties` (tidak di-commit); tanpa file itu → debug signing. Android butuh izin `INTERNET`.

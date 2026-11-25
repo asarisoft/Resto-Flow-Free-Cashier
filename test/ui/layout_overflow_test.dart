@@ -17,13 +17,13 @@ import 'package:kasir_resto/features/reports/report_page.dart';
 import 'package:kasir_resto/features/users/user_list_page.dart';
 import 'package:kasir_resto/core/services/daos/expenses_dao.dart';
 import 'package:kasir_resto/core/services/daos/sales_dao.dart';
-import 'package:kasir_resto/core/services/daos/users_dao.dart';
 import 'package:kasir_resto/models/expense.dart';
 import 'package:kasir_resto/models/transaction.dart';
 import 'package:kasir_resto/main.dart' show clampTextScale;
 import 'package:kasir_resto/models/product.dart';
 import 'package:kasir_resto/models/transaction_item.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../helpers/seed.dart';
 
 const wideSizes = <String, Size>{
   'tablet 1280x800': Size(1280, 800),
@@ -70,7 +70,7 @@ void main() {
 
   for (final size in const [Size(360, 640), Size(800, 1280), Size(1280, 800)]) {
     testWidgets('LoginPage hero layout no overflow on ${size.width.toInt()}x${size.height.toInt()}', (tester) async {
-      await UsersDao(db).seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(db);
       await pump(tester, size, const LoginPage());
       await tester.pump(const Duration(milliseconds: 100));
       expect(tester.takeException(), isNull);
@@ -105,7 +105,7 @@ void main() {
       });
 
       testWidgets('UserListPage has no overflow on ${e.key} @ text ${scale}x', (tester) async {
-        await UsersDao(db).seedDefaultOwnerIfEmpty();
+        await seedDefaultOwnerIfEmpty(db);
         await pump(tester, e.value, const UserListPage(), textScale: scale);
         expect(tester.takeException(), isNull);
       });

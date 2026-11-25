@@ -9,6 +9,7 @@ import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/features/reports/report_providers.dart';
 import 'package:kasir_resto/features/users/password_dialogs.dart';
 import 'package:kasir_resto/models/transaction.dart';
+import '../helpers/seed.dart';
 
 void main() {
   late AppDatabase db;
@@ -19,7 +20,7 @@ void main() {
     test('owner hasil seed terdeteksi memakai password bawaan; hilang setelah diganti',
         () async {
       final dao = UsersDao(db);
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       expect(await dao.usesDefaultPassword('admin'), true);
 
       await dao.changeOwnPassword(

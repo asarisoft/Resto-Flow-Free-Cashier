@@ -8,6 +8,7 @@ import '../../core/widgets/icon_badge.dart';
 import '../../core/widgets/password_field.dart';
 import '../../core/widgets/primary_button.dart';
 import 'auth_controller.dart';
+import 'login_throttle.dart';
 import '../../core/theme/app_icons.dart';
 
 class LoginPage extends ConsumerStatefulWidget {
@@ -127,13 +128,15 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     setState(() => _loading = true);
     try {
       final ok = await ref.read(loginProvider).login(_selectedUsername!, _passwordController.text);
-      if (!ok && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Username atau password salah'), backgroundColor: AppColors.error),
-        );
-      }
+      if (!ok && mounted) _showError('Username atau password salah');
+    } on LoginLockedException catch (e) {
+      if (mounted) _showError(e.message);
     } finally {
       if (mounted) setState(() => _loading = false);
     }
   }
+
+  void _showError(String msg) => ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(msg), backgroundColor: AppColors.error),
+      );
 }

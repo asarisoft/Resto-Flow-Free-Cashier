@@ -8,6 +8,7 @@ import 'package:kasir_resto/core/services/password_hasher.dart';
 import 'package:kasir_resto/core/services/session_service.dart';
 import 'package:kasir_resto/features/auth/register_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../helpers/seed.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -102,7 +103,7 @@ void main() {
   });
 
   testWidgets('ada user (akun lama default) tampil Login & tetap bisa login', (tester) async {
-    await dao.seedDefaultOwnerIfEmpty();
+    await seedDefaultOwnerIfEmpty(dao.db);
     await pumpGate(tester);
     expect(find.text('Masuk'), findsOneWidget);
     expect(find.text('Buat Akun'), findsNothing);

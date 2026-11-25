@@ -6,6 +6,7 @@ import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/services/session_service.dart';
 import 'package:kasir_resto/features/auth/auth_controller.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../../helpers/seed.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -43,7 +44,7 @@ void main() {
   });
 
   test('currentUserProvider returns the user from the saved session', () async {
-    await dao.seedDefaultOwnerIfEmpty();
+    await seedDefaultOwnerIfEmpty(dao.db);
     await SessionService().save('admin');
 
     final user = await container.read(currentUserProvider.future);
@@ -57,7 +58,7 @@ void main() {
   });
 
   test('login success saves the session and sets currentUserProvider', () async {
-    await dao.seedDefaultOwnerIfEmpty();
+    await seedDefaultOwnerIfEmpty(dao.db);
 
     final ok = await container.read(loginProvider).login('admin', 'P@ssw0rd123');
 
@@ -70,7 +71,7 @@ void main() {
 
   test('login with wrong password returns false and saves no session',
       () async {
-    await dao.seedDefaultOwnerIfEmpty();
+    await seedDefaultOwnerIfEmpty(dao.db);
 
     final ok = await container.read(loginProvider).login('admin', 'salah');
 
@@ -81,7 +82,7 @@ void main() {
   });
 
   test('login with unknown username returns false', () async {
-    await dao.seedDefaultOwnerIfEmpty();
+    await seedDefaultOwnerIfEmpty(dao.db);
 
     final ok = await container.read(loginProvider).login('tidak-ada', 'x');
 
@@ -119,7 +120,7 @@ void main() {
   });
 
   test('logout clears the session and currentUserProvider', () async {
-    await dao.seedDefaultOwnerIfEmpty();
+    await seedDefaultOwnerIfEmpty(dao.db);
     await container.read(loginProvider).login('admin', 'P@ssw0rd123');
     await container.read(currentUserProvider.future);
     expect(container.read(isLoggedInProvider), true);

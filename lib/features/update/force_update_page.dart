@@ -6,13 +6,18 @@ import '../../core/theme/app_typography.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/app_logo.dart';
 import '../../core/widgets/primary_button.dart';
+import '../shifts/shift_providers.dart';
 import 'in_app_updater.dart';
 import 'version_check.dart';
 
 /// Layar terkunci saat versi app di bawah minimal. Tanpa tombol kembali.
 class ForceUpdatePage extends ConsumerWidget {
   final String message;
-  const ForceUpdatePage({super.key, required this.message});
+
+  /// Bila ada: tampil tombol "Lanjut sementara" (dipakai saat shift terbuka
+  /// supaya kasir bisa menutup shift, tidak terkunci di tengah jualan).
+  final VoidCallback? onContinue;
+  const ForceUpdatePage({super.key, required this.message, this.onContinue});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -49,6 +54,13 @@ class ForceUpdatePage extends ConsumerWidget {
                         onPressed: () =>
                             runRequiredUpdate(ref.read(inAppUpdaterProvider)),
                       ),
+                      if (onContinue != null) ...[
+                        const SizedBox(height: 8),
+                        TextButton(
+                          onPressed: onContinue,
+                          child: const Text('Lanjut sementara'),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -60,6 +72,10 @@ class ForceUpdatePage extends ConsumerWidget {
     );
   }
 }
+
+/// True = user memilih "Lanjut sementara" pada sesi app ini. Sengaja tidak
+/// disimpan: buka ulang app → layar update wajib muncul lagi.
+final forceUpdateDismissedProvider = StateProvider<bool>((_) => false);
 
 /// Pembungkus root: status required -> ForceUpdatePage; selain itu (termasuk
 /// loading / error) -> child. Tidak pernah memblokir saat fetch gagal.
@@ -82,7 +98,14 @@ class UpdateGate extends ConsumerWidget {
     });
     final d = ref.watch(updateDecisionProvider).valueOrNull;
     if (d != null && d.status == UpdateStatus.required) {
-      return ForceUpdatePage(message: d.message);
+      final shiftOpen = ref.watch(openShiftProvider).valueOrNull != null;
+      if (shiftOpen && ref.watch(forceUpdateDismissedProvider)) return child;
+      return ForceUpdatePage(
+        message: d.message,
+        onContinue: shiftOpen
+            ? () => ref.read(forceUpdateDismissedProvider.notifier).state = true
+            : null,
+      );
     }
     return child;
   }

@@ -3,6 +3,7 @@ import '../../core/services/session_service.dart';
 import '../../core/services/daos/users_dao.dart';
 import '../../core/services/database_provider.dart';
 import '../../models/app_user.dart';
+import 'login_throttle.dart';
 
 final sessionServiceProvider = Provider<SessionService>((ref) => SessionService());
 
@@ -14,9 +15,12 @@ class LoginController {
   final Ref ref;
   LoginController(this.ref);
 
+  /// Melempar [LoginLockedException] bila username sedang dikunci.
   Future<bool> login(String username, String password) async {
     final dao = ref.read(usersDaoProvider);
-    final user = await dao.verify(username, password);
+    final user = await ref
+        .read(loginThrottleProvider)
+        .attempt(username, () => dao.verify(username, password));
     if (user == null) return false;
     await ref.read(sessionServiceProvider).save(user.id);
     ref.invalidate(currentUserProvider);

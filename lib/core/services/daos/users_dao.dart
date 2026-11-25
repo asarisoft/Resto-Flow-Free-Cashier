@@ -27,24 +27,6 @@ class UsersDao {
     return PasswordHasher.verify(defaultPassword, row.salt, row.passwordHash);
   }
 
-  Future<void> seedDefaultOwnerIfEmpty() async {
-    final count = await db.select(db.users).get();
-    if (count.isNotEmpty) return;
-    final salt = PasswordHasher.generateSalt();
-    final hash = PasswordHasher.hash(defaultPassword, salt);
-    await db.into(db.users).insert(
-          UsersCompanion.insert(
-            id: 'admin',
-            username: 'admin',
-            passwordHash: hash,
-            salt: salt,
-            role: 'owner',
-            createdAt: DateTime.now(),
-          ),
-          mode: InsertMode.insertOrIgnore,
-        );
-  }
-
   static final _usernamePattern = RegExp(r'^[A-Za-z0-9_]{3,20}$');
 
   Future<bool> hasAnyUser() async =>

@@ -4,6 +4,7 @@ import 'package:crypto/crypto.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir_resto/core/services/database.dart' hide Product, Transaction, TransactionItem, RestoProfile, Users, User;
 import 'package:kasir_resto/core/services/daos/users_dao.dart';
+import '../helpers/seed.dart';
 
 void main() {
   late AppDatabase db;
@@ -14,21 +15,21 @@ void main() {
   });
   tearDown(() => db.close());
   test('seedDefaultOwnerIfEmpty creates admin/owner once', () async {
-    await dao.seedDefaultOwnerIfEmpty();
-    await dao.seedDefaultOwnerIfEmpty();
+    await seedDefaultOwnerIfEmpty(dao.db);
+    await seedDefaultOwnerIfEmpty(dao.db);
     final all = await dao.getAll();
     expect(all.where((u) => u.username == 'admin').length, 1);
   });
   test('concurrent seed calls do not throw and keep one admin', () async {
     await Future.wait([
-      dao.seedDefaultOwnerIfEmpty(),
-      dao.seedDefaultOwnerIfEmpty(),
+      seedDefaultOwnerIfEmpty(dao.db),
+      seedDefaultOwnerIfEmpty(dao.db),
     ]);
     final all = await dao.getAll();
     expect(all.where((u) => u.username == 'admin').length, 1);
   });
   test('verify accepts correct password, rejects wrong one', () async {
-    await dao.seedDefaultOwnerIfEmpty();
+    await seedDefaultOwnerIfEmpty(dao.db);
     expect(await dao.verify('admin', 'P@ssw0rd123'), isNotNull);
     expect(await dao.verify('admin', 'wrong'), isNull);
   });
@@ -74,17 +75,17 @@ void main() {
   });
   group('last owner guard', () {
     test('cannot deactivate the only active owner', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       expect(() => dao.setActive('admin', false), throwsStateError);
     });
     test('can deactivate an owner when another active owner exists', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       await dao.add(username: 'owner2', password: 'password1', role: 'owner');
       await dao.setActive('admin', false);
       expect((await dao.getById('admin'))!.active, isFalse);
     });
     test('can deactivate a kasir', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       final id = await dao.add(username: 'budi', password: 'password1', role: 'kasir');
       await dao.setActive(id, false);
       expect((await dao.getById(id))!.active, isFalse);
@@ -93,7 +94,7 @@ void main() {
 
   group('changeOwnPassword', () {
     test('changes password: old fails, new works, salt changes', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       final oldSalt = (await dao.getById('admin'))!.salt;
       await dao.changeOwnPassword(
           userId: 'admin', oldPassword: 'P@ssw0rd123', newPassword: 'newpass123');
@@ -102,7 +103,7 @@ void main() {
       expect((await dao.getById('admin'))!.salt, isNot(oldSalt));
     });
     test('rejects wrong old password', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       expect(
         () => dao.changeOwnPassword(
             userId: 'admin', oldPassword: 'salah', newPassword: 'newpass123'),
@@ -110,7 +111,7 @@ void main() {
       );
     });
     test('rejects new password shorter than 8', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       expect(
         () => dao.changeOwnPassword(
             userId: 'admin', oldPassword: 'P@ssw0rd123', newPassword: 'short'),
@@ -118,7 +119,7 @@ void main() {
       );
     });
     test('rejects new password same as old', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       expect(
         () => dao.changeOwnPassword(
             userId: 'admin', oldPassword: 'P@ssw0rd123', newPassword: 'P@ssw0rd123'),
@@ -138,7 +139,7 @@ void main() {
 
   group('resetPassword', () {
     test('kasir cannot reset', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       final id = await dao.add(username: 'kasir1', password: 'pass12345', role: 'kasir');
       expect(
         () => dao.resetPassword(
@@ -147,7 +148,7 @@ void main() {
       );
     });
     test('owner cannot reset own password', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       expect(
         () => dao.resetPassword(
             actorRole: 'owner', actorId: 'admin', targetId: 'admin', newPassword: 'newpass123'),
@@ -155,7 +156,7 @@ void main() {
       );
     });
     test('owner resets target; target logs in with new password', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       final id = await dao.add(username: 'kasir1', password: 'pass12345', role: 'kasir');
       await dao.resetPassword(
           actorRole: 'owner', actorId: 'admin', targetId: id, newPassword: 'newpass123');
@@ -163,7 +164,7 @@ void main() {
       expect(await dao.verify('kasir1', 'pass12345'), isNull);
     });
     test('reset rejects missing target', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       expect(
         () => dao.resetPassword(
             actorRole: 'owner', actorId: 'admin', targetId: 'ghost', newPassword: 'newpass123'),
@@ -171,7 +172,7 @@ void main() {
       );
     });
     test('reset rejects short password', () async {
-      await dao.seedDefaultOwnerIfEmpty();
+      await seedDefaultOwnerIfEmpty(dao.db);
       final id = await dao.add(username: 'kasir1', password: 'pass12345', role: 'kasir');
       expect(
         () => dao.resetPassword(

@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kasir_resto/core/services/database.dart' show AppDatabase, CountersCompanion;
+import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/features/auth/auth_controller.dart';
+import 'package:kasir_resto/features/auth/login_throttle.dart';
 import 'package:kasir_resto/features/auth/auto_lock.dart';
 import 'package:kasir_resto/features/pos/cart_provider.dart';
 import 'package:kasir_resto/models/app_user.dart';
@@ -32,6 +35,9 @@ Product _product() => Product(
       updatedAt: DateTime(2026, 1, 1),
     );
 
+late AppDatabase _db;
+var _clock = DateTime(2026, 1, 1);
+
 Future<ProviderContainer> _pump(
   WidgetTester tester, {
   int minutes = 1,
@@ -42,6 +48,8 @@ Future<ProviderContainer> _pump(
 }) async {
   await tester.pumpWidget(ProviderScope(
     overrides: [
+      databaseProvider.overrideWithValue(_db),
+      loginClockProvider.overrideWithValue(() => _clock),
       autoLockMinutesProvider.overrideWith(() => _FixedMinutes(minutes)),
       _userSource.overrideWith((ref) => user),
       currentUserProvider.overrideWith((ref) async => ref.watch(_userSource)),
@@ -66,7 +74,12 @@ Future<ProviderContainer> _pump(
 final _lockedText = find.text('Layar terkunci');
 
 void main() {
-  setUp(() => SharedPreferences.setMockInitialValues({}));
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    _db = AppDatabase.forTest();
+    _clock = DateTime(2026, 1, 1);
+  });
+  tearDown(() => _db.close());
 
   testWidgets('terkunci setelah idle N menit, belum sebelumnya', (tester) async {
     await _pump(tester, minutes: 1);
@@ -156,23 +169,24 @@ void main() {
     await tester.pump(const Duration(minutes: 2));
     await tester.pump();
 
-    for (var i = 0; i < maxUnlockAttempts; i++) {
+    for (var i = 0; i < LoginThrottle.maxAttempts; i++) {
       await tester.enterText(find.byType(TextField), 'salah$i');
       await tester.tap(find.text('Buka kunci'));
       await tester.pump();
       await tester.pump();
     }
-    expect(calls.length, maxUnlockAttempts);
+    expect(calls.length, LoginThrottle.maxAttempts);
     expect(find.textContaining('Terlalu banyak percobaan'), findsOneWidget);
 
     // Selama jeda, password benar pun tidak diperiksa.
     await tester.enterText(find.byType(TextField), 'rahasia123');
     await tester.tap(find.text('Buka kunci'), warnIfMissed: false);
     await tester.pump();
-    expect(calls.length, maxUnlockAttempts);
+    expect(calls.length, LoginThrottle.maxAttempts);
     expect(_lockedText, findsOneWidget);
 
-    await tester.pump(unlockCooldown + const Duration(seconds: 1));
+    _clock = _clock.add(const Duration(seconds: 31));
+    await tester.pump(const Duration(seconds: 31));
     await tester.enterText(find.byType(TextField), 'rahasia123');
     await tester.tap(find.text('Buka kunci'));
     await tester.pump();
@@ -212,6 +226,7 @@ void main() {
       overrides: [
         autoLockMinutesProvider.overrideWith(() => _FixedMinutes(1)),
         currentUserProvider.overrideWith((ref) async => _kasir),
+        databaseProvider.overrideWithValue(_db),
         unlockVerifierProvider.overrideWithValue((u, p) async => false),
       ],
       child: MaterialApp(
@@ -349,10 +364,9 @@ void main() {
   });
 
   testWidgets('jeda tersimpan langsung aktif saat app dibuka', (tester) async {
-    SharedPreferences.setMockInitialValues({
-      'unlock_cooldown_until_ms':
-          DateTime.now().add(const Duration(seconds: 20)).millisecondsSinceEpoch,
-    });
+    await _db.into(_db.counters).insert(CountersCompanion.insert(
+        key: 'throttle:until:budi',
+        value: _clock.add(const Duration(seconds: 20)).millisecondsSinceEpoch));
     final calls = <String>[];
     await _pump(tester, minutes: 1, verifyCalls: calls, lockOnLaunch: true);
     await tester.pump();

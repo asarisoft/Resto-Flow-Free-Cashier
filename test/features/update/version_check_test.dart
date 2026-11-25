@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:kasir_resto/features/shifts/shift_providers.dart';
 import 'package:kasir_resto/features/update/force_update_page.dart';
+import 'package:kasir_resto/models/shift.dart';
 import 'package:kasir_resto/features/update/version_check.dart';
 
 void main() {
@@ -32,8 +34,11 @@ void main() {
     );
   });
 
-  Widget app(Override o) => ProviderScope(
-        overrides: [o],
+  Widget app(Override o, {Shift? shift}) => ProviderScope(
+        overrides: [
+          o,
+          openShiftProvider.overrideWith((ref) => Stream.value(shift)),
+        ],
         child: const MaterialApp(
           home: UpdateGate(child: Text('Halaman Login')),
         ),
@@ -57,5 +62,39 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Halaman Login'), findsOneWidget);
     expect(find.byType(ForceUpdatePage), findsNothing);
+  });
+
+  final required = updateDecisionProvider.overrideWith(
+    (ref) async => (status: UpdateStatus.required, message: 'Update dulu'),
+  );
+
+  testWidgets('required tanpa shift terbuka -> tidak ada Lanjut sementara',
+      (tester) async {
+    await tester.pumpWidget(app(required));
+    await tester.pumpAndSettle();
+    expect(find.text('Lanjut sementara'), findsNothing);
+  });
+
+  testWidgets('required + shift terbuka -> Lanjut sementara membuka app sesi ini',
+      (tester) async {
+    final shift = Shift(
+        id: 's1',
+        openedAt: DateTime(2026, 1, 1),
+        openedBy: 'u1',
+        openingCash: 100000);
+    await tester.pumpWidget(app(required, shift: shift));
+    await tester.pumpAndSettle();
+    expect(find.byType(ForceUpdatePage), findsOneWidget);
+
+    await tester.tap(find.text('Lanjut sementara'));
+    await tester.pumpAndSettle();
+    expect(find.text('Halaman Login'), findsOneWidget);
+    expect(find.byType(ForceUpdatePage), findsNothing);
+
+    // Sesi baru (app dibuka ulang) -> tidak diingat.
+    await tester.pumpWidget(const SizedBox());
+    await tester.pumpWidget(app(required, shift: shift));
+    await tester.pumpAndSettle();
+    expect(find.byType(ForceUpdatePage), findsOneWidget);
   });
 }
