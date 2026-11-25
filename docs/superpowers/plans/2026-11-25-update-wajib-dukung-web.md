@@ -72,11 +72,11 @@
 
 ### Task 6: Halaman Dukung jadi WebView
 **Files:** `lib/features/support/support_page.dart`, `test/features/support/support_page_test.dart`.
-- [ ] WebView memuat `$baseUrl/dukung.html`; navigasi ke host selain host Netlify → `NavigationDecision.prevent` + `launchUrl(externalApplication)`.
-- [ ] Gagal muat / offline → tampil konten Dukung lokal yang sekarang (jadikan widget `SupportFallback`).
-- [ ] Indikator loading saat memuat.
-- [ ] Tes: keputusan navigasi (host sendiri → izinkan; instagram.com → prevent + launch); error → fallback tampil.
-- [ ] Commit `feat(support): halaman dukung dari web`.
+- [x] WebView memuat `$baseUrl/dukung.html`; navigasi ke host selain host Netlify → `NavigationDecision.prevent` + `launchUrl(externalApplication)`.
+- [x] Gagal muat / offline → tampil konten Dukung lokal yang sekarang (jadikan widget `SupportFallback`).
+- [x] Indikator loading saat memuat.
+- [x] Tes: keputusan navigasi (host sendiri → izinkan; instagram.com → prevent + launch); error → fallback tampil.
+- [x] Commit `feat(support): halaman dukung dari web`.
 
 ### Task 7: Docs
 - [ ] `docs/SPEC.md` (update wajib, dukung web, package), `docs/DESIGN.md` (ForceUpdatePage), graphify update, centang plan.

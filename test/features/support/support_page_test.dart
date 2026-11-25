@@ -1,15 +1,65 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:kasir_resto/features/support/support_page.dart';
+import 'package:webview_flutter/webview_flutter.dart';
 
 void main() {
-  testWidgets('halaman Dukung Developer menampilkan kedua kartu & tombol', (tester) async {
-    await tester.pumpWidget(const MaterialApp(home: SupportPage()));
+  testWidgets('web gagal dimuat -> konten lokal tampil', (tester) async {
+    await tester.pumpWidget(MaterialApp(
+      home: SupportPage(
+        webBuilder: (context, {required onLoaded, required onError}) {
+          WidgetsBinding.instance.addPostFrameCallback((_) => onError());
+          return const SizedBox.shrink();
+        },
+      ),
+    ));
+    await tester.pump();
+    await tester.pump();
 
+    expect(find.byType(SupportFallback), findsOneWidget);
     expect(find.text('Follow kami'), findsOneWidget);
     expect(find.text('Instagram'), findsOneWidget);
     expect(find.text('TikTok'), findsOneWidget);
     expect(find.text('Jasa Bikin Aplikasi'), findsOneWidget);
     expect(find.text('Hubungi via Instagram'), findsOneWidget);
+  });
+
+  testWidgets('saat memuat tampil indikator, selesai -> hilang', (tester) async {
+    late VoidCallback done;
+    await tester.pumpWidget(MaterialApp(
+      home: SupportPage(
+        webBuilder: (context, {required onLoaded, required onError}) {
+          done = onLoaded;
+          return const Text('web');
+        },
+      ),
+    ));
+    expect(find.byType(CircularProgressIndicator), findsOneWidget);
+    done();
+    await tester.pump();
+    expect(find.byType(CircularProgressIndicator), findsNothing);
+    expect(find.byType(SupportFallback), findsNothing);
+  });
+
+  test('navigasi: host sendiri izinkan, instagram dicegah & dibuka luar', () async {
+    final launched = <Uri>[];
+    Future<bool> fake(Uri u) async {
+      launched.add(u);
+      return true;
+    }
+
+    expect(
+      await decideSupportNavigation('https://kasirkita.netlify.app/dukung.html',
+          launcher: fake),
+      NavigationDecision.navigate,
+    );
+    expect(launched, isEmpty);
+
+    expect(
+      await decideSupportNavigation('https://instagram.com/asdev.id',
+          launcher: fake),
+      NavigationDecision.prevent,
+    );
+    expect(launched.single.host, 'instagram.com');
   });
 }
