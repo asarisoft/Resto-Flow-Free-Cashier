@@ -55,9 +55,37 @@ void main() {
       (w.decoration as BoxDecoration).borderRadius ==
           const BorderRadius.vertical(top: Radius.circular(28));
 
+  for (final size in const [Size(360, 800), Size(360, 640)]) {
+    final w = size.width.toInt(), h = size.height.toInt();
+    testWidgets('HP login $w x $h: kartu menimpa hero, tombol Masuk di kartu, footer ada', (t) async {
+      await pump(t, const LoginPage(), size);
+      expect(t.takeException(), isNull);
+      expect(find.byWidgetPredicate(isSheet), findsNothing);
+      final heroBottom = t.getRect(find.byType(Image).first).bottom;
+      final btn = find.text('Masuk');
+      expect(btn, findsOneWidget);
+      expect(t.getRect(find.text('Halo, selamat datang!')).top, lessThan(heroBottom)); // judul kartu menimpa hero
+      await t.ensureVisible(find.text('KasirKita oleh ASDEV.id'));
+      await t.pumpAndSettle();
+      expect(find.text('KasirKita oleh ASDEV.id'), findsOneWidget);
+      expect(t.getRect(btn).bottom, lessThanOrEqualTo(size.height));
+      expect(t.getRect(btn).top, greaterThan(0));
+    });
+
+    testWidgets('HP login $w x $h: keyboard 300, tombol Masuk bisa di-scroll terlihat', (t) async {
+      await pump(t, const LoginPage(), size, keyboard: 300);
+      expect(t.takeException(), isNull);
+      await t.ensureVisible(find.text('Masuk'));
+      await t.pumpAndSettle();
+      final btn = t.getRect(find.text('Masuk'));
+      expect(btn.bottom, lessThanOrEqualTo(size.height - 300));
+      expect(btn.top, greaterThan(0));
+    });
+  }
+
   for (final e in pages.entries) {
     final (page, button) = e.value;
-    for (final size in const [Size(360, 800), Size(360, 640)]) {
+    for (final size in e.key == 'login' ? const <Size>[] : const [Size(360, 800), Size(360, 640)]) {
       testWidgets('HP ${e.key} ${size.width.toInt()}x${size.height.toInt()}: panel sampai dasar, tombol terlihat',
           (t) async {
         await pump(t, page, size);

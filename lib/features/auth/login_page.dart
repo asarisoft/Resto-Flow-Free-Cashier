@@ -84,6 +84,9 @@ class _LoginPageState extends ConsumerState<LoginPage> {
             ],
           ),
           narrowAction: _loginButton(),
+          narrowStyle: HeroNarrowStyle.card,
+          narrowFooter: Text('KasirKita oleh ASDEV.id',
+              style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
         ),
       ),
     );

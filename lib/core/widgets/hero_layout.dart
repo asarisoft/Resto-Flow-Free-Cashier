@@ -4,6 +4,9 @@ import '../theme/app_typography.dart';
 import '../theme/clay.dart';
 import 'app_logo.dart';
 
+/// Gaya HP: [sheet] panel dari bawah; [card] kartu clay menimpa hero.
+enum HeroNarrowStyle { sheet, card }
+
 /// Tata letak halaman dengan gambar hero (login & onboarding).
 ///
 /// Lebar (>= 900 dp): satu kartu clay besar, gambar full-bleed, logo + [wideLeft]
@@ -11,11 +14,16 @@ import 'app_logo.dart';
 /// HP: gambar hero ~42% tinggi (220-380 dp) di atas; panel putih (sheet) naik
 /// menimpa gambar 32 dp sampai dasar layar. [narrowChild] scroll di dalam panel,
 /// [narrowAction] (tombol utama) disematkan di dasar panel, di luar scroll.
+/// Gaya [HeroNarrowStyle.card]: hero ~38% (200-320 dp); kartu clay (margin 16)
+/// menimpa hero 40 dp, [narrowAction] di dalam kartu, [narrowFooter] di bawah
+/// kartu; semuanya scroll.
 class HeroLayout extends StatelessWidget {
   final Widget wideLeft;
   final Widget? wideRight;
   final Widget narrowChild;
   final Widget? narrowAction;
+  final HeroNarrowStyle narrowStyle;
+  final Widget? narrowFooter;
 
   const HeroLayout({
     super.key,
@@ -23,6 +31,8 @@ class HeroLayout extends StatelessWidget {
     this.wideRight,
     required this.narrowChild,
     this.narrowAction,
+    this.narrowStyle = HeroNarrowStyle.sheet,
+    this.narrowFooter,
   });
 
   static const _wideBreakpoint = 900.0;
@@ -100,7 +110,52 @@ class HeroLayout extends StatelessWidget {
 
   static const _sheetOverlap = 32.0;
 
+  static const _cardOverlap = 40.0;
+
+  Widget _narrowCard(BuildContext context, BoxConstraints c) {
+    final h = c.maxHeight;
+    final heroH = h < 480 ? h * 0.3 : (h * 0.38).clamp(200.0, 320.0);
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned(top: 0, left: 0, right: 0, height: heroH, child: const _HeroImage(round: true)),
+        const Positioned(top: 16, left: 16, child: _Brand(size: 40)),
+        SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(16, heroH - _cardOverlap, 16, 16 + bottomInset),
+          child: Center(
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 480),
+              child: Column(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(20),
+                    decoration: ClayDecoration.box(radius: 24),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        narrowChild,
+                        if (narrowAction != null) ...[
+                          const SizedBox(height: 20),
+                          narrowAction!,
+                        ],
+                      ],
+                    ),
+                  ),
+                  if (narrowFooter != null)
+                    Padding(padding: const EdgeInsets.only(top: 16), child: narrowFooter),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _narrow(BuildContext context, BoxConstraints c) {
+    if (narrowStyle == HeroNarrowStyle.card) return _narrowCard(context, c);
     final h = c.maxHeight;
     // Keyboard terbuka (tinggi sempit): hero mengecil agar panel + tombol muat.
     final heroH = h < 480 ? h * 0.3 : (h * 0.42).clamp(220.0, 380.0);
@@ -189,15 +244,20 @@ class _Brand extends StatelessWidget {
 
 /// Gambar dekoratif: dinding kosong di kiri, karakter di kanan.
 class _HeroImage extends StatelessWidget {
-  const _HeroImage();
+  final bool round; // sudut bawah radius 28 (HP gaya kartu)
+  const _HeroImage({this.round = false});
 
   @override
   Widget build(BuildContext context) {
-    return Image.asset(
+    final img = Image.asset(
       'assets/images/login_hero.webp',
       fit: BoxFit.cover,
       alignment: Alignment.centerRight,
       excludeFromSemantics: true,
     );
+    return round
+        ? ClipRRect(
+            borderRadius: const BorderRadius.vertical(bottom: Radius.circular(28)), child: img)
+        : img;
   }
 }
