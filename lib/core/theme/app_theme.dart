@@ -113,6 +113,11 @@ class AppTheme {
         hintStyle: textTheme.bodyMedium
             ?.copyWith(color: AppColors.textSecondary),
       ),
+      pageTransitionsTheme: PageTransitionsTheme(
+        builders: {
+          for (final p in TargetPlatform.values) p: _AppPageTransitions(),
+        },
+      ),
       dividerTheme: const DividerThemeData(
         color: AppColors.divider,
         thickness: 1,
@@ -171,5 +176,26 @@ class AppTheme {
         ),
       ),
     );
+  }
+}
+
+/// Satu transisi halaman untuk semua rute (fade-forwards M3);
+/// tanpa gerak bila pengguna mematikan animasi.
+class _AppPageTransitions extends PageTransitionsBuilder {
+  const _AppPageTransitions();
+
+  static const _inner = FadeForwardsPageTransitionsBuilder();
+
+  @override
+  Widget buildTransitions<T>(
+    PageRoute<T> route,
+    BuildContext context,
+    Animation<double> animation,
+    Animation<double> secondaryAnimation,
+    Widget child,
+  ) {
+    if (MediaQuery.maybeDisableAnimationsOf(context) == true) return child;
+    return _inner.buildTransitions(
+        route, context, animation, secondaryAnimation, child);
   }
 }

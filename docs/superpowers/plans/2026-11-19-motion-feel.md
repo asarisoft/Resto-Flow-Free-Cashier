@@ -29,7 +29,7 @@
 - [x] Transaksi berhasil: `HapticFeedback.mediumImpact()` + tanda centang singkat sebelum struk
 
 ### 4. Transisi layar
-- [ ] Pindah halaman pakai transisi Material 3 yang konsisten (shared axis / fade-through), satu aturan untuk semua rute
+- [x] Pindah halaman pakai transisi Material 3 yang konsisten (shared axis / fade-through), satu aturan untuk semua rute
 
 ### 5. Cek akhir
 - [ ] Uji di HP kasir murah (frame drop?) — animasi berat dibuang
