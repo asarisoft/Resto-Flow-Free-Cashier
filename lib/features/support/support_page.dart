@@ -92,6 +92,7 @@ class SupportPage extends StatefulWidget {
 class _SupportPageState extends State<SupportPage> {
   bool _loading = true;
   bool _failed = false;
+  Widget? _web;
 
   @override
   Widget build(BuildContext context) {
@@ -106,7 +107,8 @@ class _SupportPageState extends State<SupportPage> {
           ? const SupportFallback()
           : Stack(
               children: [
-                widget.webBuilder(
+                // Dibuat sekali: membangun ulang = controller baru = muat ulang (kedip).
+                _web ??= widget.webBuilder(
                   context,
                   onLoaded: () {
                     if (mounted) setState(() => _loading = false);

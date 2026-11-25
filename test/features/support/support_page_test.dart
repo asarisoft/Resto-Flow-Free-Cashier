@@ -32,6 +32,24 @@ void main() {
     expect(find.text('Hubungi via Instagram'), findsOneWidget);
   });
 
+  testWidgets('web dibuat sekali, tidak dibuat ulang setelah selesai muat (anti kedip)', (tester) async {
+    var builds = 0;
+    late VoidCallback done;
+    await tester.pumpWidget(MaterialApp(
+      home: SupportPage(
+        webBuilder: (context, {required onLoaded, required onError}) {
+          builds++;
+          done = onLoaded;
+          return const Text('web');
+        },
+      ),
+    ));
+    done();
+    await tester.pump();
+    await tester.pump();
+    expect(builds, 1);
+  });
+
   testWidgets('saat memuat tampil indikator, selesai -> hilang', (tester) async {
     late VoidCallback done;
     await tester.pumpWidget(MaterialApp(
