@@ -101,6 +101,7 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
           padding: const EdgeInsets.fromLTRB(16, 16, 16, 96),
           children: [
             FilterPanel(
+              summary: _filter.period.label,
               onReset: _filter.isDefault ? null : () => setState(() => _filter = const ExpenseFilter()),
               top: PeriodFilterBar(
                 value: _filter.period,
@@ -157,6 +158,7 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
                 ),
                 AppColumn<Expense>(
                   label: 'Kategori',
+                  primary: true,
                   minWidth: 140,
                   cell: (e) => Text(_orDash(e.category)),
                 ),
@@ -168,6 +170,7 @@ class _ExpenseListPageState extends ConsumerState<ExpenseListPage> {
                 ),
                 AppColumn<Expense>(
                   label: 'Nominal',
+                  primary: true,
                   minWidth: 140,
                   numeric: true,
                   cell: (e) => AmountText(

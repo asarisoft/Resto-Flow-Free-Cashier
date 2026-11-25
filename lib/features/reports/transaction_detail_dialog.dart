@@ -115,9 +115,10 @@ class TransactionDetailDialog extends StatelessWidget {
                                 fontStyle: FontStyle.italic)),
                     ],
                   )),
-                  AppColumn(label: 'Qty', minWidth: 60, numeric: true, cell: (i) => Text('${i.qty}')),
+                  AppColumn(label: 'Qty', minWidth: 60, primary: true, numeric: true, cell: (i) => Text('${i.qty}')),
                   AppColumn(
                     label: 'Subtotal',
+                    primary: true,
                     flex: 2,
                     minWidth: 120,
                     numeric: true,

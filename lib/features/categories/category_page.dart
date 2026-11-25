@@ -91,7 +91,7 @@ class _CategoryPageState extends ConsumerState<CategoryPage> {
                   ),
                   columns: [
                     AppColumn(label: 'Nama', flex: 3, minWidth: 180, cell: (c) => Text(c.name)),
-                    AppColumn(label: 'Dipakai', minWidth: 100, numeric: true, cell: (c) => Text('${c.usage} item')),
+                    AppColumn(label: 'Dipakai', minWidth: 100, primary: true, numeric: true, cell: (c) => Text('${c.usage} item')),
                     AppColumn(
                       label: '',
                       minWidth: 120,

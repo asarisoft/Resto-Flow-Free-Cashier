@@ -47,6 +47,11 @@ void main() {
     }
   }
 
+  Future<void> openFilter(WidgetTester tester) async {
+    await tester.tap(find.textContaining('Filter ·'));
+    await tester.pump(const Duration(milliseconds: 300));
+  }
+
   void expectChipsVisible(WidgetTester tester) {
     for (final l in ['Hari ini', 'Bulan ini', 'Bulan lalu', 'Semua', 'Pilih tanggal']) {
       final r = tester.getRect(find.byKey(ValueKey('chip-$l')));
@@ -67,12 +72,14 @@ void main() {
   testWidgets('Laporan 360x800: 5 chip periode terlihat penuh', (tester) async {
     await pump(tester, const ReportPage());
     expect(tester.takeException(), isNull);
+    await openFilter(tester);
     expectChipsVisible(tester);
   });
 
   testWidgets('Pengeluaran 360x800: chip terlihat & label total satu baris', (tester) async {
     await pump(tester, const ExpenseListPage());
     expect(tester.takeException(), isNull);
+    await openFilter(tester);
     expectChipsVisible(tester);
     expect(find.textContaining('Total · '), findsOneWidget);
   });

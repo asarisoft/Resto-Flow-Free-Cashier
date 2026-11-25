@@ -73,6 +73,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
             padding: const EdgeInsets.all(16),
             children: [
               FilterPanel(
+                summary: _filter.period.label,
                 onReset: _filter.isDefault ? null : () => setState(() => _filter = const TransactionFilter()),
                 top: PeriodFilterBar(
                   value: _filter.period,
@@ -162,7 +163,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                                 subtitle: 'Ubah atau reset filter',
                               ),
                         columns: [
-                          AppColumn(label: 'No.', minWidth: 80, cell: (t) => Text(t.number == null ? '-' : '#${t.number}')),
+                          AppColumn(label: 'No.', minWidth: 80, primary: true, cell: (t) => Text(t.number == null ? '-' : '#${t.number}')),
                           AppColumn(
                             label: 'Status',
                             minWidth: 140,
@@ -187,6 +188,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                           ),
                           AppColumn(
                             label: 'Tanggal',
+                            primary: true,
                             flex: 2,
                             minWidth: 150,
                             cell: (t) => Text(DateFormat('dd/MM/yyyy HH:mm').format(t.createdAt)),
@@ -199,6 +201,7 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                           ),
                           AppColumn(
                             label: 'Total',
+                            primary: true,
                             flex: 2,
                             minWidth: 130,
                             numeric: true,

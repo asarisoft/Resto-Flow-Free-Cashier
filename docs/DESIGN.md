@@ -88,8 +88,8 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | `TapArea`       | Ripple + Semantics tombol (pengganti `GestureDetector`) |
 | `ChoiceSegment` | Pilihan 1-dari-N (58/80 mm, Hari Ini/Bulan Ini): wadah `inset`, segmen terpilih = kotak oranye gradasi `primaryLight→primary` teks putih, tinggi ≥ 48 dp |
 | `BarChart`       | Grafik batang sederhana (tanpa dependency chart): label sumbu bawah, batang tertinggi ditandai aksen, tap/long-press → SnackBar tanggal + nominal, scroll horizontal |
-| `AppDataTable`  | Tabel standar: header, baris berpembatas, angka rata kanan, scroll horizontal di layar sempit, "Tampilkan lebih banyak" per 25 baris. Dipakai Pengeluaran, Transaksi, Pengguna |
-| `FilterPanel`   | Kartu kontrol filter + "Reset filter" (muncul saat filter aktif) |
+| `AppDataTable`  | Tabel standar: header, baris berpembatas, angka rata kanan, scroll horizontal di layar sempit, infinite scroll (25 baris pertama, batch berikutnya otomatis saat mendekati ujung, indikator "Memuat…"). Dipakai Pengeluaran, Transaksi, Pengguna |
+| `FilterPanel`   | Kartu kontrol filter + "Reset filter" (muncul saat filter aktif). HP: lipat, header "Filter · <summary>" |
 | `PeriodFilterBar`| Chip clay kecil (radius 14, `compact`, tinggi ≥ 48 dp; terpilih = `textPrimary` + teks putih): Hari ini / Bulan ini / Bulan lalu / Semua / Pilih tanggal (rentang) |
 | `SearchField`   | Kolom cari dengan ikon + tombol hapus               |
 | `ProductSearchBar` | `SearchField` "Cari produk" + tombol ikon grid/list (tooltip + Semantics, ≥ 48 dp). Dipakai Produk & POS |
@@ -126,10 +126,14 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 
 ## Responsif HP (< 600 dp)
 
-- `AppDataTable` → mode kartu: kolom pertama jadi judul, kolom lain baris "label … nilai", kolom tanpa label
-  (aksi) di kanan judul. Tidak ada scroll horizontal.
-- `FilterPanel` → chip periode membungkus ke baris berikut (tanpa geser horizontal); field lain dilipat di "Filter lainnya"
-  (terbuka sendiri bila ada filter aktif).
+- `AppDataTable` → mode kartu **ciut**: kolom pertama jadi judul, kolom `primary: true` tampil sebagai "label … nilai", kolom
+  tanpa label (aksi) di kanan judul. Chevron (≥ 48 dp, tooltip "Tampilkan detail"/"Sembunyikan detail") membuka kolom sisanya;
+  tanpa chevron bila semua kolom sudah primary. Ketuk kartu (`onRowTap`) tetap jalan. Tidak ada scroll horizontal.
+  Tandai `primary` kolom yang paling dibutuhkan sekilas (mis. Laporan: No., Tanggal, Total).
+- `AppDataTable` memuat `pageSize` (25) baris dulu, lalu menambah batch saat scroll induk < 300 dp dari ujung; reset saat
+  daftar baris berubah (filter). Tidak ada tombol halaman.
+- `FilterPanel` (< 600 dp) → lipat, default tertutup: header "Filter · <summary>" (summary = label periode) + chevron;
+  ketuk membuka chip periode, field, dan Reset. Tablet selalu terbuka.
 - Bar bawah maks 5 tab (label 11 sp). Pengguna dibuka dari Pengaturan di HP; sidebar tablet tetap 6.
 - Kartu ringkasan Laporan 2 kolom; Pengeluaran 2 kartu sebaris; angka besar `FittedBox` (menyusut, tidak terpotong).
 - Kartu produk lebih pendek (`productGridDelegatePhone`, rasio 0,95). Banner backup satu baris.

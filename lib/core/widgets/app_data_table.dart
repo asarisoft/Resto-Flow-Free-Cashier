@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_colors.dart';
+import '../theme/app_icons.dart';
 import '../theme/app_typography.dart';
 import 'app_card.dart';
 import 'tap_area.dart';
@@ -9,6 +10,9 @@ class AppColumn<T> {
   final int flex;
   final double minWidth;
   final bool numeric;
+
+  /// Mode kartu (HP): kolom ini ikut tampil saat kartu diciutkan.
+  final bool primary;
   final Widget Function(T row) cell;
 
   const AppColumn({
@@ -17,12 +21,15 @@ class AppColumn<T> {
     this.flex = 1,
     this.minWidth = 100,
     this.numeric = false,
+    this.primary = false,
   });
 }
 
 /// Tabel data standar: header kolom, baris berpembatas, angka rata kanan.
 /// Di layar sempit (< [cardBreakpoint]) tiap baris tampil sebagai kartu
-/// (kolom pertama = judul, kolom lain = "label … nilai"), dan "Tampilkan lebih banyak" per [pageSize] baris.
+/// (kolom pertama = judul, kolom lain = "label … nilai"). Kartu ciut: hanya
+/// kolom pertama + kolom [AppColumn.primary]; chevron membuka sisanya.
+/// Baris dimuat [pageSize] dulu, sisanya otomatis saat scroll mendekati ujung.
 class AppDataTable<T> extends StatefulWidget {
   final List<AppColumn<T>> columns;
   final List<T> rows;
@@ -49,15 +56,42 @@ class AppDataTable<T> extends StatefulWidget {
 }
 
 class _AppDataTableState<T> extends State<AppDataTable<T>> {
+  static const _nearEnd = 300.0;
   late int _visible = widget.pageSize;
+  ScrollPosition? _position;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final pos = Scrollable.maybeOf(context)?.position;
+    if (pos != _position) {
+      _position?.removeListener(_check);
+      _position = pos?..addListener(_check);
+    }
+  }
+
+  @override
+  void dispose() {
+    _position?.removeListener(_check);
+    super.dispose();
+  }
 
   @override
   void didUpdateWidget(covariant AppDataTable<T> old) {
     super.didUpdateWidget(old);
-    // Filter berubah (jumlah baris beda) → mulai lagi dari halaman pertama.
-    if (old.rows.length != widget.rows.length &&
-        widget.rows.length <= widget.pageSize) {
+    // Data/filter berubah → mulai lagi dari batch pertama.
+    final a = old.rows, b = widget.rows;
+    if (a.length != b.length ||
+        (b.isNotEmpty && !identical(a.first, b.first))) {
       _visible = widget.pageSize;
+    }
+  }
+
+  void _check() {
+    final pos = _position;
+    if (!mounted || pos == null || !pos.hasContentDimensions) return;
+    if (_visible < widget.rows.length && pos.extentAfter < _nearEnd) {
+      setState(() => _visible += widget.pageSize);
     }
   }
 
@@ -69,6 +103,8 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
     if (widget.rows.isEmpty && widget.empty != null) return widget.empty!;
     final shown = widget.rows.take(_visible).toList();
     final remaining = widget.rows.length - shown.length;
+    // Bila konten belum memenuhi layar, lanjutkan memuat setelah frame ini.
+    if (remaining > 0) WidgetsBinding.instance.addPostFrameCallback((_) => _check());
 
     Widget cellBox(AppColumn<T> c, Widget child) => Expanded(
       flex: c.flex,
@@ -118,67 +154,13 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
     }
 
     // Mode kartu untuk HP: tanpa scroll horizontal, tidak ada kolom terpotong.
-    Widget cardFor(T r) {
-      final first = widget.columns.first;
-      final actions = widget.columns.skip(1).where((c) => c.label.isEmpty);
-      final fields = widget.columns.skip(1).where((c) => c.label.isNotEmpty);
-      final card = Container(
-        decoration: const BoxDecoration(
-          border: Border(top: BorderSide(color: AppColors.border)),
-        ),
-        padding: const EdgeInsets.fromLTRB(16, 12, 8, 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Row(
-              children: [
-                Expanded(
-                  child: DefaultTextStyle.merge(
-                    style: textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w600,
-                    ),
-                    child: first.cell(r),
-                  ),
-                ),
-                for (final c in actions) c.cell(r),
-              ],
-            ),
-            for (final c in fields)
-              Padding(
-                padding: const EdgeInsets.only(top: 6, right: 8),
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Expanded(
-                      flex: 2,
-                      child: Text(
-                        c.label,
-                        style: textTheme.bodyMedium?.copyWith(
-                          color: AppColors.textSecondary,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      flex: 3,
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: c.cell(r),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-          ],
-        ),
-      );
-      if (widget.onRowTap == null) return card;
-      return TapArea(
-        label: widget.rowLabel?.call(r) ?? 'Baris data',
-        onTap: () => widget.onRowTap!(r),
-        child: card,
-      );
-    }
+    Widget cardFor(T r) => _CardRow<T>(
+      key: ObjectKey(r),
+      row: r,
+      columns: widget.columns,
+      onTap: widget.onRowTap == null ? null : () => widget.onRowTap!(r),
+      label: widget.rowLabel?.call(r) ?? 'Baris data',
+    );
 
     final cards = Column(
       mainAxisSize: MainAxisSize.min,
@@ -212,12 +194,129 @@ class _AppDataTableState<T> extends State<AppDataTable<T>> {
               },
             ),
             if (remaining > 0)
-              TextButton(
-                onPressed: () => setState(() => _visible += widget.pageSize),
-                child: Text('Tampilkan lebih banyak ($remaining lagi)'),
+              Padding(
+                padding: const EdgeInsets.all(16),
+                child: Center(
+                  child: Text(
+                    'Memuat…',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: AppColors.textSecondary,
+                    ),
+                  ),
+                ),
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Satu kartu HP: judul + aksi + chevron, lalu field (ciut = hanya primary).
+class _CardRow<T> extends StatefulWidget {
+  final T row;
+  final List<AppColumn<T>> columns;
+  final VoidCallback? onTap;
+  final String label;
+
+  const _CardRow({
+    super.key,
+    required this.row,
+    required this.columns,
+    required this.onTap,
+    required this.label,
+  });
+
+  @override
+  State<_CardRow<T>> createState() => _CardRowState<T>();
+}
+
+class _CardRowState<T> extends State<_CardRow<T>> {
+  bool _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final textTheme = AppTypography.textTheme;
+    final r = widget.row;
+    final first = widget.columns.first;
+    final actions = widget.columns.skip(1).where((c) => c.label.isEmpty);
+    final fields = widget.columns.skip(1).where((c) => c.label.isNotEmpty);
+    final hasMore = fields.any((c) => !c.primary);
+    final shown = _open ? fields : fields.where((c) => c.primary);
+
+    Widget tappable(Widget child) => widget.onTap == null
+        ? child
+        : TapArea(label: widget.label, onTap: widget.onTap, child: child);
+
+    final title = tappable(
+      Padding(
+        padding: const EdgeInsets.fromLTRB(16, 12, 0, 12),
+        child: DefaultTextStyle.merge(
+          style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w600),
+          child: first.cell(r),
+        ),
+      ),
+    );
+
+    return Container(
+      decoration: const BoxDecoration(
+        border: Border(top: BorderSide(color: AppColors.border)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Row(
+            children: [
+              Expanded(child: title),
+              for (final c in actions) c.cell(r),
+              if (hasMore)
+                IconButton(
+                  tooltip: _open ? 'Sembunyikan detail' : 'Tampilkan detail',
+                  constraints: const BoxConstraints(minWidth: 48, minHeight: 48),
+                  icon: Icon(_open ? AppIcons.chevronUp : AppIcons.chevronDown),
+                  onPressed: () => setState(() => _open = !_open),
+                )
+              else
+                const SizedBox(width: 8),
+            ],
+          ),
+          if (shown.isNotEmpty)
+            tappable(
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: Column(
+                  children: [
+                    for (final c in shown)
+                      Padding(
+                        padding: const EdgeInsets.only(top: 6),
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Expanded(
+                              flex: 2,
+                              child: Text(
+                                c.label,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.textSecondary,
+                                ),
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              flex: 3,
+                              child: Align(
+                                alignment: Alignment.centerRight,
+                                child: c.cell(r),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }

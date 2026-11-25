@@ -68,7 +68,7 @@ class UserListPage extends ConsumerWidget {
                         ],
                       ),
                     ),
-                    AppColumn<AppUser>(label: 'Role', minWidth: 110, cell: (u) => _RolePill(role: u.role)),
+                    AppColumn<AppUser>(label: 'Role', minWidth: 110, primary: true, cell: (u) => _RolePill(role: u.role)),
                     AppColumn<AppUser>(
                       label: 'Status',
                       minWidth: 110,
@@ -79,6 +79,7 @@ class UserListPage extends ConsumerWidget {
                     ),
                     AppColumn<AppUser>(
                       label: 'Aktif',
+                      primary: true,
                       minWidth: 90,
                       numeric: true,
                       cell: (u) => _ActiveSwitch(user: u),

@@ -1,25 +1,29 @@
 import 'package:flutter/material.dart';
 import '../theme/app_icons.dart';
+import '../theme/app_typography.dart';
 import 'app_card.dart';
 
 /// Kartu filter: baris atas ([top], mis. chip periode) + baris [fields].
 /// Layar lebar: field sebaris, field TERAKHIR melebar mengisi sisa, Reset di ujung
-/// (tanpa baris/ruang kosong). Layar sempit (HP): [top] membungkus ke baris
-/// berikut, [fields] dilipat di balik "Filter lainnya" (terbuka sendiri bila
-/// ada filter aktif, yaitu [onReset] tidak null).
+/// (tanpa baris/ruang kosong). HP (< 600 dp): panel LIPAT, default tertutup,
+/// header "Filter · [summary]" + chevron; ketuk untuk membuka [top] + [fields].
 class FilterPanel extends StatefulWidget {
   final Widget top;
   final List<Widget> fields;
   final VoidCallback? onReset;
+
+  /// Ringkasan filter aktif (mis. label periode) di header saat tertutup.
+  final String? summary;
 
   const FilterPanel({
     super.key,
     required this.top,
     required this.fields,
     this.onReset,
+    this.summary,
   });
 
-  static const _wide = 640.0;
+  static const _wide = 600.0;
 
   @override
   State<FilterPanel> createState() => _FilterPanelState();
@@ -46,29 +50,41 @@ class _FilterPanelState extends State<FilterPanel> {
         builder: (_, c) {
           final wide = c.maxWidth >= FilterPanel._wide;
           if (!wide) {
-            final open = _open || onReset != null;
+            final s = widget.summary;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                top,
-                if (onReset == null)
-                  Align(
-                    alignment: Alignment.centerLeft,
-                    child: TextButton.icon(
-                      onPressed: () => setState(() => _open = !_open),
-                      icon: Icon(
-                        open ? AppIcons.close : AppIcons.search,
-                        size: AppIcons.md,
+                Semantics(
+                  button: true,
+                  expanded: _open,
+                  label: _open ? 'Sembunyikan filter' : 'Tampilkan filter',
+                  excludeSemantics: true,
+                  onTap: () => setState(() => _open = !_open),
+                  child: InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () => setState(() => _open = !_open),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: 48),
+                      child: Row(
+                        children: [
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              s == null || s.isEmpty ? 'Filter' : 'Filter · $s',
+                              overflow: TextOverflow.ellipsis,
+                              style: AppTypography.textTheme.titleSmall,
+                            ),
+                          ),
+                          Icon(_open ? AppIcons.chevronUp : AppIcons.chevronDown),
+                        ],
                       ),
-                      label: Text(open ? 'Tutup filter' : 'Filter lainnya'),
                     ),
                   ),
-                if (open) ...[
-                  if (onReset != null) const SizedBox(height: 12),
-                  for (var i = 0; i < fields.length; i++) ...[
-                    if (i > 0) const SizedBox(height: 12),
-                    fields[i],
-                  ],
+                ),
+                if (_open) ...[
+                  const SizedBox(height: 8),
+                  top,
+                  for (final f in fields) ...[const SizedBox(height: 12), f],
                   if (reset != null)
                     Align(alignment: Alignment.centerRight, child: reset),
                 ],
