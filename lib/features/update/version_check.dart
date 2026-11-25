@@ -73,8 +73,12 @@ UpdateStatus decideUpdate(int current, RemoteVersion? remote) {
 /// versionCode app saat ini (buildNumber). Gagal baca -> 0 tidak dipakai; lempar.
 final currentVersionCodeProvider = FutureProvider<int>((ref) async {
   final info = await PackageInfo.fromPlatform();
-  return int.parse(info.buildNumber);
+  return normalizeVersionCode(int.parse(info.buildNumber));
 });
+
+/// APK `--split-per-abi` menambah 1000/2000/4000 ke versionCode (2 -> 2002).
+/// Ambil build number aslinya. Syarat: build number pubspec < 1000.
+int normalizeVersionCode(int code) => code % 1000;
 
 /// Ambil version.json; error apa pun / timeout 3 dtk -> null (offline-first).
 /// Dicek di layar loading awal, jadi batas tunggu dibuat pendek.

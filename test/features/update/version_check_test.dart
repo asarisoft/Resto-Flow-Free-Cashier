@@ -88,6 +88,13 @@ void main() {
     expect(r.changes.first.length, 80);
   });
 
+  test('normalizeVersionCode: APK split-per-abi kembali ke build asli', () {
+    expect(normalizeVersionCode(2), 2);
+    expect(normalizeVersionCode(1002), 2);
+    expect(normalizeVersionCode(2002), 2);
+    expect(normalizeVersionCode(4002), 2);
+  });
+
   Widget app(Override o, {Shift? shift}) => ProviderScope(
         overrides: [
           o,
