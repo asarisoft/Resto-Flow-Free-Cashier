@@ -6,7 +6,6 @@
   "message": "Versi baru KasirKita tersedia. Update dulu ya!",
   "changes_title": "Yang baru",
   "changes": [],
-
   "_cara_pakai": [
     "Key berawalan _ hanya catatan, diabaikan app. JSON tidak boleh pakai komentar //.",
     "min_version_code: build di bawah ini WAJIB update (layar terkunci). Angka = build number pubspec (1.0.0+N -> N).",
@@ -16,15 +15,17 @@
     "Setelah ubah: upload ulang web_landing ke Pages. Cek https://kasirkita.asdev.id/version.json.",
     "JANGAN naikkan min_version_code sebelum versi baru sudah tayang di Play Store."
   ],
-
   "_contoh_update_biasa": {
     "min_version_code": 2,
     "latest_version_code": 2,
     "title": "Update KasirKita dulu, ya",
     "message": "Versi baru sudah siap dengan perbaikan dan fitur baru.",
-    "changes": ["Pindah HP lewat Pulihkan Backup", "Struk 80 mm lebih rapi", "Laporan lebih cepat"]
+    "changes": [
+      "Pindah HP lewat Pulihkan Backup",
+      "Struk 80 mm lebih rapi",
+      "Laporan lebih cepat"
+    ]
   },
-
   "_contoh_masalah_fatal": {
     "min_version_code": 3,
     "latest_version_code": 3,
@@ -32,6 +33,9 @@
     "title": "Ada masalah di versi ini",
     "message": "Kami menemukan bug yang bisa membuat total transaksi salah. Update sekarang supaya data Anda aman.",
     "changes_title": "Sebelum update",
-    "changes": ["Data Anda tetap aman di HP", "Disarankan Backup dulu dari Pengaturan"]
+    "changes": [
+      "Data Anda tetap aman di HP",
+      "Disarankan Backup dulu dari Pengaturan"
+    ]
   }
 }
