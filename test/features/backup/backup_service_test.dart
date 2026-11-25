@@ -254,8 +254,23 @@ void main() {
   group('isBackupDue', () {
     final now = DateTime(2026, 11, 19, 12);
 
-    test('true when there has never been a backup', () {
-      expect(isBackupDue(null, now), isTrue);
+    test('false right after install (never backed up)', () {
+      expect(isBackupDue(null, now, since: now, txCount: 0), isFalse);
+    });
+
+    test('false never backed up, 7 days used but < 20 transactions', () {
+      final since = now.subtract(const Duration(days: 7));
+      expect(isBackupDue(null, now, since: since, txCount: 19), isFalse);
+    });
+
+    test('false never backed up, 20 transactions but only 6 days used', () {
+      final since = now.subtract(const Duration(days: 6));
+      expect(isBackupDue(null, now, since: since, txCount: 20), isFalse);
+    });
+
+    test('true never backed up, 7 days used and 20 transactions', () {
+      final since = now.subtract(const Duration(days: 7));
+      expect(isBackupDue(null, now, since: since, txCount: 20), isTrue);
     });
 
     test('false 6 days after the last backup', () {

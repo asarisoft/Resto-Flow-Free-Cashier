@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/app_card.dart';
@@ -11,6 +12,8 @@ import '../../models/resto_profile.dart';
 import '../auth/auth_controller.dart';
 import '../settings/settings_providers.dart';
 import '../../core/theme/app_icons.dart';
+import '../settings/logo_image_service.dart';
+import '../settings/logo_picker_field.dart';
 import '../settings/profile_fields.dart';
 
 class OnboardingPage extends ConsumerStatefulWidget {
@@ -28,6 +31,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
   final _footerCtrl = TextEditingController();
   int _paperWidth = 58;
   bool _saving = false;
+  XFile? _pickedLogo;
 
   @override
   void dispose() {
@@ -131,14 +135,35 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         ],
       );
 
-  Widget _profileFields() => ProfileFields(
-        name: _nameCtrl,
-        address: _addressCtrl,
-        phone: _phoneCtrl,
-        footer: _footerCtrl,
-        paperWidth: _paperWidth,
-        onPaperWidth: (v) => setState(() => _paperWidth = v),
+  Widget _profileFields() => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          LogoPickerField(
+            picked: _pickedLogo,
+            savedPath: null,
+            enabled: !_saving,
+            onPick: _pickLogo,
+            onRemove: () => setState(() => _pickedLogo = null),
+          ),
+          const SizedBox(height: 16),
+          ProfileFields(
+            name: _nameCtrl,
+            address: _addressCtrl,
+            phone: _phoneCtrl,
+            footer: _footerCtrl,
+            paperWidth: _paperWidth,
+            onPaperWidth: (v) => setState(() => _paperWidth = v),
+            useLogo: _pickedLogo != null,
+            logoPath: _pickedLogo?.path,
+          ),
+        ],
       );
+
+  Future<void> _pickLogo() async {
+    final file = await LogoImageService().pickImage();
+    if (file == null || !mounted) return;
+    setState(() => _pickedLogo = file);
+  }
 
   Widget _saveButton() => PrimaryButton(
         label: 'Simpan Profil & Mulai',
@@ -178,6 +203,9 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     setState(() => _saving = true);
     try {
       final repo = ref.read(settingsRepositoryProvider);
+      final logoPath = _pickedLogo == null
+          ? null
+          : await LogoImageService().saveLocal(_pickedLogo!);
       await repo.updateProfile(RestoProfile(
         name: _nameCtrl.text.trim(),
         address: _addressCtrl.text.trim().isEmpty
@@ -190,6 +218,8 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             ? null
             : _footerCtrl.text.trim(),
         paperWidth: _paperWidth,
+        useLogo: logoPath != null,
+        logoPath: logoPath,
         createdAt: DateTime.now(),
       ));
       ref.invalidate(profileProvider);

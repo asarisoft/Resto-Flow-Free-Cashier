@@ -18,8 +18,15 @@ class BackupFormatException implements Exception {
 
 /// True when there has never been a backup, or the last one is more than
 /// 7 days before [now].
-bool isBackupDue(DateTime? last, DateTime now) {
-  if (last == null) return true;
+/// Belum pernah backup → baru diingatkan setelah toko dipakai ≥7 hari
+/// ([since] = tanggal profil dibuat) dan sudah ada ≥20 transaksi.
+bool isBackupDue(DateTime? last, DateTime now,
+    {DateTime? since, int txCount = 0}) {
+  if (last == null) {
+    return since != null &&
+        now.difference(since).inDays >= 7 &&
+        txCount >= 20;
+  }
   return now.difference(last).inDays > 7;
 }
 

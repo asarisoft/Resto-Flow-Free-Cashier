@@ -31,6 +31,7 @@ import '../../printer/printer_service.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/app_form_dialog.dart';
 import 'logo_image_service.dart';
+import 'logo_picker_field.dart';
 import 'profile_fields.dart';
 
 class SettingsPage extends ConsumerWidget {
@@ -550,7 +551,13 @@ class _EditProfileDialogState extends ConsumerState<_EditProfileDialog> {
       saving: _saving,
       onSubmit: _save,
       fields: [
-        _logoSection(context),
+        LogoPickerField(
+          picked: _pickedLogo,
+          savedPath: _removeLogo ? null : _logoPath,
+          enabled: !_saving,
+          onPick: _pickLogo,
+          onRemove: _removeLogoAction,
+        ),
         ProfileFields(
           name: _nameCtrl,
           address: _addrCtrl,
@@ -563,96 +570,6 @@ class _EditProfileDialogState extends ConsumerState<_EditProfileDialog> {
           logoPath: _pickedLogo?.path ?? (_removeLogo ? null : _logoPath),
         ),
       ],
-    );
-  }
-
-  Widget _logoSection(BuildContext context) {
-    final textTheme = AppTypography.textTheme;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text('Logo Struk', style: textTheme.titleSmall),
-        const SizedBox(height: 8),
-        Center(
-          child: Container(
-            height: 96,
-            width: 160,
-            decoration: BoxDecoration(
-              color: AppColors.background,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColors.border),
-            ),
-            clipBehavior: Clip.antiAlias,
-            child: _logoPreview(),
-          ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          children: [
-            Expanded(
-              child: SecondaryButton(
-                label: _hasLogo ? 'Ganti Logo' : 'Pilih Logo',
-                icon: AppIcons.addPhoto,
-                onPressed: _saving ? null : _pickLogo,
-              ),
-            ),
-            if (_hasLogo) ...[
-              const SizedBox(width: 8),
-              Expanded(
-                child: SecondaryButton(
-                  label: 'Hapus',
-                  icon: AppIcons.delete,
-                  onPressed: _saving ? null : _removeLogoAction,
-                ),
-              ),
-            ],
-          ],
-        ),
-      ],
-    );
-  }
-
-  bool get _hasLogo =>
-      (_pickedLogo != null) || (!_removeLogo && _logoPath != null);
-
-  Widget _logoPreview() {
-    final placeholder = Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        Icon(
-          AppIcons.brokenImage,
-          size: AppIcons.xl,
-          color: AppColors.textSecondary,
-        ),
-        const SizedBox(height: 4),
-        Text(
-          'Belum ada logo',
-          style: AppTypography.textTheme.labelSmall?.copyWith(
-            color: AppColors.textSecondary,
-          ),
-        ),
-      ],
-    );
-    if (_pickedLogo != null) {
-      return Image.file(
-        File(_pickedLogo!.path),
-        fit: BoxFit.contain,
-        errorBuilder: (_, __, ___) => placeholder,
-      );
-    }
-    final path = _removeLogo ? null : _logoPath;
-    if (path == null) return placeholder;
-    return FutureBuilder<String>(
-      future: LogoImageService.resolvePath(path),
-      builder: (context, snap) {
-        final abs = snap.data;
-        if (abs == null) return placeholder;
-        return Image.file(
-          File(abs),
-          fit: BoxFit.contain,
-          errorBuilder: (_, __, ___) => placeholder,
-        );
-      },
     );
   }
 

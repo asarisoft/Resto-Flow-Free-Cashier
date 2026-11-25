@@ -248,7 +248,7 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 - Tengah layar, max-width 400 dp
 
 ### 7.3 Onboarding (sekali setelah login pertama)
-- Form: nama resto, alamat, no telp, footer note
+- Form: logo struk (opsional, `LogoPickerField` — sama dengan Edit Profil), nama resto, alamat, no telp, footer note
 - Pilih ukuran kertas printer (58 / 80)
 - Tombol "Mulai"
 - Di `wide`: form max-width 520 dp
@@ -519,6 +519,8 @@ Kembali                 9.000
    ```
 3. Share sheet (`share_plus`) → simpan ke Files / Drive / kirim
 4. Atau tombol **Simpan ke Download** (`file_picker` `saveFile`, dialog simpan sistem/SAF): file di luar sandbox app, selamat dari uninstall. Dicatat sebagai backup hanya bila benar-benar tersimpan.
+
+Banner pengingat backup (Owner): sudah pernah backup → muncul bila backup terakhir > 7 hari. Belum pernah → muncul hanya setelah toko dipakai ≥ 7 hari (sejak profil dibuat) **dan** ≥ 20 transaksi lunas; tidak muncul saat baru install.
 
 Pengaturan menampilkan `Kasir Ceria v<versi> (<build>) · skema DB <n>` di bagian bawah (untuk support).
 

@@ -11,6 +11,8 @@ import '../../core/services/database_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/theme/app_typography.dart';
+import '../reports/report_providers.dart';
+import '../settings/settings_providers.dart';
 import '../users/users_providers.dart';
 import 'backup_service.dart';
 
@@ -18,10 +20,18 @@ final lastBackupTimeProvider = FutureProvider<DateTime?>((ref) {
   return BackupService.lastBackupTime();
 });
 
+final _paidTxCountProvider = FutureProvider<int>((ref) {
+  return ref
+      .watch(reportsDaoProvider)
+      .countTransactions(DateTime(2000), DateTime(9999));
+});
+
 final backupDueProvider = Provider<bool>((ref) {
   return isBackupDue(
     ref.watch(lastBackupTimeProvider).valueOrNull,
     DateTime.now(),
+    since: ref.watch(profileProvider).valueOrNull?.createdAt,
+    txCount: ref.watch(_paidTxCountProvider).valueOrNull ?? 0,
   );
 });
 
