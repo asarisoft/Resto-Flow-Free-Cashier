@@ -79,5 +79,5 @@
 - [x] Commit `feat(support): halaman dukung dari web`.
 
 ### Task 7: Docs
-- [ ] `docs/SPEC.md` (update wajib, dukung web, package), `docs/DESIGN.md` (ForceUpdatePage), graphify update, centang plan.
-- [ ] Commit `docs: update wajib & dukung web`.
+- [x] `docs/SPEC.md` (update wajib, dukung web, package), `docs/DESIGN.md` (ForceUpdatePage), graphify update, centang plan.
+- [x] Commit `docs: update wajib & dukung web`.

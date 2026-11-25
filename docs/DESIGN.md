@@ -94,6 +94,7 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | `SearchField`   | Kolom cari dengan ikon + tombol hapus               |
 | `ProductSearchBar` | `SearchField` "Cari produk" + tombol ikon grid/list (tooltip + Semantics, ≥ 48 dp). Dipakai Produk & POS |
 | `ProductListRow` | Baris produk mode list: foto 48 dp, nama, harga, `ReadyChip`; clay compact radius 16, tinggi ≥ 64 dp; parameter sama dengan `ProductCard` |
+| `ForceUpdatePage` | Layar update wajib (`features/update/`): `AppCard` tengah (maks 420 dp) berisi `AppLogo`, judul "Update wajib", pesan, `PrimaryButton` "Update Sekarang"; tanpa tombol kembali (`PopScope`) |
 | `ReceiptPreview`| Preview nota monospace (teks sama dengan yang dicetak) di form profil |
 
 ## Ikon
