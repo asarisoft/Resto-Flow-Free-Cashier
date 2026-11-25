@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../theme/app_motion.dart';
 import '../theme/app_typography.dart';
 
 /// Format rupiah (int) → "Rp 15.000". Satu format untuk seluruh app.
@@ -45,6 +46,25 @@ class AmountTotal extends StatelessWidget {
       AmountText._format.format(amount),
       style: AppTypography.textTheme.displayMedium
           ?.apply(fontFeatures: [const FontFeature.tabularFigures()]),
+    );
+  }
+}
+
+/// [AmountText] yang berubah halus (count-up). Nilai tetap `int` rupiah dan
+/// selalu berakhir tepat di [amount]; tanpa animasi saat pertama tampil.
+class CountUpAmount extends StatelessWidget {
+  final int amount;
+  final TextStyle? style;
+
+  const CountUpAmount({super.key, required this.amount, this.style});
+
+  @override
+  Widget build(BuildContext context) {
+    return TweenAnimationBuilder<int>(
+      tween: IntTween(end: amount),
+      duration: AppMotion.of(context, AppMotion.fast),
+      curve: AppMotion.curve,
+      builder: (_, v, __) => AmountText(amount: v, style: style),
     );
   }
 }

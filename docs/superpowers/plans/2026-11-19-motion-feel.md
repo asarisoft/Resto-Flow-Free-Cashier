@@ -21,8 +21,8 @@
 - [ ] Catat di `docs/DESIGN.md` bagian Animasi
 
 ### 2. Keranjang & tambah item
-- [ ] Tambah item: umpan balik singkat (badge keranjang "pop" kecil) + `HapticFeedback.selectionClick()`
-- [ ] Angka total berubah halus (count-up singkat, tetap `int` rupiah, tabular figures)
+- [x] Tambah item: umpan balik singkat (badge keranjang "pop" kecil) + `HapticFeedback.selectionClick()`
+- [x] Angka total berubah halus (count-up singkat, tetap `int` rupiah, tabular figures)
 
 ### 3. Pembayaran
 - [ ] Detail pesanan / pembayaran memakai **modal bottom sheet** (Material 3) dengan geser-tutup

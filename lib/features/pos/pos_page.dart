@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/amount_text.dart';
+import '../../core/widgets/pop_on_change.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../models/product.dart';
 import '../../models/transaction.dart' as models;
@@ -260,7 +261,10 @@ class _PosPageState extends ConsumerState<PosPage> {
               ),
               child: Row(
                 children: [
-                  const Icon(AppIcons.cart, color: AppColors.onPrimary),
+                  PopOnChange(
+                    value: cart.fold(0, (s, i) => s + i.qty),
+                    child: const Icon(AppIcons.cart, color: AppColors.onPrimary),
+                  ),
                   const SizedBox(width: 12),
                   Text(
                     '${cart.fold(0, (s, i) => s + i.qty)} item',
@@ -276,7 +280,7 @@ class _PosPageState extends ConsumerState<PosPage> {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerRight,
-                        child: AmountText(
+                        child: CountUpAmount(
                           amount: cart.fold(0, (s, i) => s + i.subtotal),
                           style: AppTypography.textTheme.titleMedium?.copyWith(
                             color: AppColors.onPrimary,
@@ -532,6 +536,7 @@ class _ProductGrid extends ConsumerWidget {
       return;
     }
     ref.read(cartProvider.notifier).addItem(product);
+    HapticFeedback.selectionClick();
   }
 }
 
@@ -627,7 +632,7 @@ class _CartPanel extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    AmountText(
+                    CountUpAmount(
                       amount: subtotal,
                       style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.onPrimary,
@@ -652,7 +657,7 @@ class _CartPanel extends ConsumerWidget {
                       child: FittedBox(
                         fit: BoxFit.scaleDown,
                         alignment: Alignment.centerRight,
-                        child: AmountText(
+                        child: CountUpAmount(
                           amount: subtotal,
                           style: textTheme.displayMedium?.copyWith(
                             color: AppColors.onPrimary,
