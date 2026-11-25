@@ -27,10 +27,10 @@
 
 ### Task 1: Rebrand package `id.asdev.kasirkita`
 **Files:** `android/app/build.gradle.kts` (namespace, applicationId), pindah `MainActivity.kt` ke `android/app/src/main/kotlin/id/asdev/kasirkita/`, grep `freecashier`/`aisense` di repo & update semua; teks developer `ASDEV.id` di halaman Tentang/Pengaturan bila ada.
-- [ ] Ganti namespace + applicationId + package di MainActivity.
-- [ ] `grep -rn "aisense\|freecashier"` → 0 hasil (kecuali git history).
-- [ ] `flutter build apk --debug` sukses.
-- [ ] Commit `chore(android): package id.asdev.kasirkita`.
+- [x] Ganti namespace + applicationId + package di MainActivity.
+- [x] `grep -rn "aisense\|freecashier"` → 0 hasil (kecuali git history).
+- [x] `flutter build apk --debug` sukses.
+- [x] Commit `chore(android): package id.asdev.kasirkita`.
 
 ### Task 2: Signing release (keystore)
 **Files:** `android/app/build.gradle.kts`, `.gitignore`, `docs/RELEASE.md` (baru).

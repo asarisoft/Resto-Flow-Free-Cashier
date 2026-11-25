@@ -1,4 +1,4 @@
-package id.aisense.freecashier
+package id.asdev.kasirkita
 
 import io.flutter.embedding.android.FlutterActivity
 

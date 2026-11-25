@@ -5,7 +5,7 @@ plugins {
 }
 
 android {
-    namespace = "id.aisense.freecashier"
+    namespace = "id.asdev.kasirkita"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -15,7 +15,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "id.aisense.freecashier"
+        applicationId = "id.asdev.kasirkita"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

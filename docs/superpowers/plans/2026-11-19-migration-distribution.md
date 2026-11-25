@@ -13,7 +13,7 @@
 | Hal | Kondisi | Risiko |
 |---|---|---|
 | Signing release | `android/app/build.gradle*` → `signingConfig = debug` | **Kritis.** Debug keystore beda per laptop. APK dari laptop lain = signature beda → Android menolak install timpa → user harus uninstall → **data hilang**. Play Store juga menolak debug key. |
-| applicationId | `id.aisense.freecashier` | Tidak boleh berubah selamanya (beda ID = app lain, data tidak terbawa). |
+| applicationId | `id.asdev.kasirkita` | Tidak boleh berubah selamanya (beda ID = app lain, data tidak terbawa). |
 | Versi | `pubspec.yaml` `1.0.0+1` | `versionCode` (+N) harus naik tiap rilis, kalau tidak Android menolak update. |
 | Skema DB | **Di-reset ke `schemaVersion = 1`** (2026-11-19, app belum pernah rilis); `onUpgrade` kosong, siap untuk v2 | Bagus. Device test lama (DB v4) wajib uninstall/clear data sekali. |
 | Downgrade DB | Tidak ditangani | Restore backup dari app lebih baru / install APK lebih lama → Drift buka DB skema lebih tinggi tanpa error jelas → crash/data rusak. |
@@ -62,7 +62,7 @@
   "schemaVersion": 4,
   "appVersion": "1.0.0+1",
   "timestamp": 1763520000000,
-  "applicationId": "id.aisense.freecashier"
+  "applicationId": "id.asdev.kasirkita"
 }
 ```
 - `backupFormat` naik hanya kalau struktur ZIP berubah (mis. pindah folder gambar). Restore wajib bisa membaca **semua** `backupFormat` lama.
@@ -91,7 +91,7 @@
 ## 4. Fase distribusi manual (APK, sebelum Play Store)
 
 1. **Buat release keystore SEKARANG** (sekali seumur app):
-   - `keytool -genkey -v -keystore ~/keys/freecashier-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload`
+   - `keytool -genkey -v -keystore ~/keys/kasirkita-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias upload`
    - `android/key.properties` (masuk `.gitignore`), `build.gradle` → `signingConfigs.release`.
    - **Simpan keystore + password di 2 tempat aman** (password manager + offline). Hilang key = semua user harus uninstall = data hilang.
 2. Semua APK yang dibagikan **wajib** `fvm flutter build apk --release` dengan key itu. Jangan bagikan APK debug.
@@ -105,7 +105,7 @@
 
 ## 5. Fase Play Store
 
-1. **applicationId sama** (`id.aisense.freecashier`).
+1. **applicationId sama** (`id.asdev.kasirkita`).
 2. Saat aktifkan Play App Signing: pilih **"Use existing app signing key"** dan upload keystore dari §4.1 (pakai tool PEPK dari Play Console). Hasil: APK dari Play punya signature sama dengan APK manual → user manual bisa update langsung dari Play Store tanpa uninstall (S7).
    - Kalau malah pakai key yang dibuat Google → semua user APK manual wajib Backup → uninstall → install dari Play → Restore. Hindari.
 3. `versionCode` di Play harus > versionCode APK manual terakhir.
