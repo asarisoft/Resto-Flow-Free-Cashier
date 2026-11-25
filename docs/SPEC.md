@@ -486,7 +486,7 @@ Kembali                 9.000
    ```
    ddMMMyy HH.mm.zip  (mis. 19Nov26 10.00.zip)
    ├── database.db
-   ├── manifest.json     (versi app, tanggal, jumlah record)
+   ├── manifest.json     (backupFormat, applicationId, appVersion `1.0.0+N`, schemaVersion, timestamp)
    └── images/
        ├── products/...
        └── logo/...
@@ -495,9 +495,11 @@ Kembali                 9.000
 
 ### Restore (Settings → "Restore Data", Owner only)
 1. `file_picker` pilih file `.zip`
-2. Validasi: `manifest.json` + `database.db` ada, schema kompatibel
+2. Validasi: `manifest.json` + `database.db` ada; `PRAGMA user_version` (header SQLite) > skema app → ditolak "Update aplikasi dulu"
 3. Dialog konfirmasi: "Semua data saat ini akan DIGANTI"
-4. Tutup DB → ekstrak ke temp → swap atomik (DB + images) → buka ulang → kembali ke login
+4. Auto-backup data sekarang ke `<docs>/backups/pre_restore_<tgl>.zip` (simpan maks 3)
+5. Tutup DB → ekstrak ke temp → swap (DB + images) → buka DB hasil restore (migrasi Drift) + `quick_check`; gagal → data lama dikembalikan + pesan error
+6. Kembali ke login
 
 **Penting:** ZIP invalid/corrupt → pesan error jelas, data existing tidak tersentuh.
 

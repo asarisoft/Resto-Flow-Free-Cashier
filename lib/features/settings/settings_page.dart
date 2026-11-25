@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import 'package:path_provider/path_provider.dart';
 import '../../core/services/database_provider.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
@@ -450,15 +449,13 @@ class SettingsPage extends ConsumerWidget {
     if (confirmed != true || !context.mounted) return;
 
     try {
-      final dir = await getApplicationDocumentsDirectory();
+      final backup = await createBackupService(ref);
       final db = ref.read(databaseProvider);
       // Restore contract: DB must be closed before files are swapped, then
       // the provider is invalidated so the next read opens the restored DB.
       // Username diambil sebelum DB diganti; log ditulis ke DB hasil restore.
       final actor = ref.read(currentUserProvider).valueOrNull?.username ?? '-';
-      await BackupService(
-        dbDir: dir,
-      ).restoreFromZip(path, closeDatabase: db.close);
+      await backup.restoreFromZip(path, closeDatabase: db.close, database: db);
       ref.invalidate(databaseProvider);
       await logActivity(
         ref,

@@ -24,7 +24,7 @@ void main() {
     await dbDir.create(recursive: true);
     dbFile = File(p.join(dbDir.path, 'kasir_resto.sqlite'));
     db = AppDatabase.forFile(dbFile);
-    service = BackupService(dbDir: dbDir);
+    service = BackupService(dbDir: dbDir, schemaVersion: 1, appVersion: '1.0.0+2');
   });
 
   tearDown(() async {
@@ -63,6 +63,9 @@ void main() {
           as List<int>),
     ) as Map<String, dynamic>;
     expect(manifest['schemaVersion'], 1);
+    expect(manifest['backupFormat'], 1);
+    expect(manifest['applicationId'], 'id.asdev.kasirkita');
+    expect(manifest['appVersion'], '1.0.0+2');
 
     final snapshot =
         archive.firstWhere((e) => e.name == 'database.db').content as List<int>;
@@ -154,6 +157,98 @@ void main() {
     expect(closed, isFalse);
     expect(await dbFile.readAsBytes(), before);
     expect((await db.select(db.products).get()).single.id, 'p1');
+  });
+
+  Future<File> rezip(File zip, List<int> Function(List<int> db) patch,
+      String name) async {
+    final src = ZipDecoder().decodeBytes(await zip.readAsBytes());
+    final out = Archive();
+    for (final e in src) {
+      final bytes = e.name == 'database.db'
+          ? patch(e.content as List<int>)
+          : e.content as List<int>;
+      out.addFile(ArchiveFile(e.name, bytes.length, bytes));
+    }
+    final f = File(p.join(temp.path, name));
+    await f.writeAsBytes(ZipEncoder().encode(out)!);
+    return f;
+  }
+
+  test('restore backup dari skema lebih baru ditolak, data & DB tetap terbuka',
+      () async {
+    await seed();
+    final zip = await service.exportZip(database: db);
+    final newer = await rezip(zip, (b) {
+      final c = List<int>.from(b);
+      c[63] = 2; // user_version = 2 > schemaVersion app (1)
+      return c;
+    }, 'newer.zip');
+    final before = await dbFile.readAsBytes();
+
+    var closed = false;
+    await expectLater(
+      service.restoreFromZip(newer.path, closeDatabase: () async {
+        closed = true;
+        await db.close();
+      }, database: db),
+      throwsA(isA<BackupFormatException>()
+          .having((e) => e.message, 'message', contains('Update aplikasi'))),
+    );
+    expect(closed, isFalse);
+    expect(await dbFile.readAsBytes(), before);
+    expect(await Directory(p.join(dbDir.path, 'backups')).exists(), isFalse);
+  });
+
+  test('restore DB rusak: rollback, data lama (produk + foto) kembali',
+      () async {
+    await seed();
+    final zip = await service.exportZip(database: db);
+    // Header SQLite valid, isi sampah.
+    final broken = await rezip(zip, (b) {
+      final c = List<int>.filled(b.length, 7);
+      c.setRange(0, 60, b.sublist(0, 60));
+      c.setRange(60, 64, [0, 0, 0, 1]);
+      return c;
+    }, 'broken.zip');
+
+    await expectLater(
+      service.restoreFromZip(broken.path,
+          closeDatabase: db.close, database: db),
+      throwsA(isA<BackupFormatException>()
+          .having((e) => e.message, 'message', contains('dikembalikan'))),
+    );
+
+    db = AppDatabase.forFile(dbFile);
+    expect((await db.select(db.products).get()).single.price, 15000);
+    expect(
+        await File(p.join(dbDir.path, 'images', 'foto.jpg')).readAsBytes(),
+        [1, 2, 3]);
+    expect(await File('${dbFile.path}.pre_restore').exists(), isFalse);
+    expect(await Directory('${dbDir.path}/images.restore_old').exists(), isFalse);
+  });
+
+  test('restore membuat pre_restore zip, simpan maks 3 terakhir', () async {
+    await seed();
+    final zip = await service.exportZip(database: db);
+    final backups = Directory(p.join(dbDir.path, 'backups'));
+    await backups.create(recursive: true);
+    for (final d in ['20200101_000001', '20200101_000002', '20200101_000003']) {
+      await File(p.join(backups.path, 'pre_restore_$d.zip')).writeAsBytes([0]);
+    }
+
+    await service.restoreFromZip(zip.path,
+        closeDatabase: db.close, database: db);
+
+    final names = (await backups.list().toList())
+        .map((e) => p.basename(e.path))
+        .toList()
+      ..sort();
+    expect(names.length, 3);
+    expect(names, isNot(contains('pre_restore_20200101_000001.zip')));
+    // File terbaru berisi data sebelum restore (bisa dibuka sebagai zip).
+    final latest = File(p.join(backups.path, names.last));
+    final a = ZipDecoder().decodeBytes(await latest.readAsBytes());
+    expect(a.map((e) => e.name), contains('database.db'));
   });
 
   group('isBackupDue', () {

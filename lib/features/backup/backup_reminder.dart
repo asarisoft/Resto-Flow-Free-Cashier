@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
@@ -21,14 +22,24 @@ final backupDueProvider = Provider<bool>((ref) {
   );
 });
 
+/// BackupService dengan versi app (`1.0.0+2`) & skema DB yang sedang berjalan.
+Future<BackupService> createBackupService(WidgetRef ref) async {
+  final dir = await getApplicationDocumentsDirectory();
+  final info = await PackageInfo.fromPlatform();
+  return BackupService(
+    dbDir: dir,
+    schemaVersion: ref.read(databaseProvider).schemaVersion,
+    appVersion: '${info.version}+${info.buildNumber}',
+  );
+}
+
 /// Export the database zip and share it. Shows a SnackBar on failure or when
 /// the user dismisses the share sheet. The last-backup time is recorded only
 /// after the user actually shares (or the platform can't tell), so a cancelled
 /// share never marks the data as backed up.
 Future<void> runBackupNow(WidgetRef ref, BuildContext context) async {
   try {
-    final dir = await getApplicationDocumentsDirectory();
-    final file = await BackupService(dbDir: dir)
+    final file = await (await createBackupService(ref))
         .exportZip(database: ref.read(databaseProvider));
     final result = await SharePlus.instance.share(
       ShareParams(files: [XFile(file.path)]),

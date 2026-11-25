@@ -138,11 +138,11 @@
 - [x] Tambah ke checklist rilis (`docs/RELEASE.md` §5): "ubah skema = schemaVersion++ + dump + tes"
 
 ### Task 5: Restore yang sadar versi
-- [ ] Manifest: `backupFormat`, `applicationId`, `appVersion` dari `package_info_plus`
-- [ ] Restore: baca `user_version` DB staging; tolak kalau > skema app (pesan Indonesia)
-- [ ] Auto-backup `pre_restore_<tgl>.zip` sebelum swap (maks 3)
-- [ ] Rollback kalau buka/migrasi DB hasil restore gagal
-- [ ] Tes: restore backup v(N-1) → migrasi sukses; restore v(N+1) → ditolak; restore DB rusak → rollback
+- [x] Manifest: `backupFormat`, `applicationId`, `appVersion` dari `package_info_plus`
+- [x] Restore: baca `user_version` DB staging; tolak kalau > skema app (pesan Indonesia)
+- [x] Auto-backup `pre_restore_<tgl>.zip` sebelum swap (maks 3)
+- [x] Rollback kalau buka/migrasi DB hasil restore gagal
+- [x] Tes: restore backup v(N-1) → migrasi sukses (baru ada v1 → dicakup `test/migration_test.dart` + restore versi sama); restore v(N+1) → ditolak; restore DB rusak → rollback
 
 ### Task 6: Safety copy sebelum migrasi
 - [ ] Sebelum buka `AppDatabase`: baca `user_version` file; kalau < schemaVersion → salin ke `backups/pre_migration_v<old>.sqlite`

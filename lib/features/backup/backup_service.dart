@@ -44,16 +44,25 @@ bool shouldRecordBackup(ShareResultStatus status) {
 class BackupService {
   static const _lastBackupKey = 'last_backup_at';
 
+  /// Naik hanya kalau struktur ZIP berubah. Restore harus bisa baca semua format lama.
+  static const backupFormat = 1;
+  static const applicationId = 'id.asdev.kasirkita';
+  static const _maxPreRestore = 3;
+
   final Directory dbDir;
   final String dbName;
   final String imagesDirName;
   final String appVersion;
 
+  /// Skema DB tertinggi yang dikenal app ini (`AppDatabase.schemaVersion`).
+  final int schemaVersion;
+
   BackupService({
     required this.dbDir,
+    required this.schemaVersion,
     this.dbName = 'kasir_resto.sqlite',
     this.imagesDirName = 'images',
-    this.appVersion = '1.0.0',
+    this.appVersion = '0.0.0',
   });
 
   File get _dbFile => File(p.join(dbDir.path, dbName));
@@ -79,7 +88,9 @@ class BackupService {
   /// The snapshot is a consistent standalone sqlite file even while the app
   /// keeps using [database]. WAL content is checkpointed first so no
   /// committed row can be missed by anything reading the main file later.
-  Future<File> exportZip({required AppDatabase database}) async {
+  ///
+  /// Hasil ditulis ke [to] bila diberikan, selain itu ke folder temp.
+  Future<File> exportZip({required AppDatabase database, File? to}) async {
     final ts = DateTime.now().millisecondsSinceEpoch;
     final tempDir = Directory(p.join(dbDir.path, '.backup_tmp'));
     if (await tempDir.exists()) await tempDir.delete(recursive: true);
@@ -97,6 +108,8 @@ class BackupService {
       archive.addFile(ArchiveFile('database.db', dbBytes.length, dbBytes));
 
       final manifest = jsonEncode({
+        'backupFormat': backupFormat,
+        'applicationId': applicationId,
         'timestamp': ts,
         'appVersion': appVersion,
         'schemaVersion': database.schemaVersion,
@@ -116,8 +129,9 @@ class BackupService {
       }
 
       final zipBytes = ZipEncoder().encode(archive)!;
-      final out =
+      final out = to ??
           File(p.join(Directory.systemTemp.path, '${DateFormat('ddMMMyy HH.mm').format(DateTime.now())}.zip'));
+      await out.parent.create(recursive: true);
       await out.writeAsBytes(zipBytes, flush: true);
       return out;
     } finally {
@@ -132,9 +146,16 @@ class BackupService {
   /// and staged, so a corrupt/invalid zip leaves the live database untouched
   /// and open. After this returns, invalidate `databaseProvider` and send the
   /// user back to login before any query runs again.
+  ///
+  /// Urutan: validasi ZIP -> tolak bila skema backup > skema app -> staging ->
+  /// auto-backup data sekarang `backups/pre_restore_<tgl>.zip` (bila
+  /// [database] diberikan; maks 3) -> tutup DB -> swap -> buka DB hasil restore
+  /// (migrasi Drift) + `quick_check`. Gagal buka/migrasi -> data lama
+  /// dikembalikan dan [BackupFormatException] dilempar.
   Future<void> restoreFromZip(
     String zipPath, {
     required Future<void> Function() closeDatabase,
+    AppDatabase? database,
   }) async {
     final file = File(zipPath);
     if (!await file.exists()) throw BackupFormatException('zip not found');
@@ -156,6 +177,13 @@ class BackupService {
     if (!_looksLikeSqlite(dbBytes)) {
       throw BackupFormatException(
           'invalid backup: database.db is not a SQLite database');
+    }
+
+    // Sumber kebenaran = PRAGMA user_version di header SQLite (byte 60-63), bukan manifest.
+    final backupSchema = _userVersion(dbBytes);
+    if (backupSchema > schemaVersion) {
+      throw BackupFormatException(
+          'Backup dibuat oleh versi aplikasi yang lebih baru. Update aplikasi dulu.');
     }
 
     await dbDir.create(recursive: true);
@@ -183,10 +211,21 @@ class BackupService {
         await out.writeAsBytes(_content(entry), flush: true);
       }
 
+      // Salinan data sekarang, supaya restore yang salah bisa dibatalkan.
+      if (database != null) await _preRestoreBackup(database);
+
       // All validated. Stop the live connection before swapping files.
       await closeDatabase();
       await _swapDatabase(stagedDb);
       await _swapImages(stagedImages);
+      try {
+        await _verifyOpens();
+      } catch (e) {
+        await _rollback();
+        throw BackupFormatException(
+            'Backup tidak bisa dibuka ($e). Data lama dikembalikan.');
+      }
+      await _discardOld();
     } finally {
       if (await staging.exists()) await staging.delete(recursive: true);
     }
@@ -236,7 +275,6 @@ class BackupService {
       }
       rethrow;
     }
-    if (await previous.exists()) await previous.delete();
   }
 
   Future<void> _swapImages(Directory stagedImages) async {
@@ -249,6 +287,58 @@ class BackupService {
       if (await old.exists()) await old.rename(_imagesDir.path);
       rethrow;
     }
-    if (await old.exists()) await old.delete(recursive: true);
+  }
+
+  File get _previousDb => File('${_dbFile.path}.pre_restore');
+  Directory get _oldImages => Directory('${_imagesDir.path}.restore_old');
+
+  /// Buka DB hasil restore sekali (memicu migrasi Drift) lalu cek integritas.
+  Future<void> _verifyOpens() async {
+    final db = AppDatabase.forFile(_dbFile);
+    try {
+      final rows = await db.customSelect('PRAGMA quick_check').get();
+      final result = rows.isEmpty ? null : rows.first.data.values.first;
+      if (result != 'ok') throw StateError('integrity check: $result');
+    } finally {
+      await db.close();
+    }
+  }
+
+  Future<void> _rollback() async {
+    for (final suffix in const ['', '-wal', '-shm']) {
+      final f = File('${_dbFile.path}$suffix');
+      if (await f.exists()) await f.delete();
+    }
+    if (await _previousDb.exists()) await _previousDb.rename(_dbFile.path);
+    if (await _imagesDir.exists()) await _imagesDir.delete(recursive: true);
+    if (await _oldImages.exists()) await _oldImages.rename(_imagesDir.path);
+  }
+
+  Future<void> _discardOld() async {
+    if (await _previousDb.exists()) await _previousDb.delete();
+    if (await _oldImages.exists()) await _oldImages.delete(recursive: true);
+  }
+
+  Future<void> _preRestoreBackup(AppDatabase database) async {
+    final dir = Directory(p.join(dbDir.path, 'backups'));
+    final stamp = DateFormat('yyyyMMdd_HHmmss').format(DateTime.now());
+    await exportZip(
+        database: database, to: File(p.join(dir.path, 'pre_restore_$stamp.zip')));
+    final all = await dir
+        .list()
+        .where((e) => e is File && p.basename(e.path).startsWith('pre_restore_'))
+        .map((e) => e.path)
+        .toList()
+      ..sort();
+    for (final path in all.take(all.length > _maxPreRestore ? all.length - _maxPreRestore : 0)) {
+      await File(path).delete();
+    }
+  }
+
+  int _userVersion(List<int> b) {
+    if (b.length < 100) {
+      throw BackupFormatException('invalid backup: database.db too small');
+    }
+    return (b[60] << 24) | (b[61] << 16) | (b[62] << 8) | b[63];
   }
 }
