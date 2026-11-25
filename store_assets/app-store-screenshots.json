@@ -1,0 +1,313 @@
+{
+  "schemaVersion": 2,
+  "appName": "Kasir Ceria",
+  "themeId": "soft-clay-wellness",
+  "connectedCanvas": true,
+  "locales": [
+    "id"
+  ],
+  "locale": "id",
+  "device": "android",
+  "orientation": "portrait",
+  "appIcon": "/app-icon.png",
+  "slidesByDevice": {
+    "iphone": [],
+    "android": [
+      {
+        "id": "kk_01",
+        "layout": "no-device",
+        "label": {
+          "id": "Gratis · Tanpa internet"
+        },
+        "headline": {
+          "id": "Kasir gratis\nuntuk warung & cafe"
+        },
+        "screenshot": "",
+        "backgroundColor": "#E8D4FD",
+        "transforms": {
+          "caption": {
+            "x": 86,
+            "y": 150,
+            "width": 908,
+            "height": 560,
+            "rotation": 0,
+            "zIndex": 4
+          }
+        },
+        "imageElements": [
+          {
+            "id": "hero1",
+            "src": "/hero/login_hero.png",
+            "fit": "contain",
+            "transform": {
+              "x": -560,
+              "y": 1110,
+              "width": 1720,
+              "height": 860,
+              "zIndex": 1
+            },
+            "fade": {
+              "edge": "top",
+              "amount": 0.25
+            }
+          }
+        ]
+      },
+      {
+        "id": "kk_02",
+        "layout": "device-bottom",
+        "label": {
+          "id": "Kasir"
+        },
+        "headline": {
+          "id": "Cari & pilih menu\nsecepat kilat"
+        },
+        "screenshot": "/screenshots/android/phone/{locale}/02.png",
+        "backgroundColor": "#FFD9C7"
+      },
+      {
+        "id": "kk_03",
+        "layout": "device-top",
+        "label": {
+          "id": "Cepat"
+        },
+        "headline": {
+          "id": "Bayar dalam\nsekali tap"
+        },
+        "screenshot": "/screenshots/android/phone/{locale}/03.png",
+        "backgroundColor": "#CFF1DE"
+      },
+      {
+        "id": "kk_04",
+        "layout": "hero",
+        "label": {
+          "id": "Printer Bluetooth"
+        },
+        "headline": {
+          "id": "Struk rapi,\nlangsung cetak"
+        },
+        "screenshot": "/screenshots/android/phone/{locale}/04.png",
+        "backgroundColor": "#FFE9B0"
+      },
+      {
+        "id": "kk_05",
+        "layout": "device-top",
+        "label": {
+          "id": "Laporan & pengeluaran"
+        },
+        "headline": {
+          "id": "Tahu untung\ntiap hari"
+        },
+        "screenshot": "/screenshots/android/phone/{locale}/05.png",
+        "inverted": true
+      },
+      {
+        "id": "kk_06",
+        "layout": "device-bottom",
+        "label": {
+          "id": "Data milik Anda"
+        },
+        "headline": {
+          "id": "Aman di HP,\npindah HP mudah"
+        },
+        "screenshot": "/screenshots/android/phone/{locale}/06.png",
+        "backgroundColor": "#FBF4EA"
+      }
+    ],
+    "ipad": [],
+    "android-7": [
+      {
+        "id": "kk_12",
+        "layout": "no-device",
+        "label": {
+          "id": "Gratis · Tanpa internet"
+        },
+        "headline": {
+          "id": "Kasir gratis untuk warung & cafe"
+        },
+        "screenshot": "",
+        "backgroundColor": "#E8D4FD",
+        "transforms": {
+          "caption": {
+            "x": 120,
+            "y": 300,
+            "width": 1000,
+            "height": 700,
+            "rotation": 0,
+            "zIndex": 4
+          }
+        },
+        "imageElements": [
+          {
+            "id": "hero1",
+            "src": "/hero/login_hero.png",
+            "fit": "contain",
+            "transform": {
+              "x": 1060,
+              "y": 0,
+              "width": 1500,
+              "height": 1600,
+              "zIndex": 1
+            },
+            "fade": {
+              "edge": "left",
+              "amount": 0.2
+            }
+          }
+        ]
+      },
+      {
+        "id": "kk_13",
+        "layout": "split-landscape",
+        "label": {
+          "id": "Tablet"
+        },
+        "headline": {
+          "id": "Layar lega untuk kasir tablet"
+        },
+        "screenshot": "/screenshots/android/tablet-7/landscape/{locale}/02.png",
+        "backgroundColor": "#FFD9C7"
+      },
+      {
+        "id": "kk_14",
+        "layout": "split-landscape",
+        "label": {
+          "id": "Laporan"
+        },
+        "headline": {
+          "id": "Omzet & laba sekali lihat"
+        },
+        "screenshot": "/screenshots/android/tablet-7/landscape/{locale}/03.png",
+        "inverted": true
+      },
+      {
+        "id": "kk_15",
+        "layout": "split-landscape",
+        "label": {
+          "id": "Pengeluaran"
+        },
+        "headline": {
+          "id": "Pengeluaran tercatat rapi"
+        },
+        "screenshot": "/screenshots/android/tablet-7/landscape/{locale}/04.png",
+        "backgroundColor": "#CFF1DE"
+      }
+    ],
+    "android-10": [
+      {
+        "id": "kk_08",
+        "layout": "no-device",
+        "label": {
+          "id": "Gratis · Tanpa internet"
+        },
+        "headline": {
+          "id": "Kasir gratis untuk warung & cafe"
+        },
+        "screenshot": "",
+        "backgroundColor": "#E8D4FD",
+        "transforms": {
+          "caption": {
+            "x": 120,
+            "y": 300,
+            "width": 1000,
+            "height": 700,
+            "rotation": 0,
+            "zIndex": 4
+          }
+        },
+        "imageElements": [
+          {
+            "id": "hero1",
+            "src": "/hero/login_hero.png",
+            "fit": "contain",
+            "transform": {
+              "x": 1060,
+              "y": 0,
+              "width": 1500,
+              "height": 1600,
+              "zIndex": 1
+            },
+            "fade": {
+              "edge": "left",
+              "amount": 0.2
+            }
+          }
+        ]
+      },
+      {
+        "id": "kk_09",
+        "layout": "split-landscape",
+        "label": {
+          "id": "Tablet"
+        },
+        "headline": {
+          "id": "Layar lega untuk kasir tablet"
+        },
+        "screenshot": "/screenshots/android/tablet-10/landscape/{locale}/02.png",
+        "backgroundColor": "#FFD9C7"
+      },
+      {
+        "id": "kk_10",
+        "layout": "split-landscape",
+        "label": {
+          "id": "Laporan"
+        },
+        "headline": {
+          "id": "Omzet & laba sekali lihat"
+        },
+        "screenshot": "/screenshots/android/tablet-10/landscape/{locale}/03.png",
+        "inverted": true
+      },
+      {
+        "id": "kk_11",
+        "layout": "split-landscape",
+        "label": {
+          "id": "Pengeluaran"
+        },
+        "headline": {
+          "id": "Pengeluaran tercatat rapi"
+        },
+        "screenshot": "/screenshots/android/tablet-10/landscape/{locale}/04.png",
+        "backgroundColor": "#CFF1DE"
+      }
+    ],
+    "feature-graphic": [
+      {
+        "id": "kk_07",
+        "layout": "feature-graphic",
+        "label": {},
+        "headline": {
+          "id": "Kasir gratis & offline untuk UMKM"
+        },
+        "screenshot": "",
+        "backgroundColor": "#FBF4EA"
+      }
+    ]
+  },
+  "crossScreenMockupsByDevice": {
+    "iphone": [],
+    "ipad": [],
+    "android": [],
+    "android-7": [],
+    "android-10": [],
+    "feature-graphic": []
+  },
+  "fontId": "self-hosted",
+  "importedFont": {
+    "src": "/fonts/imported/Outfit.woff2",
+    "format": "woff2",
+    "name": "Outfit"
+  },
+  "scene": {
+    "backdrop": "solid",
+    "span": false,
+    "decoration": "blobs",
+    "shadow": 60,
+    "glow": 0,
+    "tilt": 0,
+    "headlineWeight": 700,
+    "headlineScale": 1,
+    "headlineCase": "as-typed",
+    "captionAlign": "auto"
+  }
+}
