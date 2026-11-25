@@ -57,6 +57,18 @@ void main() {
     await scenario(tester, const ReportPage());
   });
 
+  testWidgets('Laporan: tombol ke bawah → maxScrollExtent', (tester) async {
+    await pump(tester, const ReportPage());
+    final pos = tester.state<ScrollableState>(find.byType(Scrollable).first).position;
+    expect(pos.pixels, 0);
+    await tester.tap(find.byTooltip('Ke bawah'));
+    await tester.pumpAndSettle();
+    expect(pos.pixels, pos.maxScrollExtent);
+    expect(pos.pixels, greaterThan(0));
+    // Sudah di ujung: tombol bawah hilang.
+    expect(find.byTooltip('Ke bawah'), findsNothing);
+  });
+
   testWidgets('Riwayat Shift: tombol kembali ke atas', (tester) async {
     await scenario(tester, const ShiftHistoryPage());
   });

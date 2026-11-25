@@ -5,8 +5,10 @@ import '../theme/app_motion.dart';
 import '../theme/clay.dart';
 import 'tap_area.dart';
 
-/// Tombol clay bulat "Kembali ke atas" untuk daftar panjang. Muncul (fade)
-/// saat offset > 1 layar; hilang di dekat atas. Letakkan di slot FAB.
+/// Pasangan tombol clay bulat untuk daftar panjang. "Kembali ke atas" muncul
+/// (fade) saat offset > 1 layar; "Ke bawah" muncul saat belum dekat ujung
+/// (lompat ke ujung baris yang termuat, sehingga batch berikutnya ikut dimuat).
+/// Letakkan di slot FAB.
 class ScrollToTopButton extends StatefulWidget {
   final ScrollController controller;
   /// Jarak di bawah tombol saat tampil (mis. di atas FAB lain).
@@ -19,12 +21,14 @@ class ScrollToTopButton extends StatefulWidget {
 }
 
 class _ScrollToTopButtonState extends State<ScrollToTopButton> {
-  bool _show = false;
+  bool _showUp = false;
+  bool _showDown = false;
 
   @override
   void initState() {
     super.initState();
     widget.controller.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
   }
 
   @override
@@ -44,19 +48,70 @@ class _ScrollToTopButtonState extends State<ScrollToTopButton> {
 
   void _onScroll() {
     final c = widget.controller;
-    if (!c.hasClients) return;
-    final show = c.offset > c.position.viewportDimension;
-    if (show != _show) setState(() => _show = show);
-  }
-
-  void _toTop() {
-    final d = AppMotion.of(context);
-    if (d == Duration.zero) {
-      widget.controller.jumpTo(0);
-    } else {
-      widget.controller.animateTo(0, duration: d, curve: AppMotion.curve);
+    if (!mounted || !c.hasClients || !c.position.hasContentDimensions) return;
+    final p = c.position;
+    final up = p.pixels > p.viewportDimension;
+    final down = p.extentAfter > _nearEnd;
+    if (up != _showUp || down != _showDown) {
+      setState(() {
+        _showUp = up;
+        _showDown = down;
+      });
     }
   }
+
+  static const _nearEnd = 100.0;
+
+  void _go(double target) {
+    final d = AppMotion.of(context);
+    if (d == Duration.zero) {
+      widget.controller.jumpTo(target);
+    } else {
+      widget.controller.animateTo(target, duration: d, curve: AppMotion.curve);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // Ukuran konten bisa berubah tanpa event scroll (data dimuat): cek ulang.
+    WidgetsBinding.instance.addPostFrameCallback((_) => _onScroll());
+    final c = widget.controller;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _RoundButton(
+          show: _showUp,
+          tooltip: 'Kembali ke atas',
+          icon: AppIcons.arrowUp,
+          bottomGap: 8,
+          onTap: () => _go(0),
+        ),
+        _RoundButton(
+          show: _showDown,
+          tooltip: 'Ke bawah',
+          icon: AppIcons.arrowDown,
+          bottomGap: widget.bottomGap,
+          onTap: () => _go(c.position.maxScrollExtent),
+        ),
+      ],
+    );
+  }
+}
+
+class _RoundButton extends StatelessWidget {
+  final bool show;
+  final String tooltip;
+  final IconData icon;
+  final double bottomGap;
+  final VoidCallback onTap;
+
+  const _RoundButton({
+    required this.show,
+    required this.tooltip,
+    required this.icon,
+    required this.bottomGap,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -64,34 +119,34 @@ class _ScrollToTopButtonState extends State<ScrollToTopButton> {
       duration: AppMotion.of(context, AppMotion.fast),
       transitionBuilder: (child, anim) =>
           FadeTransition(opacity: anim, child: child),
-      child: !_show
-          ? const SizedBox.shrink(key: ValueKey('scroll-top-hidden'))
+      child: !show
+          ? SizedBox.shrink(key: ValueKey('$tooltip-hidden'))
           : Padding(
-              key: const ValueKey('scroll-top'),
-              padding: EdgeInsets.only(bottom: widget.bottomGap),
+              key: ValueKey(tooltip),
+              padding: EdgeInsets.only(bottom: bottomGap),
               child: Tooltip(
-                message: 'Kembali ke atas',
+                message: tooltip,
                 child: SizedBox(
-                width: 48,
-                height: 48,
-                child: DecoratedBox(
-                  decoration: ClayDecoration.box(
-                    color: AppColors.surface,
-                    radius: 24,
-                    compact: true,
-                  ),
-                  child: TapArea(
-                    label: 'Kembali ke atas',
-                    onTap: _toTop,
-                    borderRadius: BorderRadius.circular(24),
-                    child: const Center(
-                      child: Icon(AppIcons.arrowUp,
-                          size: AppIcons.md, color: AppColors.textPrimary),
+                  width: 48,
+                  height: 48,
+                  child: DecoratedBox(
+                    decoration: ClayDecoration.box(
+                      color: AppColors.surface,
+                      radius: 24,
+                      compact: true,
+                    ),
+                    child: TapArea(
+                      label: tooltip,
+                      onTap: onTap,
+                      borderRadius: BorderRadius.circular(24),
+                      child: Center(
+                        child: Icon(icon,
+                            size: AppIcons.md, color: AppColors.textPrimary),
+                      ),
                     ),
                   ),
                 ),
               ),
-            ),
             ),
     );
   }

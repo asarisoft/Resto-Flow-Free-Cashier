@@ -32,6 +32,7 @@ class AppIcons {
   static const IconData chevronDown = LucideIcons300.chevronDown;
   static const IconData chevronUp = LucideIcons300.chevronUp;
   static const IconData arrowUp = LucideIcons300.arrowUp;
+  static const IconData arrowDown = LucideIcons300.arrowDown;
   static const IconData add = LucideIcons300.plus;
   static const IconData remove = LucideIcons300.minus;
   static const IconData edit = LucideIcons300.pencil;
