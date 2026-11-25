@@ -84,7 +84,7 @@ Gaya: **claymorphism** — permukaan empuk, sudut sangat bulat, latar lilac, tin
 | `AppImage`      | Wrapper `Image.file` + placeholder ikon              |
 | `ProductCard`   | Kartu produk SATU bentuk untuk POS & halaman Produk: foto penuh lebar (cover), nama 1 baris, harga + chip. Grid: `productGridDelegate` (maks 220 dp, rasio 0.8) |
 | `AppFormDialog` | Dialog form standar (lebar 560 dp, field berjarak 16, [Batal][Simpan] sebaris di bawah). SEMUA form tambah/ubah (produk, pengeluaran, pengguna, profil) memakai ini — tidak ada form halaman penuh |
-| `QtyStepper`    | Tombol − qty +, target sentuh ≥ 48 dp               |
+| `QtyStepper`    | Tombol − qty +, target sentuh ≥ 48 dp; `name` opsional → tooltip/label "Kurangi/Tambah <nama>". Dipakai keranjang + `ProductCard`/`ProductListRow` di POS (HP atau mode list) saat produk sudah di keranjang; "−" pada baris terakhir produk (qty 1 → hapus), "+" lewat `_add` (cek stok). Tablet grid tanpa stepper |
 | `TapArea`       | Ripple + Semantics tombol (pengganti `GestureDetector`) |
 | `ChoiceSegment` | Pilihan 1-dari-N (58/80 mm, Hari Ini/Bulan Ini): wadah `inset`, segmen terpilih = kotak oranye gradasi `primaryLight→primary` teks putih, tinggi ≥ 48 dp |
 | `BarChart`       | Grafik batang sederhana (tanpa dependency chart): label sumbu bawah, batang tertinggi ditandai aksen, tap/long-press → SnackBar tanggal + nominal, scroll horizontal |

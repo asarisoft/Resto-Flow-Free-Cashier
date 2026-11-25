@@ -4,6 +4,7 @@ import '../../core/theme/app_icons.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/theme/clay.dart';
 import '../../core/widgets/amount_text.dart';
+import '../../core/widgets/qty_stepper.dart';
 import '../../core/widgets/ready_chip.dart';
 import '../../core/widgets/tap_area.dart';
 import '../../models/product.dart';
@@ -36,19 +37,23 @@ class ProductCard extends StatelessWidget {
   final VoidCallback? onTap;
   final VoidCallback? onToggleReady;
 
+  /// Jika diisi dan [cartQty] > 0: tampil stepper − qty + (HP/POS).
+  final ValueChanged<int>? onQtyChanged;
+
   const ProductCard({
     super.key,
     required this.product,
     this.cartQty = 0,
     this.onTap,
     this.onToggleReady,
+    this.onQtyChanged,
   });
 
   @override
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
     final selected = cartQty > 0;
-    return TapArea(
+    final card = TapArea(
       label: product.ready ? product.name : '${product.name}, habis',
       borderRadius: BorderRadius.circular(20),
       onTap: onTap,
@@ -137,6 +142,24 @@ class ProductCard extends StatelessWidget {
         ),
         ),
       ),
+    );
+    if (!selected || onQtyChanged == null) return card;
+    // Stepper di luar TapArea (InkWell menutupi child), melayang di atas foto.
+    return Stack(
+      children: [
+        card,
+        Positioned(
+          left: 0,
+          right: 0,
+          bottom: 62,
+          child: Center(
+            child: DecoratedBox(
+              decoration: ClayDecoration.box(radius: 28, compact: true),
+              child: QtyStepper(value: cartQty, onChanged: onQtyChanged!, name: product.name),
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

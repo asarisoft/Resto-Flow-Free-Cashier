@@ -34,6 +34,12 @@ class CartNotifier extends Notifier<List<TransactionItem>> {
     ];
   }
 
+  /// Kurangi 1 pada baris TERAKHIR produk ini (qty 1 → baris dihapus).
+  void decrementProduct(String? productId) {
+    final idx = state.lastIndexWhere((i) => i.productId == productId);
+    if (idx >= 0) updateQty(idx, state[idx].qty - 1);
+  }
+
   void updateDiscount(int index, int discount) {
     state = [
       for (var i = 0; i < state.length; i++)

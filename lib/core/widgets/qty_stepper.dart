@@ -8,7 +8,10 @@ class QtyStepper extends StatelessWidget {
   final int value;
   final ValueChanged<int> onChanged;
 
-  const QtyStepper({super.key, required this.value, required this.onChanged});
+  /// Nama item untuk label aksesibilitas ("Kurangi Nama"); null = "Kurangi".
+  final String? name;
+
+  const QtyStepper({super.key, required this.value, required this.onChanged, this.name});
 
   static final _style = IconButton.styleFrom(
     minimumSize: const Size(48, 48),
@@ -23,7 +26,7 @@ class QtyStepper extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: [
         IconButton(
-          tooltip: 'Kurangi',
+          tooltip: name == null ? 'Kurangi' : 'Kurangi $name',
           style: _style,
           icon: const Icon(AppIcons.remove),
           onPressed: () => onChanged(value - 1),
@@ -37,7 +40,7 @@ class QtyStepper extends StatelessWidget {
           ),
         ),
         IconButton(
-          tooltip: 'Tambah',
+          tooltip: name == null ? 'Tambah' : 'Tambah $name',
           style: _style,
           icon: const Icon(AppIcons.add),
           onPressed: () => onChanged(value + 1),

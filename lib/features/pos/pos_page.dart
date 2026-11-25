@@ -483,6 +483,7 @@ class _ProductGrid extends ConsumerWidget {
             product: product,
             cartQty: qtyOf(product),
             onTap: product.ready ? () => _add(context, ref, product) : null,
+            onQtyChanged: (q) => _changeQty(context, ref, product, q),
           );
         },
       );
@@ -498,9 +499,19 @@ class _ProductGrid extends ConsumerWidget {
           product: product,
           cartQty: qtyOf(product),
           onTap: product.ready ? () => _add(context, ref, product) : null,
+          onQtyChanged: isWide ? null : (q) => _changeQty(context, ref, product, q),
         );
       },
     );
+  }
+
+  void _changeQty(BuildContext context, WidgetRef ref, Product product, int q) {
+    final current = cart.where((i) => i.productId == product.id).fold(0, (s, i) => s + i.qty);
+    if (q > current) {
+      _add(context, ref, product);
+    } else {
+      ref.read(cartProvider.notifier).decrementProduct(product.id);
+    }
   }
 
   void _add(BuildContext context, WidgetRef ref, Product product) {
