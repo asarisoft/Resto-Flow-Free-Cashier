@@ -107,6 +107,6 @@ void main() {
     await pumpGate(tester);
     expect(find.text('Masuk'), findsOneWidget);
     expect(find.text('Buat Akun'), findsNothing);
-    expect(await dao.verify('admin', UsersDao.defaultPassword), isNotNull);
+    expect(await dao.verify('admin', testOwnerPassword), isNotNull);
   });
 }

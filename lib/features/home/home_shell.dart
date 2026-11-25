@@ -11,8 +11,6 @@ import '../reports/report_page.dart';
 import '../settings/settings_page.dart';
 import '../users/user_list_page.dart';
 import '../users/users_providers.dart';
-import '../auth/auth_controller.dart' show currentUserProvider;
-import '../users/password_dialogs.dart';
 import '../expenses/expense_list_page.dart';
 import '../backup/backup_reminder.dart';
 import '../support/support_page.dart';
@@ -69,25 +67,6 @@ class _MainShell extends ConsumerStatefulWidget {
 
 class _MainShellState extends ConsumerState<_MainShell> {
   int _tab = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) => _forceDefaultPasswordChange());
-  }
-
-  /// Password owner bawaan tertulis di kode: wajib diganti sebelum bekerja.
-  Future<void> _forceDefaultPasswordChange() async {
-    final user = ref.read(currentUserProvider).valueOrNull;
-    if (user == null) return;
-    if (!await ref.read(usersDaoProvider).usesDefaultPassword(user.id)) return;
-    if (!mounted) return;
-    await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (_) => ChangePasswordDialog(userId: user.id, forced: true),
-    );
-  }
 
   Widget _buildSidebarItem(int index, IconData icon, String label) {
     final isSelected = _tab == index;

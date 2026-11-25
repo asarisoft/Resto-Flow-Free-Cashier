@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:kasir_resto/core/services/daos/users_dao.dart';
 import 'package:kasir_resto/core/services/database.dart';
 import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/features/auth/auth_controller.dart';
@@ -44,7 +43,7 @@ void main() {
   test('5 salah -> percobaan ke-6 diblokir tanpa memanggil verify', () async {
     await failFive();
     // Password benar pun ditolak selama kunci: verify tidak dipanggil.
-    await expectLater(login(UsersDao.defaultPassword),
+    await expectLater(login(testOwnerPassword),
         throwsA(isA<LoginLockedException>()));
     expect(await c.read(sessionServiceProvider).read(), isNull);
     final t = c.read(loginThrottleProvider);
@@ -59,7 +58,7 @@ void main() {
     await expectLater(login('salah'), throwsA(isA<LoginLockedException>()));
 
     now = now.add(const Duration(seconds: 61));
-    expect(await login(UsersDao.defaultPassword), true);
+    expect(await login(testOwnerPassword), true);
 
     // Reset: kunci berikutnya kembali 30 detik.
     await c.read(loginProvider).logout();
@@ -84,7 +83,7 @@ void main() {
   test('username tak dikenal diperlakukan sama; user lain tidak terkena', () async {
     await failFive(user: 'hantu');
     await expectLater(login('x', user: 'hantu'), throwsA(isA<LoginLockedException>()));
-    expect(await login(UsersDao.defaultPassword), true);
+    expect(await login(testOwnerPassword), true);
   });
 
   test('logout dari layar kunci lalu login: user yang sama tetap diblokir',
@@ -94,7 +93,7 @@ void main() {
       await t.attempt<bool>('admin', () async => null); // gagal buka kunci
     }
     await c.read(loginProvider).logout();
-    await expectLater(login(UsersDao.defaultPassword),
+    await expectLater(login(testOwnerPassword),
         throwsA(isA<LoginLockedException>()));
   });
 

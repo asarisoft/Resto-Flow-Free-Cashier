@@ -16,17 +16,6 @@ class UsersDao {
     }
   }
 
-  /// Password owner bawaan saat DB pertama dibuat. Wajib diganti saat login
-  /// pertama (lihat [usesDefaultPassword]).
-  static const defaultPassword = 'P@ssw0rd123';
-
-  /// True bila user masih memakai [defaultPassword].
-  Future<bool> usesDefaultPassword(String userId) async {
-    final row = await getById(userId);
-    if (row == null) return false;
-    return PasswordHasher.verify(defaultPassword, row.salt, row.passwordHash);
-  }
-
   static final _usernamePattern = RegExp(r'^[A-Za-z0-9_]{3,20}$');
 
   Future<bool> hasAnyUser() async =>

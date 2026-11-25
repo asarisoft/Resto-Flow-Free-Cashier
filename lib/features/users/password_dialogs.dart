@@ -13,8 +13,7 @@ class ChangePasswordDialog extends ConsumerStatefulWidget {
   final String userId;
 
   /// Wajib ganti (password bawaan): tanpa Batal, tidak bisa ditutup.
-  final bool forced;
-  const ChangePasswordDialog({super.key, required this.userId, this.forced = false});
+  const ChangePasswordDialog({super.key, required this.userId});
 
   @override
   ConsumerState<ChangePasswordDialog> createState() => _ChangePasswordDialogState();
@@ -37,15 +36,12 @@ class _ChangePasswordDialogState extends ConsumerState<ChangePasswordDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final dialog = AppFormDialog(
-      title: widget.forced ? 'Ganti password bawaan' : 'Ganti Password',
+    return AppFormDialog(
+      title: 'Ganti Password',
       saving: _saving,
       error: _error,
       onSubmit: _save,
-      cancellable: !widget.forced,
       fields: [
-        if (widget.forced)
-          const Text('Akun ini masih memakai password bawaan. Ganti dulu sebelum mulai bekerja.'),
         PasswordField(controller: _old, label: 'Password lama'),
         PasswordField(
           controller: _new,
@@ -58,7 +54,6 @@ class _ChangePasswordDialogState extends ConsumerState<ChangePasswordDialog> {
         ),
       ],
     );
-    return widget.forced ? PopScope(canPop: false, child: dialog) : dialog;
   }
 
   Future<void> _save() async {

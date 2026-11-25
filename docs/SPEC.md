@@ -213,15 +213,13 @@ Ringkasan tabel: `Products`, `Transactions`, `TransactionItems`, `Users`, `Resto
 - Sesi persist lintas restart app — tetap login sampai logout manual
 - Router redirect: cek `currentUserProvider` → null = ke `/login`, ada = ke `/home`
 - Logout: hapus session dari `shared_preferences`, invalidate provider
-- Owner bawaan (`UsersDao.defaultPassword`): selama password belum diganti, masuk ke home memunculkan dialog
-  "Ganti password bawaan" yang wajib diselesaikan (tanpa Batal, tidak bisa ditutup).
 
 ### Registrasi Owner (install baru)
 - Tidak ada seed user. Router `/login` → `AuthGate`: belum ada user → `RegisterPage`, sudah ada → `LoginPage`
 - Field: Nama pengguna (3–20 huruf/angka/underscore), Password (min 8, `UsersDao.minPasswordLength`), Ulangi password
 - `UsersDao.createOwner`: validasi, salt + `PasswordHasher`, cek-ada-user + insert dalam 1 transaksi; gagal (`StateError`) bila sudah ada user
 - Sukses → langsung login sebagai Owner → onboarding
-- Install lama dengan akun `admin` default tetap jalan (`defaultPassword`/`usesDefaultPassword` hanya untuk deteksi akun lama; seed `seedDefaultOwnerIfEmpty` dihapus dari app, adanya di `test/helpers/seed.dart`)
+- Tidak ada password bawaan & tidak ada paksaan ganti password (app belum pernah rilis dengan akun default). Seed `admin` hanya untuk tes (`test/helpers/seed.dart`).
 - Pembatas percobaan (`LoginThrottle`, dipakai login & buka kunci, per username; username tak dikenal diperlakukan sama): 5 gagal beruntun → kunci 30 dtk, lalu 60, 120, … maks 1 jam; sukses mereset; saat kunci `verify` tidak dipanggil ("Terlalu banyak percobaan. Coba lagi dalam N detik/menit"). Disimpan di tabel `counters` (kunci `throttle:fails|level|until:<username>`), tanpa perubahan skema.
 
 ---
