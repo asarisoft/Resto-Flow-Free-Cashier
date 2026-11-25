@@ -520,6 +520,9 @@ Pengaturan menampilkan `KasirKita v<versi> (<build>) · skema DB <n>` di bagian 
 
 **Penting:** ZIP invalid/corrupt → pesan error jelas, data existing tidak tersentuh.
 
+### Pindah HP (Restore dari Buat Akun)
+Halaman Buat Akun punya tautan "Pindah dari HP lama? Pulihkan dari Backup". Konfirmasi "Data dari backup akan dipakai di HP ini." → pilih zip → alur restore yang sama (`features/backup/restore_flow.dart`, dipakai juga Pengaturan). Sukses → sesi dihapus, `AuthGate` pindah ke Login (user dari backup; wajib login). Batal/gagal (zip invalid, versi terlalu baru) → tetap di Buat Akun + pesan error.
+
 ### Pengingat backup
 - Setelah user benar-benar menyimpan/membagikan zip (share sheet `success`/`unavailable`), simpan `last_backup_at` (epoch ms) di `shared_preferences`; share sheet di-`dismissed` → tidak dicatat dan tampil "Backup dibatalkan" (gagal = tidak tersimpan; restore tidak mengubah tanggal ini).
 - `isBackupDue(last, now)` → true bila belum pernah backup atau > 7 hari.

@@ -7,6 +7,8 @@ import 'package:kasir_resto/core/services/database_provider.dart';
 import 'package:kasir_resto/core/services/password_hasher.dart';
 import 'package:kasir_resto/core/services/session_service.dart';
 import 'package:kasir_resto/features/auth/register_page.dart';
+import 'package:kasir_resto/features/backup/backup_service.dart';
+import 'package:kasir_resto/features/backup/restore_flow.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../helpers/seed.dart';
 
@@ -108,5 +110,73 @@ void main() {
     expect(find.text('Masuk'), findsOneWidget);
     expect(find.text('Buat Akun'), findsNothing);
     expect(await dao.verify('admin', testOwnerPassword), isNotNull);
+  });
+
+  const link = 'Pindah dari HP lama? Pulihkan dari Backup';
+
+  Future<void> pumpRestore(WidgetTester tester, {String? picked, Object? failWith}) async {
+    tester.view.physicalSize = const Size(375, 800);
+    tester.view.devicePixelRatio = 1.0;
+    addTearDown(tester.view.reset);
+    await tester.pumpWidget(ProviderScope(
+      overrides: [
+        databaseProvider.overrideWithValue(db),
+        backupZipPickerProvider.overrideWithValue(() async => picked),
+        backupZipRestorerProvider.overrideWithValue((ref, path) async {
+          if (failWith != null) throw failWith;
+          await seedDefaultOwnerIfEmpty(db); // simulasi user dari backup
+        }),
+      ],
+      child: const MaterialApp(home: AuthGate()),
+    ));
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('Buat Akun menampilkan tautan pulihkan backup', (tester) async {
+    await pumpGate(tester);
+    expect(find.text(link), findsOneWidget);
+  });
+
+  testWidgets('restore sukses: pindah ke Login, sesi kosong (wajib login)', (tester) async {
+    await pumpRestore(tester, picked: '/x/backup.zip');
+    await SessionService().save('admin');
+    await tester.ensureVisible(find.text(link));
+    await tester.tap(find.text(link));
+    await tester.pumpAndSettle();
+    expect(find.text('Data dari backup akan dipakai di HP ini.'), findsOneWidget);
+    await tester.tap(find.text('Lanjut'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Masuk'), findsOneWidget);
+    expect(find.text('Buat Akun'), findsNothing);
+    expect(await SessionService().read(), isNull);
+  });
+
+  testWidgets('batal di konfirmasi atau picker: tetap di Buat Akun', (tester) async {
+    await pumpRestore(tester, picked: null);
+    await tester.ensureVisible(find.text(link));
+    await tester.tap(find.text(link));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Batal'));
+    await tester.pumpAndSettle();
+    expect(find.text('Buat Akun'), findsOneWidget);
+
+    await tester.tap(find.text(link));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Lanjut')); // picker batal (null)
+    await tester.pumpAndSettle();
+    expect(find.text('Buat Akun'), findsOneWidget);
+    expect(await dao.hasAnyUser(), isFalse);
+  });
+
+  testWidgets('restore gagal: tetap di Buat Akun + pesan error', (tester) async {
+    await pumpRestore(tester, picked: '/x/b.zip', failWith: BackupFormatException('Backup dibuat oleh versi aplikasi yang lebih baru.'));
+    await tester.ensureVisible(find.text(link));
+    await tester.tap(find.text(link));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Lanjut'));
+    await tester.pumpAndSettle();
+    expect(find.textContaining('Backup tidak valid'), findsOneWidget);
+    expect(find.text('Buat Akun'), findsOneWidget);
   });
 }

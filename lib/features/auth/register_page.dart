@@ -11,6 +11,7 @@ import '../../core/widgets/icon_badge.dart';
 import '../../core/widgets/password_field.dart';
 import '../../core/widgets/primary_button.dart';
 import '../../core/widgets/step_progress.dart';
+import '../backup/restore_flow.dart';
 import 'auth_controller.dart';
 import 'database_too_new_page.dart';
 import 'login_page.dart';
@@ -82,6 +83,38 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     }
   }
 
+  Future<void> _restore() async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (c) => AlertDialog(
+        title: const Text('Pulihkan dari Backup'),
+        content: const Text('Data dari backup akan dipakai di HP ini.'),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(c, false), child: const Text('Batal')),
+          FilledButton(onPressed: () => Navigator.pop(c, true), child: const Text('Lanjut')),
+        ],
+      ),
+    );
+    if (ok != true || !mounted) return;
+    final path = await ref.read(backupZipPickerProvider)();
+    if (path == null || !mounted) return;
+    setState(() => _loading = true);
+    final messenger = ScaffoldMessenger.of(context);
+    try {
+      // Sukses: user dari backup terbaca → AuthGate pindah ke Login (sesi dihapus).
+      await restoreBackupFromZip(ref, path);
+    } catch (e) {
+      messenger.showSnackBar(SnackBar(content: Text(restoreErrorMessage(e))));
+    } finally {
+      if (mounted) setState(() => _loading = false);
+    }
+  }
+
+  Widget _restoreLink() => TextButton(
+        onPressed: _loading ? null : _restore,
+        child: const Text('Pindah dari HP lama? Pulihkan dari Backup', textAlign: TextAlign.center),
+      );
+
   @override
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
@@ -114,6 +147,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               _fields(withInfoAndButton: false),
               const SizedBox(height: 16),
               const _OfflineInfo(),
+              Center(child: _restoreLink()),
             ],
           ),
           narrowAction: PrimaryButton(label: 'Buat Akun', loading: _loading, onPressed: _loading ? null : _submit),
@@ -163,6 +197,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
           Text(_info, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
           const SizedBox(height: 24),
           PrimaryButton(label: 'Buat Akun', loading: _loading, onPressed: _loading ? null : _submit),
+          _restoreLink(),
         ],
       ],
     );
