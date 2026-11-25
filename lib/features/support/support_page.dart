@@ -24,7 +24,8 @@ Future<NavigationDecision> decideSupportNavigation(
   Future<bool> Function(Uri) launcher = _launchExternal,
 }) async {
   final uri = Uri.tryParse(url);
-  if (uri != null && uri.host == Uri.parse(remoteBaseUrl).host) {
+  // Hanya halaman Dukung tampil di WebView; landing & link lain dibuka di luar app.
+  if (uri != null && _norm(uri) == _norm(Uri.parse(supportUrl))) {
     return NavigationDecision.navigate;
   }
   if (uri != null) {
@@ -57,9 +58,10 @@ Widget _defaultWebBuilder(
 /// Hanya galat pada dokumen utama yang berarti gagal; resource lain (mis. favicon 404) diabaikan.
 bool isMainDocumentError(Uri? requestUri) {
   if (requestUri == null) return false;
-  String norm(Uri u) => u.removeFragment().toString().replaceFirst(RegExp(r'/$'), '');
-  return norm(requestUri) == norm(Uri.parse('$remoteBaseUrl/'));
+  return _norm(requestUri) == _norm(Uri.parse(supportUrl));
 }
+
+String _norm(Uri u) => u.removeFragment().toString().replaceFirst(RegExp(r'/$'), '');
 
 WebViewController _newController(VoidCallback onLoaded, VoidCallback onError) {
   return WebViewController()
@@ -77,7 +79,7 @@ WebViewController _newController(VoidCallback onLoaded, VoidCallback onError) {
         }
       },
     ))
-    ..loadRequest(Uri.parse('$remoteBaseUrl/'));
+    ..loadRequest(Uri.parse(supportUrl));
 }
 
 /// Dukung Developer: halaman web; gagal muat/offline -> [SupportFallback].

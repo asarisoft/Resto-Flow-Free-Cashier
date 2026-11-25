@@ -7,8 +7,9 @@ import 'package:webview_flutter/webview_flutter.dart';
 void main() {
   test('isMainDocumentError: hanya dokumen utama', () {
     expect(isMainDocumentError(Uri.parse('$remoteBaseUrl/favicon.ico')), isFalse);
-    expect(isMainDocumentError(Uri.parse('$remoteBaseUrl/')), isTrue);
-    expect(isMainDocumentError(Uri.parse(remoteBaseUrl)), isTrue);
+    expect(isMainDocumentError(Uri.parse('$remoteBaseUrl/')), isFalse);
+    expect(isMainDocumentError(Uri.parse(supportUrl)), isTrue);
+    expect(isMainDocumentError(Uri.parse('$supportUrl/')), isTrue);
     expect(isMainDocumentError(null), isFalse);
   });
 
@@ -75,11 +76,20 @@ void main() {
     }
 
     expect(
-      await decideSupportNavigation('https://kasirkita.asdeveloper-id.workers.dev/',
+      await decideSupportNavigation('https://kasirkita.asdev.id/dukung',
           launcher: fake),
       NavigationDecision.navigate,
     );
     expect(launched, isEmpty);
+
+    // Landing page di host yang sama dibuka di browser, bukan di WebView.
+    expect(
+      await decideSupportNavigation('https://kasirkita.asdev.id/',
+          launcher: fake),
+      NavigationDecision.prevent,
+    );
+    expect(launched.single.path, '/');
+    launched.clear();
 
     expect(
       await decideSupportNavigation('https://instagram.com/asdev.id',

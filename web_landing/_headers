@@ -10,3 +10,7 @@
 
 /*.png
   Cache-Control: public, max-age=604800
+
+/version.json
+  Cache-Control: no-cache
+  Access-Control-Allow-Origin: *

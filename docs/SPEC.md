@@ -432,8 +432,8 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 - Menu sidebar "Dukung Developer" (tablet/desktop) = tab terakhir; di HP jadi tab bar bawah bila < 5 tab (Kasir), selain itu masuk lewat tile di Pengaturan.
 - Kartu "Follow kami" (Instagram, TikTok) dan "Jasa Bikin Aplikasi" (ajakan + tombol Hubungi via Instagram).
 - Buka link lewat `url_launcher` (`externalApplication`); gagal → SnackBar. Android `<queries>` https ditambahkan.
-- Halaman = WebView ke `$remoteBaseUrl/` (index.html) (JS nonaktif, indikator loading). Link ke host lain (Instagram, WA) dicegah di WebView & dibuka di luar app. Gagal muat / offline / WebView tak tersedia → `SupportFallback` (konten lokal di atas).
-- Sumber web: folder `web_netlify/` (`index.html`, `version.json`), di-host di Cloudflare Workers `https://kasirkita.asdeveloper-id.workers.dev`. `version.json` harus `Cache-Control: no-cache` (`_headers` hanya berlaku di Netlify).
+- Halaman = WebView ke `supportUrl` = `$remoteBaseUrl/dukung` (JS nonaktif, jadi halaman tanpa script; indikator loading). Semua URL selain `/dukung` (termasuk landing di host yang sama, Instagram, WA) dicegah di WebView & dibuka di luar app. Gagal muat / offline / WebView tak tersedia → `SupportFallback` (konten lokal di atas).
+- Sumber web: satu situs `web_landing/` (landing `/`, `/privasi`, `/dukung`, `/version.json`) di Cloudflare Pages, domain `https://kasirkita.asdev.id` (CNAME di Biznet Gio ke `<project>.pages.dev`). `version.json` `Cache-Control: no-cache` lewat `web_landing/_headers`.
 
 ### 7.17 Update Wajib & In-App Update
 - Saat start, `UpdateGate` (membungkus app di `main.dart`) ambil `$remoteBaseUrl/version.json` (`min_version_code`, `latest_version_code`, `message`), timeout 5 dtk, bandingkan dengan versionCode (`package_info_plus` buildNumber).

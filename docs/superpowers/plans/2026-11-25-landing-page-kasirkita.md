@@ -2,9 +2,9 @@
 
 **Goal:** Satu halaman promosi statis yang membuat pemilik UMKM klik "Download di Google Play".
 
-**Domain:** subdomain `kasirkita.asdev.id` (DNS CNAME ke Cloudflare Workers/Pages). Halaman Dukung (`web_netlify/index.html`, dipakai WebView app) dan `version.json` TIDAK dipindah; tetap di URL `remoteBaseUrl` sekarang, kecuali diputuskan lain (lihat Keputusan).
+**Domain:** subdomain `kasirkita.asdev.id` (DNS CNAME ke Cloudflare Workers/Pages). Satu situs: landing `/`, `/privasi`, `/dukung` (WebView app), `/version.json` (cek versi). `web_netlify/` dihapus; `remoteBaseUrl` app = `https://kasirkita.asdev.id`.
 
-**Tech:** HTML + CSS statis satu file (tanpa framework), gambar WebP, hosting Cloudflare Pages. Folder baru `web_landing/`.
+**Tech:** HTML + CSS statis (tanpa framework), GSAP + Lenis, hosting Cloudflare Pages (Workers tidak bisa CNAME dari DNS luar). Folder baru `web_landing/`.
 
 **Gaya:** Soft Clay sama dengan app & screenshot Play Store (krem, peach, mint, butter, lilac, oranye `#C2410C`; Outfit + Work Sans). Maskot dari `assets/images/login_hero.webp`.
 
@@ -26,22 +26,22 @@
 7. **CTA akhir** + footer: ASDEV.id, Instagram/TikTok @ngodingdarirumah, Kebijakan Privasi, Dukung Developer.
 
 ## Tasks
-- [ ] **1. Kebijakan privasi** `web_landing/privacy.html` (wajib Play Store): data hanya lokal, izin Bluetooth/penyimpanan/kamera-galeri, cek koneksi hanya ke `version.json`, kontak.
-- [ ] **2. Aset**: ekspor gambar dari editor screenshot Play Store (hero HP, 2 tablet) ke WebP ≤ 150KB; favicon dari `app_logo`; OG image 1200×630.
-- [ ] **3. Halaman** `web_landing/index.html` sesuai struktur; meta SEO (title "KasirKita – Aplikasi Kasir Gratis & Offline untuk UMKM", description ≤ 155 char, OG/Twitter card, JSON-LD `SoftwareApplication` dengan harga 0).
-- [ ] **3b. SEO / AEO / GEO** (mockup v6 sudah memuat poin 1–4):
+- [x] **1. Kebijakan privasi** `web_landing/privacy.html` (wajib Play Store): data hanya lokal, izin Bluetooth/penyimpanan/kamera-galeri, cek koneksi hanya ke `version.json`, kontak.
+- [x] **2. Aset**: ekspor gambar dari editor screenshot Play Store (hero HP, 2 tablet) ke WebP ≤ 150KB; favicon dari `app_logo`; OG image 1200×630.
+- [x] **3. Halaman** `web_landing/index.html` sesuai struktur; meta SEO (title "KasirKita – Aplikasi Kasir Gratis & Offline untuk UMKM", description ≤ 155 char, OG/Twitter card, JSON-LD `SoftwareApplication` dengan harga 0).
+- [x] **3b. SEO / AEO / GEO** (mockup v6 sudah memuat poin 1–4):
   1. Kata kunci utama: "aplikasi kasir gratis", "kasir offline", "aplikasi kasir android", "aplikasi kasir UMKM/warung/cafe", "POS gratis", "cetak struk bluetooth". Pakai alami di H1, H2, deskripsi, alt gambar.
   2. Blok definisi "Apa itu KasirKita?" (1 kalimat jawaban langsung + tabel fakta) — mudah dikutip AI/answer engine.
   3. JSON-LD `@graph`: Organization (ASDEV.id + sameAs IG/TikTok), SoftwareApplication (harga 0 IDR, featureList, downloadUrl), HowTo (3 langkah), FAQPage (pertanyaan lengkap berisi nama brand).
   4. Meta description ≤155, canonical, OG/Twitter, `lang="id"`.
   5. `robots.txt` (izinkan GPTBot, ClaudeBot, PerplexityBot, Google-Extended), `sitemap.xml`, `llms.txt` (ringkasan fakta app + link).
   6. Daftarkan di Google Search Console + Bing Webmaster; uji Rich Results Test.
-- [ ] **4. `_headers`**: cache panjang untuk gambar, CSP ketat, `X-Content-Type-Options`.
+- [x] **4. `_headers`**: cache panjang untuk gambar, CSP ketat, `X-Content-Type-Options`.
 - [ ] **5. Deploy**: Cloudflare Pages project `kasirkita-landing`, custom domain `kasirkita.asdev.id`, cek HTTPS.
 - [ ] **6. QA**: Lighthouse mobile, uji 360px & desktop, semua link (Play Store, IG, TikTok, privacy) jalan.
 - [ ] **7. Isi URL privacy** di Play Console + `docs/SPEC.md`.
 
 ## Keputusan yang perlu user
-1. Pindahkan juga halaman Dukung + `version.json` ke `kasirkita.asdev.id`? (Kalau ya: `remoteBaseUrl` di app berubah → harus rilis sebelum go-live, URL lama tetap hidup untuk versi lama.)
-2. Hosting: Cloudflare Pages (saran) atau Netlify?
-3. Tombol Play Store aktif sebelum app live? (Saran: "Segera hadir" sampai listing tayang.)
+1. ~~Pindah Dukung + version.json~~ → ya, sudah (domain harus aktif sebelum rilis app).
+2. ~~Hosting~~ → Cloudflare Pages + CNAME Biznet Gio.
+3. ~~Tombol Play~~ → popup "Sedang ditinjau Google Play" (`PLAY_LIVE=false` di index.html).
