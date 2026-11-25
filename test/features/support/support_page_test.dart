@@ -76,7 +76,7 @@ void main() {
     }
 
     expect(
-      await decideSupportNavigation('https://kasirkita.asdev.id/dukung',
+      await decideSupportNavigation('$supportUrl',
           launcher: fake),
       NavigationDecision.navigate,
     );
@@ -84,7 +84,7 @@ void main() {
 
     // Landing page di host yang sama dibuka di browser, bukan di WebView.
     expect(
-      await decideSupportNavigation('https://kasirkita.asdev.id/',
+      await decideSupportNavigation('$remoteBaseUrl/',
           launcher: fake),
       NavigationDecision.prevent,
     );
