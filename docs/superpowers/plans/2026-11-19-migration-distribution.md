@@ -117,11 +117,11 @@
 ## Tasks
 
 ### Task 1: Release signing (paling mendesak)
-- [ ] Agent buat keystore upload (`keytool`, password acak kuat) di luar repo + `android/key.properties` (gitignore) — user tidak perlu menjalankan apa pun
-- [ ] `build.gradle` → `signingConfigs.release`, buildTypes.release pakai itu
-- [ ] Agent beri tahu lokasi file keystore + `key.properties`; user cukup salin keduanya ke 1 tempat aman tambahan (satu-satunya langkah manual, wajib)
-- [ ] Build release, install di device, cek install timpa versi berikutnya berhasil
-- [ ] Catat di `docs/SPEC.md` (bagian Distribusi)
+- [x] Agent buat keystore upload (`keytool`, password acak kuat) di luar repo + `android/key.properties` (gitignore) — user tidak perlu menjalankan apa pun (dibuat user: `~/keystores/kasirkita-upload.jks`)
+- [x] `build.gradle` → `signingConfigs.release`, buildTypes.release pakai itu
+- [x] Agent beri tahu lokasi file keystore + `key.properties`; user cukup salin keduanya ke 1 tempat aman tambahan (satu-satunya langkah manual, wajib)
+- [ ] Build release, install di device, cek install timpa versi berikutnya berhasil (manual; build release + signature non-debug sudah diverifikasi dengan apksigner)
+- [x] Catat di `docs/SPEC.md` (bagian Distribusi)
 
 ### Task 2: Matikan Android Auto Backup
 - [ ] `android:allowBackup="false"` (+ `android:fullBackupContent="false"`)

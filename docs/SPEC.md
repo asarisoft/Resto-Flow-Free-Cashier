@@ -583,3 +583,11 @@ Ringkasan urutan:
 10. Users management + role guard
 11. Backup & restore
 12. Remove Firebase entirely
+
+---
+
+## 14. Distribusi & Update
+
+- APK/AAB yang dibagikan **wajib release-signed** (`android/key.properties` + keystore di luar repo, lihat `docs/RELEASE.md`). Jangan bagikan APK debug.
+- `applicationId` `id.asdev.kasirkita` tidak boleh berubah. `versionCode` (angka setelah `+` di `pubspec.yaml`) harus naik tiap rilis.
+- Keystore sama dipakai selamanya (APK manual → Play Store lewat "Use existing app signing key"). Hilang key = user harus uninstall = data hilang.
