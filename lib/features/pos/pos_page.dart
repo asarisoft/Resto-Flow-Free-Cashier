@@ -949,13 +949,10 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
   Widget build(BuildContext context) {
     final textTheme = AppTypography.textTheme;
     final isWide = MediaQuery.of(context).size.width >= 600;
-    final body = _done
-        ? _doneView(context)
-        : SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+    // Mode sheet (HP): jarak rapat, Total/Bayar di atas, diskon di bawah
+    // (boleh di-scroll) agar Uang pas & Bayar muat tanpa scroll.
+    final gap = widget.asSheet ? 8.0 : 12.0;
+    final discW = <Widget>[
               _row('Subtotal', _subtotal, textTheme),
               TextField(
                 controller: _discCtrl,
@@ -995,9 +992,10 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                     ),
                   ),
                 ),
-              const Divider(height: 24),
+    ];
+    final payW = <Widget>[
               _row('Total', _total, textTheme, bold: true),
-              const SizedBox(height: 16),
+              SizedBox(height: gap),
               DropdownButtonFormField<String>(
                 value: _method,
                 decoration: const InputDecoration(labelText: 'Metode'),
@@ -1008,7 +1006,7 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                 ],
                 onChanged: (v) => setState(() => _method = v!),
               ),
-              const SizedBox(height: 12),
+              SizedBox(height: gap),
               TextField(
                 controller: _paidCtrl,
                 decoration: const InputDecoration(
@@ -1021,7 +1019,7 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
               ),
               if (_method == 'cash' && _total > 0)
                 Padding(
-                  padding: const EdgeInsets.only(top: 12),
+                  padding: EdgeInsets.only(top: gap),
                   child: Wrap(
                     spacing: 8,
                     runSpacing: 8,
@@ -1037,6 +1035,17 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
                   padding: const EdgeInsets.only(top: 8),
                   child: _row('Kembali', _change, textTheme),
                 ),
+    ];
+    final body = _done
+        ? _doneView(context)
+        : SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              ...(widget.asSheet
+                  ? [...payW, const Divider(height: 24), ...discW]
+                  : [...discW, const Divider(height: 24), ...payW]),
             ],
           ),
         );
@@ -1061,19 +1070,19 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
     if (widget.asSheet) {
       return Padding(
         padding: EdgeInsets.fromLTRB(
-          24,
-          16,
-          24,
-          16 + MediaQuery.of(context).viewInsets.bottom,
+          20,
+          12,
+          20,
+          8 + MediaQuery.of(context).viewInsets.bottom,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Text('Pembayaran', style: textTheme.titleLarge),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             Flexible(child: body),
-            const SizedBox(height: 12),
+            const SizedBox(height: 4),
             Wrap(
               alignment: WrapAlignment.end,
               spacing: 8,
@@ -1154,7 +1163,8 @@ class _CheckoutDialogState extends ConsumerState<CheckoutDialog> {
         side: const BorderSide(color: AppColors.border),
         elevation: 2,
         shadowColor: AppColors.clayShadow,
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        minimumSize: const Size(48, 48),
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
       ),
