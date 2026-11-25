@@ -1,5 +1,7 @@
 /// Situs KasirKita (landing, /dukung, /version.json) di Cloudflare Pages.
-const remoteBaseUrl = 'https://kasirkita.asdev.id';
+/// Bisa diganti saat run untuk testing: --dart-define=REMOTE_BASE_URL=https://...
+const remoteBaseUrl = String.fromEnvironment('REMOTE_BASE_URL',
+    defaultValue: 'https://kasirkita.asdev.id');
 
 /// Halaman Dukung Developer yang dibuka WebView.
 const supportUrl = '$remoteBaseUrl/dukung';
