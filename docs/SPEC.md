@@ -442,6 +442,14 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 
 ---
 
+### 7.18 Data Demo (debug saja)
+- Untuk screenshot toko. `lib/features/demo/demo_seeder.dart` → `seedDemoData(db, {now, seed})`; tile
+  "Isi data demo (debug)" di paling bawah Pengaturan, **hanya `kDebugMode`** (tidak ada di rilis).
+- Mengisi profil "Kedai Kopi Senja", 4 kategori, 16 produk, 60 hari shift/transaksi/pengeluaran, kasir `sari`
+  lewat DAO yang sama dengan POS. Deterministik (`Random(seed)`). Shift hari ini dibiarkan terbuka.
+- Ditolak (`StateError`) bila sudah ada transaksi atau shift terbuka; berjalan dalam 1 transaksi DB.
+- Foto/logo opsional dari `assets/demo/` (lihat README di sana); file tidak ada = dilewati.
+
 ## 8. Print Struk (ESC/POS)
 
 - Service: `PrinterService` via package `bluetooth_serial_next`

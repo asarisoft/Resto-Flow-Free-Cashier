@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
@@ -19,6 +20,7 @@ import '../../features/users/users_providers.dart';
 import '../../features/users/password_dialogs.dart';
 import '../activity_log/activity_log_page.dart';
 import '../categories/category_page.dart';
+import '../demo/demo_seed_tile.dart';
 import '../../core/services/daos/categories_dao.dart' show CategoryType;
 import '../auth/auto_lock.dart';
 import '../users/user_list_page.dart';
@@ -366,6 +368,10 @@ class SettingsPage extends ConsumerWidget {
                       ),
                     ),
                   ),
+                  if (kDebugMode) ...[
+                    const SizedBox(height: 24),
+                    const DemoSeedTile(),
+                  ],
                 ],
               ),
             ),

@@ -14,6 +14,7 @@ class AppIcons {
   static const double hero = 48;
 
   // Navigasi / fitur
+  static const IconData demo = LucideIcons300.flaskConical;
   static const IconData pos = LucideIcons300.calculator;
   static const IconData product = LucideIcons300.package2;
   static const IconData expense = LucideIcons300.receiptText;
