@@ -38,7 +38,7 @@ void main() {
     await pumpGate(tester);
     expect(find.text('Buat Akun'), findsOneWidget);
     expect(find.text('Masuk'), findsNothing);
-    expect(find.textContaining('Akun disimpan hanya di HP ini (offline)'), findsOneWidget);
+    expect(find.textContaining('Tersimpan hanya di HP ini.', findRichText: true), findsOneWidget);
   });
 
   testWidgets('kasir baru register valid: owner tersimpan, hash bukan plaintext, session aktif', (tester) async {

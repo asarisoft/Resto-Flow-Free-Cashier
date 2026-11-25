@@ -6,6 +6,7 @@ import '../../core/widgets/app_card.dart';
 import '../../core/widgets/hero_layout.dart';
 import '../../core/widgets/icon_badge.dart';
 import '../../core/widgets/primary_button.dart';
+import '../../core/widgets/step_progress.dart';
 import '../../models/resto_profile.dart';
 import '../auth/auth_controller.dart';
 import '../settings/settings_providers.dart';
@@ -60,25 +61,11 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text('Pengaturan Awal', style: textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary)),
-          const SizedBox(height: 4),
-          Text('Lengkapi profil restoran Anda untuk dicetak pada struk.',
-              style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+          _formHead(textTheme),
           const SizedBox(height: 24),
-          ProfileFields(
-            name: _nameCtrl,
-            address: _addressCtrl,
-            phone: _phoneCtrl,
-            footer: _footerCtrl,
-            paperWidth: _paperWidth,
-            onPaperWidth: (v) => setState(() => _paperWidth = v),
-          ),
+          _profileFields(),
           const SizedBox(height: 24),
-          PrimaryButton(
-            label: 'Simpan Profil & Mulai',
-            loading: _saving,
-            onPressed: _save,
-          ),
+          _saveButton(),
         ],
       ),
     );
@@ -98,6 +85,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
         title: const Text('Setup Resto'),
       ),
       body: SafeArea(
+        bottom: false,
         child: Form(
           key: _formKey,
           child: HeroLayout(
@@ -112,17 +100,50 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
             narrowChild: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                AppCard(padding: const EdgeInsets.all(24), child: intro),
+                const StepProgress(step: 2),
+                const SizedBox(height: 8),
+                Text('Langkah 2 dari 2 · atur toko',
+                    style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
                 const SizedBox(height: 16),
-                form,
+                intro,
+                const SizedBox(height: 8),
+                _formHead(textTheme),
+                const SizedBox(height: 24),
+                _profileFields(),
               ],
             ),
+            narrowAction: _saveButton(),
           ),
         ),
       ),
     ),
     );
   }
+
+  Widget _formHead(TextTheme textTheme) => Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text('Pengaturan Awal', style: textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary)),
+          const SizedBox(height: 4),
+          Text('Lengkapi profil restoran Anda untuk dicetak pada struk.',
+              style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+        ],
+      );
+
+  Widget _profileFields() => ProfileFields(
+        name: _nameCtrl,
+        address: _addressCtrl,
+        phone: _phoneCtrl,
+        footer: _footerCtrl,
+        paperWidth: _paperWidth,
+        onPaperWidth: (v) => setState(() => _paperWidth = v),
+      );
+
+  Widget _saveButton() => PrimaryButton(
+        label: 'Simpan Profil & Mulai',
+        loading: _saving,
+        onPressed: _save,
+      );
 
   void _backToLogin() => ref.read(loginProvider).logout();
 

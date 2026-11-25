@@ -8,17 +8,21 @@ import 'app_logo.dart';
 ///
 /// Lebar (>= 900 dp): satu kartu clay besar, gambar full-bleed, logo + [wideLeft]
 /// di kiri (di atas dinding polos gambar), [wideRight] opsional di kanan.
-/// HP: gambar di atas (<= 260 dp), [narrowChild] menumpuk di bawahnya, scroll.
+/// HP: gambar hero ~42% tinggi (220-380 dp) di atas; panel putih (sheet) naik
+/// menimpa gambar 32 dp sampai dasar layar. [narrowChild] scroll di dalam panel,
+/// [narrowAction] (tombol utama) disematkan di dasar panel, di luar scroll.
 class HeroLayout extends StatelessWidget {
   final Widget wideLeft;
   final Widget? wideRight;
   final Widget narrowChild;
+  final Widget? narrowAction;
 
   const HeroLayout({
     super.key,
     required this.wideLeft,
     this.wideRight,
     required this.narrowChild,
+    this.narrowAction,
   });
 
   static const _wideBreakpoint = 900.0;
@@ -27,13 +31,17 @@ class HeroLayout extends StatelessWidget {
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, c) =>
-          c.maxWidth >= _wideBreakpoint ? _wide(c) : _narrow(c),
+          c.maxWidth >= _wideBreakpoint ? _wide(c) : _narrow(context, c),
     );
   }
 
   Widget _wide(BoxConstraints c) {
     final inner = c.maxWidth - 48;
-    return Container(
+    return SafeArea(
+      top: false,
+      left: false,
+      right: false,
+      child: Container(
       margin: const EdgeInsets.all(24),
       decoration: ClayDecoration.box(radius: 32),
       child: ClipRRect(
@@ -75,7 +83,7 @@ class HeroLayout extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 
   Widget _scroll({required EdgeInsets padding, required Widget child}) {
@@ -90,51 +98,87 @@ class HeroLayout extends StatelessWidget {
     );
   }
 
-  Widget _narrow(BoxConstraints c) {
-    final heroH = c.maxWidth * 0.5 < 260 ? c.maxWidth * 0.5 : 260.0;
-    return SingleChildScrollView(
-      child: Stack(
-        children: [
-          Positioned(
-            top: 0,
-            left: 0,
-            right: 0,
-            height: heroH,
-            child: ClipRRect(
-              borderRadius: const BorderRadius.vertical(bottom: Radius.circular(32)),
-              child: const _HeroImage(),
+  static const _sheetOverlap = 32.0;
+
+  Widget _narrow(BuildContext context, BoxConstraints c) {
+    final h = c.maxHeight;
+    // Keyboard terbuka (tinggi sempit): hero mengecil agar panel + tombol muat.
+    final heroH = h < 480 ? h * 0.3 : (h * 0.42).clamp(220.0, 380.0);
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned(
+          top: 0,
+          left: 0,
+          right: 0,
+          height: heroH,
+          child: const _HeroImage(),
+        ),
+        const Positioned(top: 16, left: 16, child: _Brand(size: 40)),
+        Positioned(
+          top: heroH - _sheetOverlap,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          child: DecoratedBox(
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+              boxShadow: [
+                BoxShadow(color: AppColors.clayShadow, offset: Offset(0, -6), blurRadius: 18),
+              ],
             ),
-          ),
-          const Positioned(top: 16, left: 16, child: _Brand()),
-          // Tinggi min = layar: bila ada ruang sisa, isi di-center vertikal.
-          ConstrainedBox(
-            constraints: BoxConstraints(minHeight: c.maxHeight),
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(16, heroH - 32, 16, 24),
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 400),
-                  child: narrowChild,
+            child: Column(
+              children: [
+                const SizedBox(height: 10),
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-              ),
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(20),
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 480),
+                        child: narrowChild,
+                      ),
+                    ),
+                  ),
+                ),
+                if (narrowAction != null)
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(20, 4, 20, 16 + bottomInset),
+                    child: ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 480),
+                      child: narrowAction,
+                    ),
+                  ),
+              ],
             ),
           ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 /// Logo + nama app.
 class _Brand extends StatelessWidget {
-  const _Brand();
+  final double size;
+  const _Brand({this.size = 56});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const AppLogo(size: 56),
+        AppLogo(size: size),
         const SizedBox(width: 12),
         Text('KasirKita',
             style: AppTypography.textTheme.titleLarge?.copyWith(color: AppColors.textPrimary)),

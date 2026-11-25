@@ -154,14 +154,16 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 
 - Gambar hero `assets/images/login_hero.webp` (ilustrasi clay kasir, dekoratif, di luar semantics).
 - **Lebar ≥ 600 dp**: gambar kiri (radius 28), form dalam `AppCard` di kanan.
-- **Lebih sempit**: gambar 220 dp di atas form; halaman bisa scroll saat keyboard muncul.
+- **HP (< 900 dp)**: gambar hero ~42% tinggi (clamp 220-380 dp, alignment centerRight), brand (logo 40 + "KasirKita") kiri atas. Panel putih (`surface`, radius atas 28, bayangan clay ke atas (0,-6) blur 18, handle dekoratif 40×4 `border`) menimpa hero 32 dp sampai dasar layar. Isi scroll (padding 20, maks 480 dp); tombol utama disematkan di dasar panel via `HeroLayout.narrowAction` (di luar scroll, di atas keyboard & safe area bawah). Tanpa centering vertikal. Tablet (>= 900 dp) tetap satu kartu clay lebar.
 - Logo kotak clay `peach` 84×84 radius 28. Judul "Halo, selamat datang!", subjudul "Masuk untuk mulai jualan hari ini".
 
 ## Layout Registrasi (RegisterPage)
 
-- Memakai `HeroLayout` + `AppCard` seperti Login. Judul "Buat akun Owner".
+- Memakai `HeroLayout` seperti Login (tablet: `AppCard`; HP: panel). Judul "Buat akun Owner".
+- HP: `StepProgress` 2 segmen (6 dp; segmen 1 `primary`, 2 `border`), subjudul "Langkah 1 dari 2 · lalu atur toko", info offline di kotak `peach` radius 14, teks `textPrimary` + ikon gembok: **"Tersimpan hanya di HP ini."** + " Catat password Anda dan rutin Backup." Tombol "Buat Akun" disematkan.
+- Onboarding HP: `StepProgress` 2 dari 2, "Langkah 2 dari 2 · atur toko", tombol "Simpan Profil & Mulai" disematkan.
 - Field: Nama pengguna, Password, Ulangi password (`PasswordField`); pesan error merah di bawah field.
-- Teks info (bodySmall, `textSecondary`): "Akun disimpan hanya di HP ini (offline). Catat password Anda — tidak bisa dipulihkan lewat internet. Gunakan Backup agar data aman."
+- Teks info tablet (bodySmall, `textSecondary`): "Akun disimpan hanya di HP ini (offline). Catat password Anda — tidak bisa dipulihkan lewat internet. Gunakan Backup agar data aman."
 - Tombol `PrimaryButton` "Buat Akun". `AuthGate` memilih Register/Login.
 
 ## Prinsip

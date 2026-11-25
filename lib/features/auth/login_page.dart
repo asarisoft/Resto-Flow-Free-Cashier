@@ -54,6 +54,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
+        bottom: false,
         child: HeroLayout(
           wideLeft: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -70,27 +71,32 @@ class _LoginPageState extends ConsumerState<LoginPage> {
               ),
             ],
           ),
-          narrowChild: AppCard(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Halo, selamat datang!',
-                    style: textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary)),
-                const SizedBox(height: 4),
-                Text('Masuk untuk mulai jualan hari ini',
-                    style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
-                const SizedBox(height: 24),
-                _fields(),
-              ],
-            ),
+          narrowChild: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Halo, selamat datang!',
+                  style: textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary)),
+              const SizedBox(height: 4),
+              Text('Masuk untuk mulai jualan hari ini',
+                  style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+              const SizedBox(height: 20),
+              _fields(withButton: false),
+            ],
           ),
+          narrowAction: _loginButton(),
         ),
       ),
     );
   }
 
-  Widget _fields() {
+  Widget _loginButton() => PrimaryButton(
+        label: 'Masuk',
+        icon: AppIcons.login,
+        loading: _loading,
+        onPressed: _loading ? null : _submit,
+      );
+
+  Widget _fields({bool withButton = true}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -112,13 +118,10 @@ class _LoginPageState extends ConsumerState<LoginPage> {
           textInputAction: TextInputAction.done,
           onSubmitted: (_) => _loading ? null : _submit(),
         ),
-        const SizedBox(height: 24),
-        PrimaryButton(
-          label: 'Masuk',
-          icon: AppIcons.login,
-          loading: _loading,
-          onPressed: _loading ? null : _submit,
-        ),
+        if (withButton) ...[
+          const SizedBox(height: 24),
+          _loginButton(),
+        ],
       ],
     );
   }

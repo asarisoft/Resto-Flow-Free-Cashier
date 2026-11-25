@@ -10,6 +10,7 @@ import '../../core/widgets/hero_layout.dart';
 import '../../core/widgets/icon_badge.dart';
 import '../../core/widgets/password_field.dart';
 import '../../core/widgets/primary_button.dart';
+import '../../core/widgets/step_progress.dart';
 import 'auth_controller.dart';
 import 'database_too_new_page.dart';
 import 'login_page.dart';
@@ -87,6 +88,7 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
+        bottom: false,
         child: HeroLayout(
           wideLeft: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -99,23 +101,28 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
               ),
             ],
           ),
-          narrowChild: AppCard(
-            padding: const EdgeInsets.all(24),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text('Buat akun Owner', style: textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary)),
-                const SizedBox(height: 16),
-                _fields(),
-              ],
-            ),
+          narrowChild: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const StepProgress(step: 1),
+              const SizedBox(height: 16),
+              Text('Buat akun Owner', style: textTheme.headlineSmall?.copyWith(color: AppColors.textPrimary)),
+              const SizedBox(height: 4),
+              Text('Langkah 1 dari 2 · lalu atur toko',
+                  style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary)),
+              const SizedBox(height: 20),
+              _fields(withInfoAndButton: false),
+              const SizedBox(height: 16),
+              const _OfflineInfo(),
+            ],
           ),
+          narrowAction: PrimaryButton(label: 'Buat Akun', loading: _loading, onPressed: _loading ? null : _submit),
         ),
       ),
     );
   }
 
-  Widget _fields() {
+  Widget _fields({bool withInfoAndButton = true}) {
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -151,10 +158,12 @@ class _RegisterPageState extends ConsumerState<RegisterPage> {
             onSubmitted: (_) => _loading ? null : _submit(),
           ),
         ),
-        const SizedBox(height: 16),
-        Text(_info, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
-        const SizedBox(height: 24),
-        PrimaryButton(label: 'Buat Akun', loading: _loading, onPressed: _loading ? null : _submit),
+        if (withInfoAndButton) ...[
+          const SizedBox(height: 16),
+          Text(_info, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+          const SizedBox(height: 24),
+          PrimaryButton(label: 'Buat Akun', loading: _loading, onPressed: _loading ? null : _submit),
+        ],
       ],
     );
   }
@@ -178,6 +187,35 @@ class _FieldError extends StatelessWidget {
             child: Text(error!, style: AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.error)),
           ),
       ],
+    );
+  }
+}
+
+/// Info offline (HP): kotak peach, teks gelap (kontras tinggi), ikon gembok.
+class _OfflineInfo extends StatelessWidget {
+  const _OfflineInfo();
+
+  @override
+  Widget build(BuildContext context) {
+    final style = AppTypography.textTheme.bodySmall?.copyWith(color: AppColors.textPrimary);
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(color: AppColors.peach, borderRadius: BorderRadius.circular(14)),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Icon(AppIcons.lock, size: AppIcons.md, color: AppColors.textPrimary),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Text.rich(
+              TextSpan(style: style, children: const [
+                TextSpan(text: 'Tersimpan hanya di HP ini.', style: TextStyle(fontWeight: FontWeight.w700)),
+                TextSpan(text: ' Catat password Anda dan rutin Backup.'),
+              ]),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
