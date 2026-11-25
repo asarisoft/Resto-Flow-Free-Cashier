@@ -454,6 +454,16 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 - Ditolak (`StateError`) bila sudah ada transaksi atau shift terbuka; berjalan dalam 1 transaksi DB.
 - Foto/logo opsional dari `assets/demo/` (lihat README di sana); file tidak ada = dilewati.
 
+### 7.19 Screenshot Otomatis (debug/tes saja)
+- `./screenshots.sh [phone|tablet|all] [--to-editor]` menjalankan `integration_test/screenshots_test.dart`
+  lewat `flutter drive` (driver: `test_driver/integration_test.dart`) di emulator Android yang menyala;
+  PNG ke `screnshoot/<phone|tablet>/NN_nama.png` (tidak di-commit). `--to-editor` menyalin ke `store_assets/`.
+- Alur: buat akun → setup toko → login → `seedDemoData` → Kasir, Rincian bayar, Struk (HP), Laporan,
+  Pengeluaran, Produk (HP). HP vs tablet dideteksi dari ukuran layar.
+- Data asli aman: tes memakai DB `kasir_resto_screenshot.sqlite` (dihapus tiap run) dan prefs memori
+  (override `databaseProvider` di tes; kode app tidak berubah). Cek versi dibuat gagal cepat via
+  `--dart-define=REMOTE_BASE_URL=https://localhost.invalid`. Screenshot = permukaan Flutter (tanpa status bar sistem).
+
 ## 8. Print Struk (ESC/POS)
 
 - Service: `PrinterService` via package `bluetooth_serial_next`
