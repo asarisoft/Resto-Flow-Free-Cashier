@@ -52,4 +52,4 @@ sed -i '' -E "s/^version: .*/version: $NAME+$BUILD/" pubspec.yaml
 echo
 echo "Build sukses: $NAME+$BUILD ($KIND)"
 echo "File: $OUT"
-echo "Ingat: naikkan latest_version_code (dan min_version_code bila wajib) di web_netlify/version.json ke $BUILD, lalu upload ke Netlify."
+echo "Ingat: naikkan latest_version_code (dan min_version_code bila wajib) di web_landing/version.json ke $BUILD, lalu upload ke Cloudflare Pages (kasirceria)."
