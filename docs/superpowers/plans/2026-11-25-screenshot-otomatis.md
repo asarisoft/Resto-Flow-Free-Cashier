@@ -31,14 +31,14 @@
 
 ## Tugas Claude
 
-- [ ] **C1. Setup integration_test**
+- [x] **C1. Setup integration_test**
   - `pubspec.yaml` dev_dependencies: `integration_test: sdk: flutter`.
   - `test_driver/integration_test.dart` dengan `integrationDriver(onScreenshot: ...)` yang menulis `screnshoot/$DEVICE/$name.png`.
   - Cek: `flutter test integration_test` bisa jalan kosong.
-- [ ] **C2. Hook tes di app (debug saja)**
+- [x] **C2. Hook tes di app (debug saja)**
   - Cara mulai dengan DB baru terisolasi (mis. `--dart-define=SCREENSHOT_MODE=true` → nama file DB berbeda, dihapus di awal).
   - Matikan banner debug & animasi berat bila perlu; kunci versi cek update (override `REMOTE_BASE_URL` ke URL tak ada supaya cek versi gagal cepat → app normal).
-- [ ] **C3. Tes `integration_test/screenshots_test.dart`**
+- [x] **C3. Tes `integration_test/screenshots_test.dart`**
   - Alur sesuai tabel; helper `shot(name)` = `pumpAndSettle` + `takeScreenshot`.
   - Deteksi HP vs tablet dari ukuran layar; lewati layar yang tidak berlaku.
   - Tunggu gambar (hero, foto produk) selesai dimuat sebelum memotret.
