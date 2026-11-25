@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:url_launcher/url_launcher.dart';
 
-import '../../core/config/remote_config.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
 import '../../core/widgets/app_card.dart';
 import '../../core/widgets/app_logo.dart';
 import '../../core/widgets/primary_button.dart';
+import 'in_app_updater.dart';
 import 'version_check.dart';
 
 /// Layar terkunci saat versi app di bawah minimal. Tanpa tombol kembali.
@@ -47,10 +46,8 @@ class ForceUpdatePage extends ConsumerWidget {
                       const SizedBox(height: 20),
                       PrimaryButton(
                         label: 'Update Sekarang',
-                        onPressed: () => launchUrl(
-                          Uri.parse(playStoreUrl),
-                          mode: LaunchMode.externalApplication,
-                        ),
+                        onPressed: () =>
+                            runRequiredUpdate(ref.read(inAppUpdaterProvider)),
                       ),
                     ],
                   ),
@@ -72,6 +69,17 @@ class UpdateGate extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    ref.listen(updateDecisionProvider, (_, next) async {
+      if (next.valueOrNull?.status != UpdateStatus.optional) return;
+      final updater = ref.read(inAppUpdaterProvider);
+      final messenger = ScaffoldMessenger.of(context);
+      if (!await runOptionalUpdate(updater)) return;
+      messenger.showSnackBar(SnackBar(
+        content: const Text('Update siap'),
+        duration: const Duration(days: 1),
+        action: SnackBarAction(label: 'Pasang', onPressed: updater.complete),
+      ));
+    });
     final d = ref.watch(updateDecisionProvider).valueOrNull;
     if (d != null && d.status == UpdateStatus.required) {
       return ForceUpdatePage(message: d.message);

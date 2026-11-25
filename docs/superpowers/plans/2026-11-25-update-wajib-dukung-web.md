@@ -54,10 +54,10 @@
 
 ### Task 4: In-app update Play Store
 **Files:** `lib/features/update/in_app_updater.dart`, pemanggil di gate Task 3.
-- [ ] Bungkus `in_app_update` di satu class (mudah di-mock): `required` → `performImmediateUpdate`; `optional` → `startFlexibleUpdate` lalu snackbar "Update siap — Pasang" → `completeFlexibleUpdate`.
-- [ ] Error / bukan dari Play Store → fallback buka link Play Store (required) atau diam (optional).
-- [ ] Tes dengan fake updater: required memanggil immediate; error → fallback url.
-- [ ] Commit `feat(update): in-app update play store`.
+- [x] Bungkus `in_app_update` di satu class (mudah di-mock): `required` → `performImmediateUpdate`; `optional` → `startFlexibleUpdate` lalu snackbar "Update siap — Pasang" → `completeFlexibleUpdate`.
+- [x] Error / bukan dari Play Store → fallback buka link Play Store (required) atau diam (optional).
+- [x] Tes dengan fake updater: required memanggil immediate; error → fallback url.
+- [x] Commit `feat(update): in-app update play store`.
 
 ### Task 5: File Netlify (`web_netlify/`)
 **Files:** `web_netlify/version.json`, `web_netlify/dukung.html`, `web_netlify/_headers`.
