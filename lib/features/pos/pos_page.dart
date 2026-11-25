@@ -24,6 +24,7 @@ import 'open_order_dialogs.dart';
 import 'pos_providers.dart';
 import '../../core/theme/app_icons.dart';
 import '../../core/widgets/qty_stepper.dart';
+import '../../core/widgets/adaptive_sheet.dart';
 import '../../core/widgets/clay_chip.dart';
 import '../../core/widgets/tap_area.dart';
 import '../products/product_card.dart';
@@ -891,17 +892,10 @@ class _NoteDialogState extends State<_NoteDialog> {
 }
 
 /// Buka pembayaran: bottom sheet di HP (geser-tutup), dialog di tablet.
-Future<void> showCheckout(BuildContext context) {
-  if (MediaQuery.of(context).size.width >= 600) {
-    return showDialog(context: context, builder: (_) => const CheckoutDialog());
-  }
-  return showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    builder: (_) => const CheckoutDialog(asSheet: true),
-  );
-}
+Future<void> showCheckout(BuildContext context) => showAdaptiveSheet(
+  context,
+  builder: (_, asSheet) => CheckoutDialog(asSheet: asSheet),
+);
 
 class CheckoutDialog extends ConsumerStatefulWidget {
   /// true = isi untuk modal bottom sheet (HP), false = AlertDialog.

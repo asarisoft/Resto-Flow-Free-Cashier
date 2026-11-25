@@ -20,6 +20,9 @@ class TransactionDetailDialog extends StatelessWidget {
   final VoidCallback? onVoid;
   final bool canVoid;
 
+  /// true = isi untuk bottom sheet (HP): tombol aksi menempel di bawah.
+  final bool asSheet;
+
   const TransactionDetailDialog({
     super.key,
     required this.txn,
@@ -27,6 +30,7 @@ class TransactionDetailDialog extends StatelessWidget {
     this.onShare,
     this.onVoid,
     this.canVoid = false,
+    this.asSheet = false,
   });
 
   @override
@@ -57,11 +61,8 @@ class TransactionDetailDialog extends StatelessWidget {
           ),
         );
 
-    return AlertDialog(
-      title: Text('Transaksi ${txn.number == null ? '' : '#${txn.number}'}'),
-      content: SizedBox(
-        width: width,
-        child: SingleChildScrollView(
+    final titleText = 'Transaksi ${txn.number == null ? '' : '#${txn.number}'}';
+    final body = SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -136,13 +137,8 @@ class TransactionDetailDialog extends StatelessWidget {
               line('Laba', txn.profit, color: txn.profit >= 0 ? AppColors.success : AppColors.error),
             ],
           ),
-        ),
-      ),
-      actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-      actions: [
-        SizedBox(
-          width: width,
-          child: Column(
+        );
+    final actions = Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -192,9 +188,36 @@ class TransactionDetailDialog extends StatelessWidget {
                 ],
               ),
             ],
-          ),
+    );
+    if (asSheet) {
+      return SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
+              child: Text(titleText, style: textTheme.titleLarge),
+            ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: body,
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 16),
+              child: actions,
+            ),
+          ],
         ),
-      ],
+      );
+    }
+    return AlertDialog(
+      title: Text(titleText),
+      content: SizedBox(width: width, child: body),
+      actionsPadding: const EdgeInsets.fromLTRB(24, 0, 24, 24),
+      actions: [SizedBox(width: width, child: actions)],
     );
   }
 }

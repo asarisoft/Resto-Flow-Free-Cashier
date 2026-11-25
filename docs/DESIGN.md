@@ -176,6 +176,7 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 - Token di `lib/core/theme/app_motion.dart`: `fast` 150 ms, `normal` 220 ms, `slow` 320 ms; kurva `easeOutCubic` (`curve`) dan `easeOutBack` (`pop`). Selalu pakai `AppMotion.of(context, durasi)` agar jadi 0 saat `MediaQuery.disableAnimations`.
 - Tambah item: ikon keranjang "pop" (`PopOnChange`) + `HapticFeedback.selectionClick()`.
 - Total/subtotal keranjang: `CountUpAmount` (count-up `int` rupiah, tabular figures, berakhir tepat di nilai akhir; tanpa animasi saat pertama tampil).
+- Sheet adaptif: helper `showAdaptiveSheet` (`core/widgets/adaptive_sheet.dart`) — lebar < 600 dp = modal bottom sheet (geser-tutup, drag handle, maks 90% tinggi, sudut atas 24, SafeArea), ≥ 600 dp = dialog. Dipakai `showCheckout`, `showShiftDetail`, detail transaksi Laporan (`TransactionDetailDialog(asSheet)`: tombol Batalkan/Bagikan/Cetak ulang menempel di bawah).
 - Pembayaran: lebar < 600 dp = modal bottom sheet (`showCheckout`), ≥ 600 dp = dialog. Sukses = `HapticFeedback.mediumImpact()` + centang hijau ±320 ms lalu tutup.
 - Transisi halaman: satu aturan di `AppTheme` (fade-forwards M3, semua platform); tanpa gerak bila animasi dimatikan.
 - Tidak ada animasi di jalur hitung uang; uji di HP kasir murah (frame drop) = manual.

@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import '../../core/theme/app_colors.dart';
 import '../../core/theme/app_typography.dart';
+import '../../core/widgets/adaptive_sheet.dart';
 import '../../core/widgets/amount_text.dart';
 import '../../models/shift.dart';
 import '../reports/report_providers.dart';
@@ -33,25 +34,18 @@ Future<ShiftDetailData> loadShiftDetail(WidgetRef ref, Shift s, {DateTime? now})
 }
 
 /// Detail shift: bottom sheet di HP, dialog di tablet.
-Future<void> showShiftDetail(BuildContext context, Shift shift) {
-  if (MediaQuery.of(context).size.width >= 600) {
-    return showDialog(
-      context: context,
-      builder: (_) => Dialog(
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 420),
-          child: ShiftDetailView(shift: shift),
-        ),
-      ),
+Future<void> showShiftDetail(BuildContext context, Shift shift) =>
+    showAdaptiveSheet(
+      context,
+      builder: (_, asSheet) => asSheet
+          ? ShiftDetailView(shift: shift)
+          : Dialog(
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 420),
+                child: ShiftDetailView(shift: shift),
+              ),
+            ),
     );
-  }
-  return showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,
-    useSafeArea: true,
-    builder: (_) => ShiftDetailView(shift: shift),
-  );
-}
 
 class ShiftDetailView extends ConsumerStatefulWidget {
   final Shift shift;

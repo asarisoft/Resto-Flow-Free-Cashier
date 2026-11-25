@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:share_plus/share_plus.dart';
+import '../../core/widgets/adaptive_sheet.dart';
 import '../../core/widgets/app_data_table.dart';
 import '../../core/widgets/app_form_dialog.dart';
 import '../../core/widgets/bar_chart.dart';
@@ -140,9 +141,10 @@ class _ReportPageState extends ConsumerState<ReportPage> {
                         pageSize: 25,
                         rows: txns,
                         rowLabel: (t) => 'Transaksi nomor ${t.number ?? '-'}',
-                        onRowTap: (t) => showDialog(
-                          context: context,
-                          builder: (dialogCtx) => TransactionDetailDialog(
+                        onRowTap: (t) => showAdaptiveSheet(
+                          context,
+                          builder: (dialogCtx, asSheet) => TransactionDetailDialog(
+                            asSheet: asSheet,
                             txn: t,
                             onReprint: () => _reprint(t),
                             onShare: () => _share(t),
