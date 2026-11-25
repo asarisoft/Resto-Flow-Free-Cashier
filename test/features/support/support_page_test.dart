@@ -49,7 +49,7 @@ void main() {
     }
 
     expect(
-      await decideSupportNavigation('https://asdevkasirkita.netlify.app/',
+      await decideSupportNavigation('https://kasirkita.asdeveloper-id.workers.dev/',
           launcher: fake),
       NavigationDecision.navigate,
     );

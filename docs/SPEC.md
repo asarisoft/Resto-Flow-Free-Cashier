@@ -427,7 +427,7 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 - Kartu "Follow kami" (Instagram, TikTok) dan "Jasa Bikin Aplikasi" (ajakan + tombol Hubungi via Instagram).
 - Buka link lewat `url_launcher` (`externalApplication`); gagal → SnackBar. Android `<queries>` https ditambahkan.
 - Halaman = WebView ke `$remoteBaseUrl/` (index.html) (JS nonaktif, indikator loading). Link ke host lain (Instagram, WA) dicegah di WebView & dibuka di luar app. Gagal muat / offline / WebView tak tersedia → `SupportFallback` (konten lokal di atas).
-- Sumber web: folder `web_netlify/` (`index.html`, `version.json`, `_headers`).
+- Sumber web: folder `web_netlify/` (`index.html`, `version.json`), di-host di Cloudflare Workers `https://kasirkita.asdeveloper-id.workers.dev`. `version.json` harus `Cache-Control: no-cache` (`_headers` hanya berlaku di Netlify).
 
 ### 7.17 Update Wajib & In-App Update
 - Saat start, `UpdateGate` (membungkus app di `main.dart`) ambil `$remoteBaseUrl/version.json` (`min_version_code`, `latest_version_code`, `message`), timeout 5 dtk, bandingkan dengan versionCode (`package_info_plus` buildNumber).
