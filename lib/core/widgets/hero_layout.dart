@@ -25,6 +25,10 @@ class HeroLayout extends StatelessWidget {
   final HeroNarrowStyle narrowStyle;
   final Widget? narrowFooter;
 
+  /// Hanya gaya sheet: saat scroll, panel naik menutupi hero sampai tepat di
+  /// bawah baris brand, baru isi scroll di dalam panel.
+  final bool narrowCollapsible;
+
   const HeroLayout({
     super.key,
     required this.wideLeft,
@@ -33,6 +37,7 @@ class HeroLayout extends StatelessWidget {
     this.narrowAction,
     this.narrowStyle = HeroNarrowStyle.sheet,
     this.narrowFooter,
+    this.narrowCollapsible = false,
   });
 
   static const _wideBreakpoint = 900.0;
@@ -160,6 +165,14 @@ class HeroLayout extends StatelessWidget {
     // Keyboard terbuka (tinggi sempit): hero mengecil agar panel + tombol muat.
     final heroH = h < 480 ? h * 0.3 : (h * 0.42).clamp(220.0, 380.0);
     final bottomInset = MediaQuery.paddingOf(context).bottom;
+    if (narrowCollapsible) {
+      return _CollapsibleSheet(
+        heroH: heroH,
+        bottomInset: bottomInset,
+        action: narrowAction,
+        child: narrowChild,
+      );
+    }
     return Stack(
       fit: StackFit.expand,
       children: [
@@ -216,6 +229,138 @@ class HeroLayout extends StatelessWidget {
                   ),
               ],
             ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+/// Sheet HP yang naik menutupi hero saat scroll (lihat [HeroLayout.narrowCollapsible]).
+/// Satu scroll: offset 0..spacer menaikkan panel, sisanya menggulir isi di dalam panel.
+class _CollapsibleSheet extends StatefulWidget {
+  final double heroH;
+  final double bottomInset;
+  final Widget? action;
+  final Widget child;
+  const _CollapsibleSheet({
+    required this.heroH,
+    required this.bottomInset,
+    required this.action,
+    required this.child,
+  });
+
+  @override
+  State<_CollapsibleSheet> createState() => _CollapsibleSheetState();
+}
+
+class _CollapsibleSheetState extends State<_CollapsibleSheet> {
+  static const _brandH = 64.0;
+  static const _handleZone = 24.0;
+  final _ctrl = ScrollController();
+
+  @override
+  void dispose() {
+    _ctrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final startTop = (widget.heroH - HeroLayout._sheetOverlap).clamp(_brandH, double.infinity);
+    final travel = startTop - _brandH; // jarak panel naik sampai mentok
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Positioned(top: 0, left: 0, right: 0, height: widget.heroH, child: const _HeroImage()),
+        ListenableBuilder(
+          listenable: _ctrl,
+          builder: (context, _) {
+            final o = _ctrl.hasClients ? _ctrl.offset.clamp(0.0, travel) : 0.0;
+            final t = travel == 0 ? 1.0 : o / travel;
+            return Stack(
+              fit: StackFit.expand,
+              children: [
+                Positioned(
+                  top: startTop - o,
+                  left: 0,
+                  right: 0,
+                  bottom: 0,
+                  child: DecoratedBox(
+                    decoration: const BoxDecoration(
+                      color: AppColors.surface,
+                      borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+                      boxShadow: [
+                        BoxShadow(color: AppColors.clayShadow, offset: Offset(0, -6), blurRadius: 18),
+                      ],
+                    ),
+                    child: Align(
+                      alignment: Alignment.topCenter,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10),
+                        child: Container(
+                          width: 40,
+                          height: 4,
+                          decoration: BoxDecoration(
+                            color: AppColors.border,
+                            borderRadius: BorderRadius.circular(2),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  top: 0,
+                  left: 0,
+                  right: 0,
+                  height: _brandH,
+                  child: ColoredBox(
+                    color: AppColors.surface.withValues(alpha: t),
+                    child: const Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(padding: EdgeInsets.only(left: 16), child: _Brand(size: 40)),
+                    ),
+                  ),
+                ),
+              ],
+            );
+          },
+        ),
+        Positioned.fill(
+          top: _brandH,
+          child: Column(
+            children: [
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, box) => SingleChildScrollView(
+                    controller: _ctrl,
+                    physics: const ClampingScrollPhysics(),
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(minHeight: box.maxHeight + travel),
+                      child: Padding(
+                        padding: EdgeInsets.fromLTRB(20, travel + _handleZone + 10, 20, 20),
+                        child: Align(
+                          alignment: Alignment.topCenter,
+                          child: ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 480),
+                            child: widget.child,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              if (widget.action != null)
+                Padding(
+                  padding: EdgeInsets.fromLTRB(20, 4, 20, 16 + widget.bottomInset),
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 480),
+                    child: widget.action,
+                  ),
+                ),
+            ],
           ),
         ),
       ],

@@ -161,7 +161,7 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 
 - Memakai `HeroLayout` seperti Login (tablet: `AppCard`; HP: panel). Judul "Buat akun Owner".
 - HP: `StepProgress` 2 segmen (6 dp; segmen 1 `primary`, 2 `border`), subjudul "Langkah 1 dari 2 · lalu atur toko", info offline di kotak `peach` radius 14, teks `textPrimary` + ikon gembok: **"Tersimpan hanya di HP ini."** + " Catat password Anda dan rutin Backup." Tombol "Buat Akun" disematkan.
-- Onboarding HP: `StepProgress` 2 dari 2, "Langkah 2 dari 2 · atur toko", tombol "Simpan Profil & Mulai" disematkan.
+- Onboarding HP: `StepProgress` 2 dari 2, "Langkah 2 dari 2 · atur toko", tombol "Simpan Profil & Mulai" disematkan. Memakai `narrowCollapsible`: saat scroll panel putih naik menutupi hero sampai tepat di bawah baris brand (tinggi 64, latar `surface` memudar masuk), baru isi scroll di dalam panel. Register tetap sheet statis.
 - Field: Nama pengguna, Password, Ulangi password (`PasswordField`); pesan error merah di bawah field.
 - Teks info tablet (bodySmall, `textSecondary`): "Akun disimpan hanya di HP ini (offline). Catat password Anda — tidak bisa dipulihkan lewat internet. Gunakan Backup agar data aman."
 - Tombol `PrimaryButton` "Buat Akun". `AuthGate` memilih Register/Login.

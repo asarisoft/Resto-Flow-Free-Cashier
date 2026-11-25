@@ -113,6 +113,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
               ],
             ),
             narrowAction: _saveButton(),
+            narrowCollapsible: true,
           ),
         ),
       ),

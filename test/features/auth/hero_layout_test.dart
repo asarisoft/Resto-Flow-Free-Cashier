@@ -135,6 +135,36 @@ void main() {
     expect(_contrast(fg, bg), greaterThanOrEqualTo(4.5));
   });
 
+  for (final size in const [Size(360, 800), Size(360, 640)]) {
+    testWidgets('onboarding HP ${size.width.toInt()}x${size.height.toInt()}: scroll jauh, panel mentok di bawah brand, tombol tetap',
+        (t) async {
+      await pump(t, const OnboardingPage(), size);
+      final before = t.getRect(find.byWidgetPredicate(isSheet)).top;
+      await t.drag(find.byType(SingleChildScrollView).first, const Offset(0, -3000));
+      await t.pumpAndSettle();
+      expect(t.takeException(), isNull);
+      final sheet = t.getRect(find.byWidgetPredicate(isSheet));
+      final brand = t.getRect(find.text('KasirKita'));
+      expect(sheet.top, lessThan(before));
+      expect(sheet.top, greaterThanOrEqualTo(brand.bottom));
+      expect(sheet.top - brand.bottom, lessThan(32)); // tepat di bawah baris brand
+      expect(find.text('KasirKita'), findsOneWidget);
+      final btn = t.getRect(find.text('Simpan Profil & Mulai'));
+      expect(btn.bottom, lessThanOrEqualTo(size.height));
+    });
+  }
+
+  testWidgets('onboarding HP: keyboard 300 + scroll jauh, brand dan tombol terlihat', (t) async {
+    await pump(t, const OnboardingPage(), const Size(360, 640), keyboard: 300);
+    await t.drag(find.byType(SingleChildScrollView).first, const Offset(0, -3000));
+    await t.pumpAndSettle();
+    expect(t.takeException(), isNull);
+    expect(find.text('KasirKita'), findsOneWidget);
+    final btn = t.getRect(find.text('Simpan Profil & Mulai'));
+    expect(btn.bottom, lessThanOrEqualTo(640 - 300));
+    expect(btn.top, greaterThan(0));
+  });
+
   testWidgets('onboarding HP: bar langkah 2 dari 2', (t) async {
     await pump(t, const OnboardingPage(), const Size(360, 800));
     expect(find.text('Langkah 2 dari 2 · atur toko'), findsOneWidget);
