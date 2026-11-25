@@ -55,8 +55,8 @@ void main() {
   setUp(() async {
     SharedPreferences.setMockInitialValues({});
     PackageInfo.setMockInitialValues(
-      appName: 'KasirKita',
-      packageName: 'id.asdev.kasirkita',
+      appName: 'Kasir Ceria',
+      packageName: 'id.asdev.kasirceria',
       version: '1.0.0',
       buildNumber: '2',
       buildSignature: '',
@@ -123,6 +123,6 @@ void main() {
         overrides: [databaseProvider.overrideWithValue(db)]);
     addTearDown(c.dispose);
     expect(await c.read(appVersionLabelProvider.future),
-        'KasirKita v1.0.0 (2) · skema DB 1');
+        'Kasir Ceria v1.0.0 (2) · skema DB 1');
   });
 }

@@ -145,7 +145,7 @@ void main() {
           await tester.pump(const Duration(milliseconds: 200));
         }
         if (e.value.width > 800) {
-          expect(find.text('KasirKita'), findsOneWidget, reason: 'sidebar must be visible (not onboarding)');
+          expect(find.text('Kasir Ceria'), findsOneWidget, reason: 'sidebar must be visible (not onboarding)');
           expect(
             find.byWidgetPredicate((w) =>
                 w is Image && w.image is AssetImage && (w.image as AssetImage).assetName == 'assets/images/app_logo.webp'),

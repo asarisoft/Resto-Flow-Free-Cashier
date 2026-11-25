@@ -94,11 +94,11 @@ Future<void> runBackupToDevice(WidgetRef ref, BuildContext context) async {
   }
 }
 
-/// Teks versi untuk layar Pengaturan: "KasirKita v1.0.0 (2) · skema DB 1".
+/// Teks versi untuk layar Pengaturan: "Kasir Ceria v1.0.0 (2) · skema DB 1".
 final appVersionLabelProvider = FutureProvider<String>((ref) async {
   final info = await PackageInfo.fromPlatform();
   final schema = ref.read(databaseProvider).schemaVersion;
-  return 'KasirKita v${info.version} (${info.buildNumber}) · skema DB $schema';
+  return 'Kasir Ceria v${info.version} (${info.buildNumber}) · skema DB $schema';
 });
 
 /// Small non-intrusive reminder, shown only to the owner when a backup is due.

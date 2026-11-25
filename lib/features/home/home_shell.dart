@@ -171,7 +171,7 @@ class _MainShellState extends ConsumerState<_MainShell> {
                             const SizedBox(width: 12),
                             Expanded(
                               child: Text(
-                                'KasirKita',
+                                'Kasir Ceria',
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
                                 style: AppTypography.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),

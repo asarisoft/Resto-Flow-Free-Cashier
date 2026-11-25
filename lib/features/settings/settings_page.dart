@@ -360,7 +360,7 @@ class SettingsPage extends ConsumerWidget {
                   Center(
                     child: Text(
                       ref.watch(appVersionLabelProvider).valueOrNull ??
-                          'KasirKita',
+                          'Kasir Ceria',
                       style: textTheme.bodyMedium?.copyWith(
                         color: AppColors.textSecondary,
                       ),

@@ -46,7 +46,7 @@ class BackupService {
 
   /// Naik hanya kalau struktur ZIP berubah. Restore harus bisa baca semua format lama.
   static const backupFormat = 1;
-  static const applicationId = 'id.asdev.kasirkita';
+  static const applicationId = 'id.asdev.kasirceria';
   static const _maxPreRestore = 3;
 
   final Directory dbDir;

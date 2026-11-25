@@ -46,13 +46,13 @@ class ForceUpdatePage extends ConsumerWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          (r?.title ?? '').isEmpty ? 'Update KasirKita dulu, ya' : r!.title,
+          (r?.title ?? '').isEmpty ? 'Update Kasir Ceria dulu, ya' : r!.title,
           style: t.headlineSmall,
         ),
         const SizedBox(height: 8),
         Text(
           (r?.message ?? '').isEmpty
-              ? 'Versi baru KasirKita tersedia. Update dulu ya!'
+              ? 'Versi baru Kasir Ceria tersedia. Update dulu ya!'
               : r!.message,
           style: t.bodyMedium?.copyWith(color: AppColors.textSecondary),
         ),

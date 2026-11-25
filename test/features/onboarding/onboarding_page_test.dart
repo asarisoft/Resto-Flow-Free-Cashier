@@ -19,7 +19,7 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      expect(find.text('Selamat datang di KasirKita'), findsOneWidget);
+      expect(find.text('Selamat datang di Kasir Ceria'), findsOneWidget);
       expect(find.text('Laporan Keuangan Realtime'), findsOneWidget);
       expect(find.widgetWithText(TextFormField, 'Nama Resto *'), findsOneWidget);
     });

@@ -1,8 +1,8 @@
-# Landing Page KasirKita (kasirkita.asdev.id) — Plan
+# Landing Page Kasir Ceria (kasirceria.pages.dev) — Plan
 
 **Goal:** Satu halaman promosi statis yang membuat pemilik UMKM klik "Download di Google Play".
 
-**Domain:** subdomain `kasirkita.asdev.id` (DNS CNAME ke Cloudflare Workers/Pages). Satu situs: landing `/`, `/privasi`, `/dukung` (WebView app), `/version.json` (cek versi). `web_netlify/` dihapus; `remoteBaseUrl` app = `https://kasirkita.asdev.id`.
+**Domain:** subdomain `kasirceria.pages.dev` (DNS CNAME ke Cloudflare Workers/Pages). Satu situs: landing `/`, `/privasi`, `/dukung` (WebView app), `/version.json` (cek versi). `web_netlify/` dihapus; `remoteBaseUrl` app = `https://kasirceria.pages.dev`.
 
 **Tech:** HTML + CSS statis (tanpa framework), GSAP + Lenis, hosting Cloudflare Pages (Workers tidak bisa CNAME dari DNS luar). Folder baru `web_landing/`.
 
@@ -13,7 +13,7 @@
 - Tanpa tracker pihak ketiga; analytics opsional Cloudflare Web Analytics (tanpa cookie).
 - Lighthouse mobile ≥ 90 (performa, aksesibilitas, SEO). Kontras teks ≥ 4.5:1.
 - Lebar HP 360px tanpa scroll samping.
-- Tombol utama: link Play Store `https://play.google.com/store/apps/details?id=id.asdev.kasirkita`.
+- Tombol utama: link Play Store `https://play.google.com/store/apps/details?id=id.asdev.kasirceria`.
 - Klaim harus benar: gratis, offline, data di HP, backup manual. Jangan janji cloud sync.
 
 ## Struktur halaman
@@ -28,16 +28,16 @@
 ## Tasks
 - [x] **1. Kebijakan privasi** `web_landing/privacy.html` (wajib Play Store): data hanya lokal, izin Bluetooth/penyimpanan/kamera-galeri, cek koneksi hanya ke `version.json`, kontak.
 - [x] **2. Aset**: ekspor gambar dari editor screenshot Play Store (hero HP, 2 tablet) ke WebP ≤ 150KB; favicon dari `app_logo`; OG image 1200×630.
-- [x] **3. Halaman** `web_landing/index.html` sesuai struktur; meta SEO (title "KasirKita – Aplikasi Kasir Gratis & Offline untuk UMKM", description ≤ 155 char, OG/Twitter card, JSON-LD `SoftwareApplication` dengan harga 0).
+- [x] **3. Halaman** `web_landing/index.html` sesuai struktur; meta SEO (title "Kasir Ceria – Aplikasi Kasir Gratis & Offline untuk UMKM", description ≤ 155 char, OG/Twitter card, JSON-LD `SoftwareApplication` dengan harga 0).
 - [x] **3b. SEO / AEO / GEO** (mockup v6 sudah memuat poin 1–4):
   1. Kata kunci utama: "aplikasi kasir gratis", "kasir offline", "aplikasi kasir android", "aplikasi kasir UMKM/warung/cafe", "POS gratis", "cetak struk bluetooth". Pakai alami di H1, H2, deskripsi, alt gambar.
-  2. Blok definisi "Apa itu KasirKita?" (1 kalimat jawaban langsung + tabel fakta) — mudah dikutip AI/answer engine.
+  2. Blok definisi "Apa itu Kasir Ceria?" (1 kalimat jawaban langsung + tabel fakta) — mudah dikutip AI/answer engine.
   3. JSON-LD `@graph`: Organization (ASDEV.id + sameAs IG/TikTok), SoftwareApplication (harga 0 IDR, featureList, downloadUrl), HowTo (3 langkah), FAQPage (pertanyaan lengkap berisi nama brand).
   4. Meta description ≤155, canonical, OG/Twitter, `lang="id"`.
   5. `robots.txt` (izinkan GPTBot, ClaudeBot, PerplexityBot, Google-Extended), `sitemap.xml`, `llms.txt` (ringkasan fakta app + link).
   6. Daftarkan di Google Search Console + Bing Webmaster; uji Rich Results Test.
 - [x] **4. `_headers`**: cache panjang untuk gambar, CSP ketat, `X-Content-Type-Options`.
-- [ ] **5. Deploy**: Cloudflare Pages project `kasirkita-landing`, custom domain `kasirkita.asdev.id`, cek HTTPS.
+- [ ] **5. Deploy**: Cloudflare Pages project `kasirceria`, custom domain `kasirceria.pages.dev`, cek HTTPS.
 - [ ] **6. QA**: Lighthouse mobile, uji 360px & desktop, semua link (Play Store, IG, TikTok, privacy) jalan.
 - [ ] **7. Isi URL privacy** di Play Console + `docs/SPEC.md`.
 

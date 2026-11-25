@@ -81,7 +81,7 @@ void main() {
       await pumpLoginPage(tester);
 
       expect(find.byWidgetPredicate(_isHero), findsOneWidget);
-      expect(find.text('KasirKita'), findsOneWidget);
+      expect(find.text('Kasir Ceria'), findsOneWidget);
       final img = tester.getRect(find.byWidgetPredicate(_isHero));
       final form = tester.getTopLeft(find.text('Halo, selamat datang!'));
       expect(form.dx, greaterThan(img.left));

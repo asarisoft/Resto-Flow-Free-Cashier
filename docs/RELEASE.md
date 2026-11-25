@@ -1,6 +1,6 @@
-# Release KasirKita
+# Release Kasir Ceria
 
-Package: `id.asdev.kasirkita`
+Package: `id.asdev.kasirceria`
 
 ## 1. Buat keystore (jalankan sendiri, sekali)
 ```

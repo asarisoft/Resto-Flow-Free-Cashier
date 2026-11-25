@@ -99,7 +99,7 @@ void main() {
         overrides: [
           o,
           packageInfoProvider.overrideWith((ref) async => PackageInfo(
-              appName: 'KasirKita',
+              appName: 'Kasir Ceria',
               packageName: 'x',
               version: '1.0.3',
               buildNumber: '3')),
@@ -191,7 +191,7 @@ void main() {
     await tester.pumpWidget(app(required));
     await tester.pumpAndSettle();
     expect(find.text('Versi baru tersedia'), findsOneWidget);
-    expect(find.text('Update KasirKita dulu, ya'), findsOneWidget);
+    expect(find.text('Update Kasir Ceria dulu, ya'), findsOneWidget);
     expect(find.text('Yang baru'), findsNothing);
     expect(find.text('Versi Anda 1.0.3 (3) · minimal build 5'), findsOneWidget);
   });

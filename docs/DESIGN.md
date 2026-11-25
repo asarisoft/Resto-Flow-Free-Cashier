@@ -155,7 +155,7 @@ satu gaya (garis) untuk semua ikon; target sentuh minimal 48 dp.
 
 - Gambar hero `assets/images/login_hero.webp` (ilustrasi clay kasir, dekoratif, di luar semantics).
 - **Lebar ≥ 600 dp**: gambar kiri (radius 28), form dalam `AppCard` di kanan.
-- **HP (< 900 dp), desain B (`HeroNarrowStyle.card`, hanya Login)**: hero ~38% tinggi (clamp 200-320 dp), sudut bawah radius 28, brand kiri atas. Kartu clay putih (`ClayDecoration`, radius 24, margin 16, maks 480 dp) menimpa hero 40 dp; isi: judul, subjudul, pengguna, password, tombol "Masuk" di dalam kartu. Seluruh isi scroll (aman saat keyboard); footer "KasirKita oleh ASDEV.id" (`bodySmall`, `textSecondary`) di bawah kartu. Register & Onboarding tetap gaya panel (`HeroNarrowStyle.sheet`): hero ~42% (220-380), panel putih radius atas 28 menimpa 32 dp, tombol utama disematkan di dasar panel via `narrowAction`. Tablet (>= 900 dp) tetap satu kartu clay lebar.
+- **HP (< 900 dp), desain B (`HeroNarrowStyle.card`, hanya Login)**: hero ~38% tinggi (clamp 200-320 dp), sudut bawah radius 28, brand kiri atas. Kartu clay putih (`ClayDecoration`, radius 24, margin 16, maks 480 dp) menimpa hero 40 dp; isi: judul, subjudul, pengguna, password, tombol "Masuk" di dalam kartu. Seluruh isi scroll (aman saat keyboard); footer "Kasir Ceria oleh ASDEV.id" (`bodySmall`, `textSecondary`) di bawah kartu. Register & Onboarding tetap gaya panel (`HeroNarrowStyle.sheet`): hero ~42% (220-380), panel putih radius atas 28 menimpa 32 dp, tombol utama disematkan di dasar panel via `narrowAction`. Tablet (>= 900 dp) tetap satu kartu clay lebar.
 - Logo kotak clay `peach` 84×84 radius 28. Judul "Halo, selamat datang!", subjudul "Masuk untuk mulai jualan hari ini".
 
 ## Layout Registrasi (RegisterPage)

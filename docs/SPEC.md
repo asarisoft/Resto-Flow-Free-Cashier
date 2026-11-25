@@ -433,16 +433,16 @@ Gaya **claymorphism** (latar lilac, kartu empuk, tint pastel, aksen oranye). Lih
 - Kartu "Follow kami" (Instagram, TikTok) dan "Jasa Bikin Aplikasi" (ajakan + tombol Hubungi via Instagram).
 - Buka link lewat `url_launcher` (`externalApplication`); gagal → SnackBar. Android `<queries>` https ditambahkan.
 - Halaman = WebView ke `supportUrl` = `$remoteBaseUrl/dukung` (JS nonaktif, jadi halaman tanpa script; indikator loading). Semua URL selain `/dukung` (termasuk landing di host yang sama, Instagram, WA) dicegah di WebView & dibuka di luar app. Gagal muat / offline / WebView tak tersedia → `SupportFallback` (konten lokal di atas).
-- Sumber web: satu situs `web_landing/` (landing `/`, `/privasi`, `/dukung`, `/version.json`) di Cloudflare Pages, domain `https://kasirkita.asdev.id` (CNAME di Biznet Gio ke `<project>.pages.dev`). `version.json` `Cache-Control: no-cache` lewat `web_landing/_headers`.
+- Sumber web: satu situs `web_landing/` (landing `/`, `/privasi`, `/dukung`, `/version.json`) di Cloudflare Pages, domain `https://kasirceria.pages.dev` (CNAME di Biznet Gio ke `<project>.pages.dev`). `version.json` `Cache-Control: no-cache` lewat `web_landing/_headers`.
 
 ### 7.17 Update Wajib & In-App Update
 - Saat start, `UpdateGate` (membungkus app di `main.dart`) ambil `$remoteBaseUrl/version.json` (`min_version_code`, `latest_version_code` wajib; opsional: `message`, `level`, `title`, `changes_title`, `changes`), timeout 3 dtk, bandingkan dengan versionCode (`package_info_plus` buildNumber).
 - `current < min` → `ForceUpdatePage` (terkunci, tanpa kembali, tombol "Update Sekarang" → `in_app_update` immediate; gagal → buka Play Store; bila shift terbuka ada tombol teks "Lanjut sementara" untuk sesi app ini saja, tidak disimpan, supaya shift bisa ditutup). `current < latest` → flexible update + SnackBar "Update siap — Pasang". Selain itu app normal.
-- Field opsional `version.json` (hilang/tipe salah → default; teks polos, dipotong): `level` (`"info"` default | `"critical"`; selain itu → info), `title` ≤60 (default "Update KasirKita dulu, ya"), `message` ≤300, `changes_title` ≤40 (default "Yang baru"), `changes` array string maks 5 item, tiap ≤80. `ForceUpdatePage` = `HeroLayout` (maskot, panel dari bawah): chip "Versi baru tersedia" (info, mint) / "Perbaikan penting" (critical, merah + hero ditint merah, kotak daftar merah muda), judul, pesan, daftar `changes`, tombol, dan baris "Versi Anda {versi} ({build}) · minimal build {min}". Contoh critical:
+- Field opsional `version.json` (hilang/tipe salah → default; teks polos, dipotong): `level` (`"info"` default | `"critical"`; selain itu → info), `title` ≤60 (default "Update Kasir Ceria dulu, ya"), `message` ≤300, `changes_title` ≤40 (default "Yang baru"), `changes` array string maks 5 item, tiap ≤80. `ForceUpdatePage` = `HeroLayout` (maskot, panel dari bawah): chip "Versi baru tersedia" (info, mint) / "Perbaikan penting" (critical, merah + hero ditint merah, kotak daftar merah muda), judul, pesan, daftar `changes`, tombol, dan baris "Versi Anda {versi} ({build}) · minimal build {min}". Contoh critical:
   `{"min_version_code":8,"latest_version_code":8,"level":"critical","title":"Harus update sekarang","message":"Versi lama bisa salah hitung total.","changes_title":"Diperbaiki","changes":["Total struk benar","Stok tidak minus"]}`
 - Offline / JSON rusak / timeout / error apa pun → TIDAK terkunci (offline-first).
 - Base URL & link Play Store: `lib/core/config/remote_config.dart`. Naikkan versi & `version.json`: lihat `docs/RELEASE.md`.
-- Package/applicationId: `id.asdev.kasirkita` (tidak boleh berubah). Release signing via `android/key.properties` (tidak di-commit); tanpa file itu → debug signing. Android butuh izin `INTERNET`.
+- Package/applicationId: `id.asdev.kasirceria` (tidak boleh berubah; rebrand dari KasirKita sebelum rilis, domain web `kasirceria.pages.dev`). Release signing via `android/key.properties` (tidak di-commit); tanpa file itu → debug signing. Android butuh izin `INTERNET`.
 
 ---
 
@@ -510,7 +510,7 @@ Kembali                 9.000
 3. Share sheet (`share_plus`) → simpan ke Files / Drive / kirim
 4. Atau tombol **Simpan ke Download** (`file_picker` `saveFile`, dialog simpan sistem/SAF): file di luar sandbox app, selamat dari uninstall. Dicatat sebagai backup hanya bila benar-benar tersimpan.
 
-Pengaturan menampilkan `KasirKita v<versi> (<build>) · skema DB <n>` di bagian bawah (untuk support).
+Pengaturan menampilkan `Kasir Ceria v<versi> (<build>) · skema DB <n>` di bagian bawah (untuk support).
 
 ### Restore (Settings → "Restore Data", Owner only)
 1. `file_picker` pilih file `.zip`
@@ -614,7 +614,7 @@ Ringkasan urutan:
 
 ### Fase APK manual
 - APK/AAB yang dibagikan **wajib release-signed** (`android/key.properties` + keystore di luar repo, lihat `docs/RELEASE.md`). Jangan bagikan APK debug.
-- `applicationId` `id.asdev.kasirkita` tidak boleh berubah. `versionCode` (angka setelah `+` di `pubspec.yaml`) harus naik tiap rilis.
+- `applicationId` `id.asdev.kasirceria` tidak boleh berubah. `versionCode` (angka setelah `+` di `pubspec.yaml`) harus naik tiap rilis.
 - Keystore sama dipakai selamanya. Hilang key = user harus uninstall = data hilang. Simpan keystore + password di 2 tempat aman.
 - `android:allowBackup="false"`: install ulang selalu mulai dari DB kosong (Register); backup resmi hanya lewat ZIP.
 - Pengaturan menampilkan versi app + skema DB untuk support.

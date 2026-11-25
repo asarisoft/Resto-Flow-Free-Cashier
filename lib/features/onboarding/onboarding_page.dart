@@ -44,7 +44,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
     final intro = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('Selamat datang di KasirKita',
+        Text('Selamat datang di Kasir Ceria',
             style: textTheme.displaySmall?.copyWith(color: AppColors.textPrimary)),
         const SizedBox(height: 8),
         Text('Kasir gratis untuk warung, toko & cafe. Bisa offline.',

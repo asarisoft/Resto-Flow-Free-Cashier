@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Logo KasirKita (kotak membulat). Dekoratif: nama app selalu ada di teks sebelahnya.
+/// Logo Kasir Ceria (kotak membulat). Dekoratif: nama app selalu ada di teks sebelahnya.
 class AppLogo extends StatelessWidget {
   final double size;
   const AppLogo({super.key, required this.size});

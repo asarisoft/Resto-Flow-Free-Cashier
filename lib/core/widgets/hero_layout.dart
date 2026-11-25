@@ -387,8 +387,11 @@ class _Brand extends StatelessWidget {
       children: [
         AppLogo(size: size),
         const SizedBox(width: 12),
-        Text('KasirKita',
-            style: AppTypography.textTheme.titleLarge?.copyWith(color: AppColors.textPrimary)),
+        Flexible(
+          child: Text('Kasir Ceria',
+              overflow: TextOverflow.ellipsis,
+              style: AppTypography.textTheme.titleLarge?.copyWith(color: AppColors.textPrimary)),
+        ),
       ],
     );
   }

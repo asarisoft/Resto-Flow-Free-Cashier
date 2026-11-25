@@ -65,9 +65,9 @@ void main() {
       final btn = find.text('Masuk');
       expect(btn, findsOneWidget);
       expect(t.getRect(find.text('Halo, selamat datang!')).top, lessThan(heroBottom)); // judul kartu menimpa hero
-      await t.ensureVisible(find.text('KasirKita oleh ASDEV.id'));
+      await t.ensureVisible(find.text('Kasir Ceria oleh ASDEV.id'));
       await t.pumpAndSettle();
-      expect(find.text('KasirKita oleh ASDEV.id'), findsOneWidget);
+      expect(find.text('Kasir Ceria oleh ASDEV.id'), findsOneWidget);
       expect(t.getRect(btn).bottom, lessThanOrEqualTo(size.height));
       expect(t.getRect(btn).top, greaterThan(0));
     });
@@ -144,11 +144,11 @@ void main() {
       await t.pumpAndSettle();
       expect(t.takeException(), isNull);
       final sheet = t.getRect(find.byWidgetPredicate(isSheet));
-      final brand = t.getRect(find.text('KasirKita'));
+      final brand = t.getRect(find.text('Kasir Ceria'));
       expect(sheet.top, lessThan(before));
       expect(sheet.top, greaterThanOrEqualTo(brand.bottom));
       expect(sheet.top - brand.bottom, lessThan(32)); // tepat di bawah baris brand
-      expect(find.text('KasirKita'), findsOneWidget);
+      expect(find.text('Kasir Ceria'), findsOneWidget);
       final btn = t.getRect(find.text('Simpan Profil & Mulai'));
       expect(btn.bottom, lessThanOrEqualTo(size.height));
     });
@@ -159,7 +159,7 @@ void main() {
     await t.drag(find.byType(SingleChildScrollView).first, const Offset(0, -3000));
     await t.pumpAndSettle();
     expect(t.takeException(), isNull);
-    expect(find.text('KasirKita'), findsOneWidget);
+    expect(find.text('Kasir Ceria'), findsOneWidget);
     final btn = t.getRect(find.text('Simpan Profil & Mulai'));
     expect(btn.bottom, lessThanOrEqualTo(640 - 300));
     expect(btn.top, greaterThan(0));

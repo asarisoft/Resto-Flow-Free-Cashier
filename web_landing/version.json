@@ -2,8 +2,8 @@
   "min_version_code": 1,
   "latest_version_code": 1,
   "level": "info",
-  "title": "Update KasirKita dulu, ya",
-  "message": "Versi baru KasirKita tersedia. Update dulu ya!",
+  "title": "Update Kasir Ceria dulu, ya",
+  "message": "Versi baru Kasir Ceria tersedia. Update dulu ya!",
   "changes_title": "Yang baru",
   "changes": [],
   "_cara_pakai": [
@@ -12,13 +12,13 @@
     "latest_version_code: build di bawah ini ditawari update opsional (snackbar 'Update siap').",
     "level: 'info' (hijau) atau 'critical' (merah, untuk bug fatal).",
     "title maks 60, message maks 300, changes_title maks 40, changes maks 5 poin x 80 karakter.",
-    "Setelah ubah: upload ulang web_landing ke Pages. Cek https://kasirkita.asdev.id/version.json.",
+    "Setelah ubah: upload ulang web_landing ke Pages. Cek https://kasirceria.pages.dev/version.json.",
     "JANGAN naikkan min_version_code sebelum versi baru sudah tayang di Play Store."
   ],
   "_contoh_update_biasa": {
     "min_version_code": 2,
     "latest_version_code": 2,
-    "title": "Update KasirKita dulu, ya",
+    "title": "Update Kasir Ceria dulu, ya",
     "message": "Versi baru sudah siap dengan perbaikan dan fitur baru.",
     "changes": [
       "Pindah HP lewat Pulihkan Backup",

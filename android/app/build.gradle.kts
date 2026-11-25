@@ -12,7 +12,7 @@ val keyProps = Properties().apply {
 }
 
 android {
-    namespace = "id.asdev.kasirkita"
+    namespace = "id.asdev.kasirceria"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -22,7 +22,7 @@ android {
     }
 
     defaultConfig {
-        applicationId = "id.asdev.kasirkita"
+        applicationId = "id.asdev.kasirceria"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode

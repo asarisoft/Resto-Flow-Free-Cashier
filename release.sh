@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Build rilis KasirKita: pilih versi + jenis build, cek signing, simpan versi ke pubspec.
+# Build rilis Kasir Ceria: pilih versi + jenis build, cek signing, simpan versi ke pubspec.
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

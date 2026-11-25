@@ -1,7 +1,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
     <uses-permission android:name="android.permission.INTERNET"/>
     <application
-        android:label="KasirKita"
+        android:label="Kasir Ceria"
         android:allowBackup="false"
         android:fullBackupContent="false"
         android:name="${applicationName}"

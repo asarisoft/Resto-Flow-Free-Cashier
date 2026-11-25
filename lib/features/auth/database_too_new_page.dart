@@ -29,7 +29,7 @@ class DatabaseTooNewPage extends StatelessWidget {
                     Text('Update aplikasi dulu', style: t.titleLarge),
                     const SizedBox(height: 8),
                     Text(
-                      'Data dibuat oleh versi KasirKita yang lebih baru. '
+                      'Data dibuat oleh versi Kasir Ceria yang lebih baru. '
                       'Install versi terbaru. Data Anda tidak diubah.',
                       textAlign: TextAlign.center,
                       style: t.bodyMedium

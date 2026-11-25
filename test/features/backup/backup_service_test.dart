@@ -64,7 +64,7 @@ void main() {
     ) as Map<String, dynamic>;
     expect(manifest['schemaVersion'], 1);
     expect(manifest['backupFormat'], 1);
-    expect(manifest['applicationId'], 'id.asdev.kasirkita');
+    expect(manifest['applicationId'], 'id.asdev.kasirceria');
     expect(manifest['appVersion'], '1.0.0+2');
 
     final snapshot =
