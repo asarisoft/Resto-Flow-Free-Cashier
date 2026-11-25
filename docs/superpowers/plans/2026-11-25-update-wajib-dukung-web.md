@@ -61,14 +61,14 @@
 
 ### Task 5: File Netlify (`web_netlify/`)
 **Files:** `web_netlify/version.json`, `web_netlify/dukung.html`, `web_netlify/_headers`.
-- [ ] `version.json`: `{"min_version_code": 1, "latest_version_code": 1, "message": "Versi baru KasirKita tersedia. Update dulu ya!"}`.
-- [ ] `dukung.html`: satu file, CSS inline, gaya clay (warna dari docs/DESIGN.md), mobile-first, tanpa JS eksternal. 3 kartu:
+- [x] `version.json`: `{"min_version_code": 1, "latest_version_code": 1, "message": "Versi baru KasirKita tersedia. Update dulu ya!"}`.
+- [x] `dukung.html`: satu file, CSS inline, gaya clay (warna dari docs/DESIGN.md), mobile-first, tanpa JS eksternal. 3 kartu:
   1. **Follow kami** — tombol Instagram (dan sosmed lain bila ada).
   2. **Request fitur** — "Punya ide fitur? DM Instagram kami" → Instagram.
   3. **Pesan aplikasi custom** — "Butuh aplikasi untuk usaha Anda? Hubungi via Instagram" → Instagram.
   Footer: "KasirKita oleh ASDEV.id".
-- [ ] `_headers`: `version.json` → `Cache-Control: no-cache`, `Access-Control-Allow-Origin: *`.
-- [ ] Commit `feat(web): halaman dukung & version.json untuk netlify`.
+- [x] `_headers`: `version.json` → `Cache-Control: no-cache`, `Access-Control-Allow-Origin: *`.
+- [x] Commit `feat(web): halaman dukung & version.json untuk netlify`.
 
 ### Task 6: Halaman Dukung jadi WebView
 **Files:** `lib/features/support/support_page.dart`, `test/features/support/support_page_test.dart`.
