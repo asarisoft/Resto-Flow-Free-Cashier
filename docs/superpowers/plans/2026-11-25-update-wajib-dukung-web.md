@@ -34,11 +34,11 @@
 
 ### Task 2: Signing release (keystore)
 **Files:** `android/app/build.gradle.kts`, `.gitignore`, `docs/RELEASE.md` (baru).
-- [ ] `signingConfigs.release` baca `android/key.properties` (storeFile, storePassword, keyAlias, keyPassword); file tidak ada → release pakai debug signing.
-- [ ] `.gitignore`: `android/key.properties`, `*.jks`, `*.keystore`.
-- [ ] `docs/RELEASE.md`: perintah buat keystore (user jalankan sendiri):
+- [x] `signingConfigs.release` baca `android/key.properties` (storeFile, storePassword, keyAlias, keyPassword); file tidak ada → release pakai debug signing.
+- [x] `.gitignore`: `android/key.properties`, `*.jks`, `*.keystore`.
+- [x] `docs/RELEASE.md`: perintah buat keystore (user jalankan sendiri):
   `keytool -genkey -v -keystore ~/keystores/kasirkita-upload.jks -keyalg RSA -keysize 2048 -validity 10000 -alias kasirkita`, isi `key.properties`, WAJIB backup keystore + password, cara naikkan versi & update `version.json`.
-- [ ] Commit `chore(android): signing release via key.properties`.
+- [x] Commit `chore(android): signing release via key.properties`.
 
 ### Task 3: Cek versi minimal (`version.json`)
 **Files:** `lib/core/config/remote_config.dart`, `lib/features/update/version_check.dart`, `lib/features/update/force_update_page.dart`, gate di root app (sebelum login), `test/features/update/version_check_test.dart`.
