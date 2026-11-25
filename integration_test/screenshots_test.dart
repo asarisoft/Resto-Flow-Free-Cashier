@@ -135,6 +135,8 @@ void main() {
     if (!phone) {
       await addToCart('Americano');
       await addToCart('Cappuccino');
+      // ensureVisible menggeser grid; kembalikan ke atas agar baris pertama utuh.
+      await tester.drag(find.byType(GridView).first, const Offset(0, 800));
     }
     await shot('04_kasir');
 
