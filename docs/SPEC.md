@@ -520,6 +520,8 @@ Kembali                 9.000
 3. Share sheet (`share_plus`) → simpan ke Files / Drive / kirim
 4. Atau tombol **Simpan ke Download** (`file_picker` `saveFile`, dialog simpan sistem/SAF): file di luar sandbox app, selamat dari uninstall. Dicatat sebagai backup hanya bila benar-benar tersimpan.
 
+Nota: nama toko dicetak rata tengah, ukuran ganda + tebal (ESC/POS `GS ! 0x11`, `ESC E 1`), dibungkus di setengah lebar kolom; preview nota meniru (besar, tebal).
+
 Banner pengingat backup (Owner): sudah pernah backup → muncul bila backup terakhir > 7 hari. Belum pernah → muncul hanya setelah toko dipakai ≥ 7 hari (sejak profil dibuat) **dan** ≥ 20 transaksi lunas; tidak muncul saat baru install.
 
 Pengaturan menampilkan `Kasir Ceria v<versi> (<build>) · skema DB <n>` di bagian bawah (untuk support).

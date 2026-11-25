@@ -35,7 +35,7 @@ void main() {
   testWidgets('kasir lihat nota penuh: kotak selebar teks + padding, tanpa overflow', (tester) async {
     await _pump(tester, _profile());
     final textSize = tester.getSize(find.descendant(
-        of: find.byType(ReceiptPreview), matching: find.byType(Text)));
+        of: find.byType(ReceiptPreview), matching: find.byType(Text)).last);
     final boxSize = tester.getSize(find.descendant(
         of: find.byType(ReceiptPreview), matching: find.byType(Container)).first);
     expect(boxSize.width, textSize.width + 32);
@@ -52,7 +52,7 @@ void main() {
     expect(find.byType(Image), findsOneWidget);
     final w = tester.getSize(find.byType(Image)).width;
     final textW = tester.getSize(find.descendant(
-        of: find.byType(ReceiptPreview), matching: find.byType(Text))).width;
+        of: find.byType(ReceiptPreview), matching: find.byType(Text)).last).width;
     expect(w, closeTo(textW * 0.6, 0.5));
 
     await _pump(tester, _profile(useLogo: false, logoPath: f.path));

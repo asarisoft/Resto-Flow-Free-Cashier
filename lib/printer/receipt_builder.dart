@@ -37,8 +37,21 @@ class ReceiptBuilder {
     final bytes = <int>[];
     final logo = await _logoRasterBytes(profile);
     if (logo != null) bytes.addAll(logo);
-    bytes.addAll(buildText(txn, profile).codeUnits);
+    bytes.addAll(nameHeaderBytes(profile));
+    bytes.addAll(buildText(txn, profile, withName: false).codeUnits);
     return bytes;
+  }
+
+  /// Nama toko rata tengah, ukuran ganda (GS ! 0x11) + tebal (ESC E 1).
+  /// Huruf 2x lebar → bungkus di setengah kolom kertas.
+  static List<int> nameHeaderBytes(RestoProfile profile) {
+    final w = (profile.paperWidth == 80 ? 48 : 32) ~/ 2;
+    final lines = wrap(profile.name.toUpperCase(), w).join('\n');
+    return [
+      0x1B, 0x61, 0x01, 0x1D, 0x21, 0x11, 0x1B, 0x45, 0x01,
+      ...'$lines\n'.codeUnits,
+      0x1D, 0x21, 0x00, 0x1B, 0x45, 0x00, 0x1B, 0x61, 0x00,
+    ];
   }
 
   static Future<CapabilityProfile>? _profileFuture;
@@ -123,7 +136,9 @@ class ReceiptBuilder {
     return out;
   }
 
-  static String buildText(models.Transaction txn, RestoProfile profile) {
+  /// [withName] false: nama toko dicetak terpisah (besar) oleh [nameHeaderBytes].
+  static String buildText(models.Transaction txn, RestoProfile profile,
+      {bool withName = true}) {
     final buf = StringBuffer();
     final w = profile.paperWidth == 80 ? 48 : 32;
 
@@ -142,7 +157,7 @@ class ReceiptBuilder {
       buf.writeln(left + ' ' * pad + right);
     }
 
-    center(profile.name.toUpperCase());
+    if (withName) center(profile.name.toUpperCase());
     if (profile.address != null && profile.address!.isNotEmpty) {
       center(profile.address!);
     }

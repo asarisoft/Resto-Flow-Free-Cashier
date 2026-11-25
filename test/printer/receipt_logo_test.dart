@@ -103,4 +103,12 @@ void main() {
     expect(_containsSub(bytes, gsV0), isFalse);
     expect(String.fromCharCodes(bytes), contains('TOTAL'));
   });
+
+  test('buildReceipt prints store name double-size & bold, once', () async {
+    final bytes = await ReceiptBuilder.buildReceipt(_txn, _profile());
+    final text = String.fromCharCodes(bytes);
+    final name = _profile().name.toUpperCase();
+    expect(text, contains('\x1D\x21\x11\x1B\x45\x01$name\n\x1D\x21\x00'));
+    expect(name.allMatches(text).length, 1);
+  });
 }

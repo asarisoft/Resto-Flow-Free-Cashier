@@ -31,7 +31,7 @@ void main() {
     await tester.enterText(find.widgetWithText(TextFormField, 'Pesan Footer Struk'), 'Terima kasih\nWifi: resto123');
     await tester.pump();
     expect(find.textContaining('Terima kasih', findRichText: true), findsWidgets);
-    final preview = tester.widget<Text>(find.descendant(of: find.bySemanticsLabel(RegExp('Preview nota')), matching: find.byType(Text)));
+    final preview = tester.widget<Text>(find.descendant(of: find.bySemanticsLabel(RegExp('Preview nota')), matching: find.byType(Text)).last);
     final lines = preview.data!.split('\n');
     final i = lines.indexWhere((l) => l.contains('Terima kasih'));
     expect(i, greaterThan(-1));
@@ -59,7 +59,7 @@ void main() {
       ),
     ));
     String longest() {
-      final t = tester.widget<Text>(find.descendant(of: find.bySemanticsLabel(RegExp('Preview nota')), matching: find.byType(Text)));
+      final t = tester.widget<Text>(find.descendant(of: find.bySemanticsLabel(RegExp('Preview nota')), matching: find.byType(Text)).last);
       return t.data!.split('\n').reduce((a, b) => a.length >= b.length ? a : b);
     }
     expect(longest().length, 32);

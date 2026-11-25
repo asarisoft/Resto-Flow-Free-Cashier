@@ -16,7 +16,7 @@ class ReceiptPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = ReceiptBuilder.buildText(txn ?? ReceiptBuilder.sampleTransaction(), profile).trimRight();
+    final text = ReceiptBuilder.buildText(txn ?? ReceiptBuilder.sampleTransaction(), profile, withName: false).trimRight();
     final style = AppTypography.textTheme.bodyMedium?.copyWith(
       fontFamily: 'monospace',
       fontSize: 12,
@@ -55,6 +55,19 @@ class ReceiptPreview extends StatelessWidget {
                 padding: const EdgeInsets.only(bottom: 8),
                 child: _LogoPreview(path: logo, width: textWidth * 0.6),
               ),
+            // Nama toko besar & tebal, seperti cetak ukuran ganda printer.
+            SizedBox(
+              width: textWidth,
+              child: Text(
+                profile.name.toUpperCase(),
+                textAlign: TextAlign.center,
+                style: style?.copyWith(
+                  fontSize: 22,
+                  fontWeight: FontWeight.w700,
+                  height: 1.2,
+                ),
+              ),
+            ),
             Text(text, softWrap: false, style: style),
           ],
         ),
