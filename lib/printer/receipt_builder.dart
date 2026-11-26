@@ -24,11 +24,6 @@ class ReceiptBuilder {
   static String shareText(models.Transaction txn, RestoProfile profile) =>
       '```\n${buildText(txn, profile).trimRight()}\n```';
 
-  /// Bytes untuk printer (isi sama persis dengan [buildText]).
-  static List<int> fromTransaction(
-          models.Transaction txn, RestoProfile profile) =>
-      buildText(txn, profile).codeUnits;
-
   /// Bytes lengkap untuk printer: logo raster hitam-putih (bila diset) di atas
   /// header, lalu teks struk. Logo hilang/rusak/gagal decode → cetak tanpa
   /// logo (tidak pernah gagal cetak).

@@ -56,11 +56,6 @@ void main() {
     expect(text, contains('Kembali'));
   });
 
-  test('fromTransaction returns the same text as bytes', () {
-    final p = profile(footer: 'Halo\nDunia');
-    expect(String.fromCharCodes(ReceiptBuilder.fromTransaction(txn, p)), ReceiptBuilder.buildText(txn, p));
-  });
-
   test('sample transaction renders (used by preview)', () {
     final text = ReceiptBuilder.buildText(ReceiptBuilder.sampleTransaction(), profile(footer: 'x'));
     expect(text, contains('TOTAL'));

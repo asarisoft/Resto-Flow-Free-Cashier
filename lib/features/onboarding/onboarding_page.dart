@@ -12,7 +12,6 @@ import '../../models/resto_profile.dart';
 import '../auth/auth_controller.dart';
 import '../settings/settings_providers.dart';
 import '../../core/theme/app_icons.dart';
-import '../settings/logo_image_service.dart';
 import '../settings/logo_picker_field.dart';
 import '../settings/profile_fields.dart';
 
@@ -160,7 +159,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       );
 
   Future<void> _pickLogo() async {
-    final file = await LogoImageService().pickImage();
+    final file = await ref.read(logoImageServiceProvider).pickImage();
     if (file == null || !mounted) return;
     setState(() => _pickedLogo = file);
   }
@@ -205,7 +204,7 @@ class _OnboardingPageState extends ConsumerState<OnboardingPage> {
       final repo = ref.read(settingsRepositoryProvider);
       final logoPath = _pickedLogo == null
           ? null
-          : await LogoImageService().saveLocal(_pickedLogo!);
+          : await ref.read(logoImageServiceProvider).saveLocal(_pickedLogo!);
       await repo.updateProfile(RestoProfile(
         name: _nameCtrl.text.trim(),
         address: _addressCtrl.text.trim().isEmpty

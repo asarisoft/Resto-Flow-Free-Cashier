@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/services/database_provider.dart';
 import '../../core/services/daos/profile_dao.dart';
 import '../../models/resto_profile.dart';
+import 'logo_image_service.dart';
 import 'settings_repository.dart';
 
 final profileDaoProvider = Provider<ProfileDao>((ref) {
@@ -15,3 +16,5 @@ final settingsRepositoryProvider = Provider<SettingsRepository>((ref) {
 final profileProvider = FutureProvider<RestoProfile?>((ref) async {
   return ref.watch(profileDaoProvider).get();
 });
+final logoImageServiceProvider =
+    Provider<LogoImageService>((ref) => LogoImageService());

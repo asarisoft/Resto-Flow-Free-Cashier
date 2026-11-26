@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:drift/drift.dart' show TableUpdateQuery;
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -20,10 +21,16 @@ final lastBackupTimeProvider = FutureProvider<DateTime?>((ref) {
   return BackupService.lastBackupTime();
 });
 
-final _paidTxCountProvider = FutureProvider<int>((ref) {
-  return ref
-      .watch(reportsDaoProvider)
-      .countTransactions(DateTime(2000), DateTime(9999));
+/// Jumlah transaksi lunas; dihitung ulang tiap tabel transaksi berubah.
+final _paidTxCountProvider = StreamProvider<int>((ref) async* {
+  final db = ref.watch(databaseProvider);
+  final reports = ref.watch(reportsDaoProvider);
+  Future<int> load() => reports.countTransactions(DateTime(2000), DateTime(9999));
+  yield await load();
+  await for (final _
+      in db.tableUpdates(TableUpdateQuery.onAllTables([db.transactions]))) {
+    yield await load();
+  }
 });
 
 final backupDueProvider = Provider<bool>((ref) {
