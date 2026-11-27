@@ -45,34 +45,65 @@ class ReceiptBuilder {
       .map((c) => c == 0x0A || (c >= 0x20 && c <= 0x7E) ? c : 0x3F)
       .toList();
 
-  /// Nama toko rata tengah, ukuran ganda (GS ! 0x11) + tebal (ESC E 1).
-  /// Huruf 2x lebar → bungkus di setengah kolom kertas.
+  /// Nama toko rata tengah, ukuran normal + tebal (ESC E 1).
   static List<int> nameHeaderBytes(RestoProfile profile) {
-    final w = (profile.paperWidth == 80 ? 48 : 32) ~/ 2;
-    final lines = wrap(profile.name.toUpperCase(), w).join('\n');
+    final w = profile.paperWidth == 80 ? 48 : 32;
+    // Tengah pakai spasi, bukan ESC a: printer murah mengabaikan ESC a.
+    final lines = wrap(profile.name.toUpperCase(), w)
+        // Sisa ganjil ditaruh kiri: printer terlihat condong kiri.
+        .map((l) => ' ' * ((w - l.length + 1) ~/ 2) + l)
+        .join('\n');
     return [
-      0x1B, 0x61, 0x01, 0x1D, 0x21, 0x11, 0x1B, 0x45, 0x01,
+      0x1B, 0x45, 0x01,
       ...printerBytes('$lines\n'),
-      0x1D, 0x21, 0x00, 0x1B, 0x45, 0x00, 0x1B, 0x61, 0x00,
+      0x1B, 0x45, 0x00,
     ];
   }
 
   static Future<CapabilityProfile>? _profileFuture;
 
-  /// Logo kecil (tinggi maks 80 dot, lebar maks ±40% kertas, rasio dijaga),
+  static const logoMaxHeightDots = 112;
+  static const logoMaxWidthRatio = 0.5;
+
+  /// Jarak logo → nama toko (dot, ±5 mm).
+  static const logoGapDots = 40;
+
+  /// Logo kecil (tinggi maks [logoMaxHeightDots], lebar maks
+  /// [logoMaxWidthRatio] kertas, rasio dijaga), pinggiran putih dipotong,
   /// ditempel di tengah kanvas putih selebar kertas → rata tengah tanpa
   /// bergantung perintah align printer.
   static img.Image fitLogo(img.Image src, int paperWidth) {
     final canvasW = paperWidth == 80 ? 576 : 384;
-    const maxH = 80;
-    final maxW = (canvasW * 0.4).round();
-    var w = src.width, h = src.height;
+    const maxH = logoMaxHeightDots;
+    final maxW = (canvasW * logoMaxWidthRatio).round();
+    final trimmed = _trimWhite(src);
+    var w = trimmed.width, h = trimmed.height;
     final scale = [maxW / w, maxH / h, 1.0].reduce((a, b) => a < b ? a : b);
     w = (w * scale).round().clamp(1, maxW);
     h = (h * scale).round().clamp(1, maxH);
-    final logo = img.copyResize(src, width: w, height: h);
-    final canvas = img.Image(canvasW, h)..fill(img.getColor(255, 255, 255));
+    final logo = img.copyResize(trimmed, width: w, height: h);
+    // Jarak ke nama toko = baris putih di gambar (printer murah abaikan ESC J).
+    final canvas = img.Image(canvasW, h + logoGapDots)
+      ..fill(img.getColor(255, 255, 255));
     return img.drawImage(canvas, logo, dstX: (canvasW - w) ~/ 2);
+  }
+
+  /// Potong pinggiran yang tercetak putih (luminance >= 128) supaya tidak
+  /// boros kertas. Putih semua → dikembalikan apa adanya.
+  static img.Image _trimWhite(img.Image src) {
+    var top = src.height, bottom = -1, left = src.width, right = -1;
+    for (var y = 0; y < src.height; y++) {
+      for (var x = 0; x < src.width; x++) {
+        if (img.getLuminance(src.getPixel(x, y)) < 128) {
+          if (y < top) top = y;
+          if (y > bottom) bottom = y;
+          if (x < left) left = x;
+          if (x > right) right = x;
+        }
+      }
+    }
+    if (bottom < 0) return src;
+    return img.copyCrop(src, left, top, right - left + 1, bottom - top + 1);
   }
 
   /// Raster logo ESC/POS (GS v 0) hitam-putih, kecil, rata tengah.
@@ -98,8 +129,8 @@ class ReceiptBuilder {
         await (_profileFuture ??= CapabilityProfile.load()),
       );
       final raster = gen.imageRaster(resized, align: PosAlign.left);
-      // Alignment kiri + feed 24 dot (ESC J) sebagai jarak ke nama toko.
-      return [...raster, 0x1B, 0x61, 0x00, 0x1B, 0x4A, 24];
+      // Kembalikan alignment ke kiri.
+      return [...raster, 0x1B, 0x61, 0x00];
     } catch (_) {
       return null;
     }
@@ -161,7 +192,7 @@ class ReceiptBuilder {
 
     void center(String text) {
       for (final s in wrap(text, w)) {
-        final pad = ((w - s.length) ~/ 2).clamp(0, w);
+        final pad = ((w - s.length + 1) ~/ 2).clamp(0, w);
         buf.writeln(s.isEmpty ? '' : ' ' * pad + s);
       }
     }
@@ -181,7 +212,6 @@ class ReceiptBuilder {
     if (profile.phone != null && profile.phone!.isNotEmpty) {
       center('Telp ${profile.phone}');
     }
-    buf.writeln();
     divider();
 
     final dateStr = DateFormat('dd/MM/yy HH:mm').format(txn.createdAt);
@@ -244,7 +274,7 @@ class ReceiptBuilder {
 
     void center(String text) {
       for (final s in wrap(text, w)) {
-        final pad = ((w - s.length) ~/ 2).clamp(0, w);
+        final pad = ((w - s.length + 1) ~/ 2).clamp(0, w);
         buf.writeln(s.isEmpty ? '' : ' ' * pad + s);
       }
     }
@@ -264,7 +294,6 @@ class ReceiptBuilder {
     if (profile.phone != null && profile.phone!.isNotEmpty) {
       center('Telp ${profile.phone}');
     }
-    buf.writeln();
     divider();
     center('REKAP KASIR');
     divider();

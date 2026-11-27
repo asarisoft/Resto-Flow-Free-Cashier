@@ -53,9 +53,23 @@ void main() {
     final w = tester.getSize(find.byType(Image)).width;
     final textW = tester.getSize(find.descendant(
         of: find.byType(ReceiptPreview), matching: find.byType(Text)).last).width;
-    expect(w, closeTo(textW * 0.6, 0.5));
+    final h = tester.getSize(find.byType(Image)).height;
+    // Sama dgn cetak 80mm (576 dot): lebar maks 50%, tinggi maks 112 dot.
+    expect(w, closeTo(textW * 0.5, 0.5));
+    expect(h, closeTo(textW * 112 / 576, 0.5));
 
     await _pump(tester, _profile(useLogo: false, logoPath: f.path));
     expect(find.byType(Image), findsNothing);
+  });
+
+  testWidgets('preview pakai garis "-" seperti cetak, bukan "─"', (tester) async {
+    await _pump(tester, _profile());
+    final texts = tester
+        .widgetList<Text>(find.descendant(
+            of: find.byType(ReceiptPreview), matching: find.byType(Text)))
+        .map((t) => t.data ?? '')
+        .join();
+    expect(texts, isNot(contains('─')));
+    expect(texts, contains('-' * 48));
   });
 }

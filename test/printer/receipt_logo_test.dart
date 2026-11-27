@@ -87,8 +87,6 @@ void main() {
     expect(_containsSub(bytes, gsV0), isTrue,
         reason: 'logo harus dicetak sebagai raster GS v 0');
     expect(String.fromCharCodes(bytes), contains('TOTAL'));
-    expect(_containsSub(bytes, [0x1B, 0x4A, 24]), isTrue,
-        reason: 'harus ada jarak (ESC J) antara logo dan nama toko');
   });
 
   test('buildReceipt hanya byte ASCII, garis pakai "-"', () async {
@@ -113,33 +111,53 @@ void main() {
     expect(String.fromCharCodes(bytes), contains('TOTAL'));
   });
 
-  test('buildReceipt prints store name double-size & bold, once', () async {
+  test('buildReceipt prints store name bold ukuran normal, once', () async {
     final bytes = await ReceiptBuilder.buildReceipt(_txn, _profile());
     final text = String.fromCharCodes(bytes);
     final name = _profile().name.toUpperCase();
-    expect(text, contains('\x1D\x21\x11\x1B\x45\x01$name\n\x1D\x21\x00'));
+    // 58mm = 32 kolom; "WARUNG BUDI" 11 huruf → sisa 21, ganjil → 11 spasi depan.
+    expect(text, contains('\x1B\x45\x01${' ' * 11}$name\n\x1B\x45\x00'));
+    expect(text, isNot(contains('\x1D\x21')), reason: 'ukuran normal');
+    expect(text, isNot(contains('\x1B\x61\x01')),
+        reason: 'jangan andalkan ESC a: printer murah mengabaikannya');
     expect(name.allMatches(text).length, 1);
   });
 
   group('fitLogo', () {
-    test('logo besar 58mm: tinggi maks 80, kanvas selebar kertas, di tengah', () {
+    test('logo besar 58mm: tinggi maks 112, kanvas selebar kertas, di tengah', () {
       final src = img.Image(1000, 1000)..fill(img.getColor(0, 0, 0));
       final out = ReceiptBuilder.fitLogo(src, 58);
       expect(out.width, 384);
-      expect(out.height, 80);
+      expect(out.height, 112 + ReceiptBuilder.logoGapDots);
+      // baris jarak di bawah logo putih
+      expect(img.getRed(out.getPixel(192, out.height - 1)), 255);
       // kiri & kanan putih, tengah hitam
       expect(img.getRed(out.getPixel(0, 40)), 255);
       expect(img.getRed(out.getPixel(383, 40)), 255);
       expect(img.getRed(out.getPixel(192, 40)), 0);
-      expect(img.getRed(out.getPixel(152, 40)), 0); // (384-80)/2 = 152
-      expect(img.getRed(out.getPixel(151, 40)), 255);
+      expect(img.getRed(out.getPixel(136, 40)), 0); // (384-112)/2 = 136
+      expect(img.getRed(out.getPixel(135, 40)), 255);
+    });
+
+    test('pinggiran putih logo dipotong: hitam mulai di baris 0', () {
+      // 200x200 putih, kotak hitam 20x20 di tengah (pinggiran putih tebal).
+      final src = img.Image(200, 200)..fill(img.getColor(255, 255, 255));
+      img.fillRect(src, 90, 90, 109, 109, img.getColor(0, 0, 0));
+      final out = ReceiptBuilder.fitLogo(src, 58);
+      expect(out.height, 20 + ReceiptBuilder.logoGapDots);
+      expect(img.getRed(out.getPixel(192, 0)), 0);
+    });
+
+    test('logo putih semua tidak error', () {
+      final src = img.Image(50, 50)..fill(img.getColor(255, 255, 255));
+      expect(ReceiptBuilder.fitLogo(src, 58).width, 384);
     });
 
     test('logo lebar 80mm: dibatasi 40% lebar kertas', () {
       final src = img.Image(2000, 100)..fill(img.getColor(0, 0, 0));
       final out = ReceiptBuilder.fitLogo(src, 80);
       expect(out.width, 576);
-      expect(out.height, lessThanOrEqualTo(80));
+      expect(out.height, lessThanOrEqualTo(112 + ReceiptBuilder.logoGapDots));
       expect(img.getRed(out.getPixel(0, 0)), 255);
       expect(img.getRed(out.getPixel(288, 0)), 0);
     });

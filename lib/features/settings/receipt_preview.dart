@@ -16,7 +16,12 @@ class ReceiptPreview extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final text = ReceiptBuilder.buildText(txn ?? ReceiptBuilder.sampleTransaction(), profile, withName: false).trimRight();
+    // Lewat printerBytes: sama persis dgn yang tercetak (`─` → '-', lebar pas).
+    final text = String.fromCharCodes(ReceiptBuilder.printerBytes(
+            ReceiptBuilder.buildText(
+                txn ?? ReceiptBuilder.sampleTransaction(), profile,
+                withName: false)))
+        .trimRight();
     final style = AppTypography.textTheme.bodyMedium?.copyWith(
       fontFamily: 'monospace',
       fontSize: 12,
@@ -32,6 +37,7 @@ class ReceiptPreview extends StatelessWidget {
     final textWidth = painter.width;
     painter.dispose();
     final logo = profile.logoPath;
+    final dots = profile.paperWidth == 80 ? 576 : 384;
     return Semantics(
       container: true,
       label: 'Preview nota kertas ${profile.paperWidth} mm',
@@ -52,20 +58,22 @@ class ReceiptPreview extends StatelessWidget {
               Container(
                 width: textWidth,
                 alignment: Alignment.center,
-                padding: const EdgeInsets.only(bottom: 8),
-                child: _LogoPreview(path: logo, width: textWidth * 0.6),
+                // Skala sama dgn cetak: lebar teks = lebar kertas (dot).
+                padding: EdgeInsets.only(
+                    bottom: textWidth * ReceiptBuilder.logoGapDots / dots),
+                child: _LogoPreview(
+                  path: logo,
+                  width: textWidth * ReceiptBuilder.logoMaxWidthRatio,
+                  height: textWidth * ReceiptBuilder.logoMaxHeightDots / dots,
+                ),
               ),
-            // Nama toko besar & tebal, seperti cetak ukuran ganda printer.
+            // Nama toko tebal, ukuran sama dgn teks lain, seperti cetak.
             SizedBox(
               width: textWidth,
               child: Text(
                 profile.name.toUpperCase(),
                 textAlign: TextAlign.center,
-                style: style?.copyWith(
-                  fontSize: 22,
-                  fontWeight: FontWeight.w700,
-                  height: 1.2,
-                ),
+                style: style?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
             Text(text, softWrap: false, style: style),
@@ -80,7 +88,9 @@ class ReceiptPreview extends StatelessWidget {
 class _LogoPreview extends StatelessWidget {
   final String path;
   final double width;
-  const _LogoPreview({required this.path, required this.width});
+  final double height;
+  const _LogoPreview(
+      {required this.path, required this.width, required this.height});
 
   static const _gray = ColorFilter.matrix(<double>[
     0.2126, 0.7152, 0.0722, 0, 0,
@@ -101,6 +111,7 @@ class _LogoPreview extends StatelessWidget {
           child: Image.file(
             File(abs),
             width: width,
+            height: height,
             fit: BoxFit.contain,
             errorBuilder: (_, __, ___) => const SizedBox.shrink(),
           ),
