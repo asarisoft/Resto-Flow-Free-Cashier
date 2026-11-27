@@ -33,7 +33,9 @@ class ReceiptBuilder {
     final logo = await _logoRasterBytes(profile);
     if (logo != null) bytes.addAll(logo);
     bytes.addAll(nameHeaderBytes(profile));
-    bytes.addAll(buildText(txn, profile, withName: false).codeUnits);
+    // `─` Unicode tidak bisa dicetak printer (jadi baris kosong) → pakai '-'.
+    bytes.addAll(
+        buildText(txn, profile, withName: false).replaceAll('─', '-').codeUnits);
     return bytes;
   }
 
@@ -51,7 +53,23 @@ class ReceiptBuilder {
 
   static Future<CapabilityProfile>? _profileFuture;
 
-  /// Raster logo ESC/POS (GS v 0) hitam-putih, lebar ±60% kertas, rata tengah.
+  /// Logo kecil (tinggi maks 80 dot, lebar maks ±40% kertas, rasio dijaga),
+  /// ditempel di tengah kanvas putih selebar kertas → rata tengah tanpa
+  /// bergantung perintah align printer.
+  static img.Image fitLogo(img.Image src, int paperWidth) {
+    final canvasW = paperWidth == 80 ? 576 : 384;
+    const maxH = 80;
+    final maxW = (canvasW * 0.4).round();
+    var w = src.width, h = src.height;
+    final scale = [maxW / w, maxH / h, 1.0].reduce((a, b) => a < b ? a : b);
+    w = (w * scale).round().clamp(1, maxW);
+    h = (h * scale).round().clamp(1, maxH);
+    final logo = img.copyResize(src, width: w, height: h);
+    final canvas = img.Image(canvasW, h)..fill(img.getColor(255, 255, 255));
+    return img.drawImage(canvas, logo, dstX: (canvasW - w) ~/ 2);
+  }
+
+  /// Raster logo ESC/POS (GS v 0) hitam-putih, kecil, rata tengah.
   /// Returns null bila logo tidak diset / hilang / rusak / gagal decode.
   static Future<List<int>?> _logoRasterBytes(RestoProfile profile) async {
     final path = profile.logoPath;
@@ -67,17 +85,15 @@ class ReceiptBuilder {
       // langsung diraster jadi kotak hitam.
       final flattened = LogoImageService.flattenToWhite(decoded);
 
-      // ±60% lebar kertas: 58mm ≈ 384 dot, 80mm ≈ 576 dot.
-      final targetWidth = profile.paperWidth == 80 ? 346 : 230;
-      final resized = img.copyResize(flattened, width: targetWidth);
+      final resized = fitLogo(flattened, profile.paperWidth);
 
       final gen = Generator(
         profile.paperWidth == 80 ? PaperSize.mm80 : PaperSize.mm58,
         await (_profileFuture ??= CapabilityProfile.load()),
       );
-      final raster = gen.imageRaster(resized, align: PosAlign.center);
-      // Kembalikan alignment ke kiri + pindah baris sebelum teks struk.
-      return [...raster, 0x1B, 0x61, 0x00, 0x0A];
+      final raster = gen.imageRaster(resized, align: PosAlign.left);
+      // Alignment kiri + feed 24 dot (ESC J) sebagai jarak ke nama toko.
+      return [...raster, 0x1B, 0x61, 0x00, 0x1B, 0x4A, 24];
     } catch (_) {
       return null;
     }

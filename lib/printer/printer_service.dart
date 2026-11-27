@@ -28,7 +28,11 @@ class PrinterService extends ChangeNotifier {
     if (!await _bluetooth.requestEnable()) {
       throw Exception('Bluetooth tidak aktif');
     }
-    return _bluetooth.discover().toList();
+    final byAddress = <String, BluetoothSerialDevice>{};
+    await for (final d in _bluetooth.discover()) {
+      byAddress[d.address] = d; // discover bisa kirim device yang sama 2x
+    }
+    return byAddress.values.toList();
   }
 
   Future<void> connect(BluetoothSerialDevice device) async {
