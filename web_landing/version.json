@@ -1,11 +1,11 @@
 {
   "min_version_code": 1,
-  "latest_version_code": 7,
+  "latest_version_code": 8,
   "level": "info",
-  "title": "Pembaruan Kasir Ceria 1.0.2",
-  "message": "Versi 1.0.2 memperbaiki cetak nota. Silakan perbarui lewat tautan uji coba: https://play.google.com/apps/internaltest/4699500768443054215 (gunakan akun Google yang terdaftar sebagai tester). Data Anda tetap aman di HP.",
+  "title": "Pembaruan Kasir Ceria 1.0.3",
+  "message": "Versi 1.0.3 memperbaiki cetak nota dan menambah fitur potong logo. Silakan perbarui lewat tautan uji coba: https://play.google.com/apps/internaltest/4699500768443054215 (gunakan akun Google yang terdaftar sebagai tester). Data Anda tetap aman di HP.",
   "changes_title": "Yang baru",
-  "changes": ["Perbaikan cetak nota"],
+  "changes": ["Perbaikan cetak nota", "Potong (crop) logo saat upload"],
   "_cara_pakai": [
     "Key berawalan _ hanya catatan, diabaikan app. JSON tidak boleh pakai komentar //.",
     "min_version_code: build di bawah ini WAJIB update (layar terkunci). Angka = build number pubspec (1.0.0+N -> N).",
