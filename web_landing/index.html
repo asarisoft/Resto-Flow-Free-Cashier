@@ -57,6 +57,20 @@ nav .links{display:flex;gap:22px;align-items:center}
 nav .links a{color:var(--sub);text-decoration:none;font-weight:500}
 nav .links a.btn{color:#fff;height:44px;padding:0 18px}
 @media (max-width:720px){nav .links a:not(.btn){display:none}}
+/* badge & efek ketik ASDEV.id */
+nav .links a.by{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:999px;background:var(--surface);box-shadow:0 2px 8px var(--sh);font-size:.85rem;color:var(--fg)}
+nav .links a.by:hover,a.typer:hover{color:var(--accent)}
+.by i{width:8px;height:8px;border-radius:50%;background:#16a34a}
+a.typer{display:inline-block;min-height:1.3em;text-decoration:none}
+@media (max-width:720px){nav .links a.by{display:none}}
+@media (prefers-reduced-motion:no-preference){.by i{animation:pulse 1.6s infinite}.tw::after{content:"|";margin-left:2px;animation:blink 1s steps(1) infinite}}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(22,163,74,.5)}100%{box-shadow:0 0 0 8px rgba(22,163,74,0)}}
+@keyframes blink{50%{opacity:0}}
+/* scroll GSAP */
+.progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--accent);transform:scaleX(0);transform-origin:left;z-index:50;pointer-events:none}
+.head h2 .w{display:inline-block}
+.steps{position:relative}
+.steps::before{content:"";position:absolute;left:0;right:0;top:-14px;height:3px;border-radius:3px;background:var(--accent);transform:scaleX(var(--p,1));transform-origin:left}
 /* hero */
 .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:32px;align-items:center;padding-block:24px 64px}
 .hero h1{font-size:clamp(2.4rem,6vw,4.2rem);font-weight:800;letter-spacing:-.01em}
@@ -168,18 +182,19 @@ dialog#soon::backdrop{background:rgba(42,33,27,.55);backdrop-filter:blur(3px)}
 </style>
 </head>
 <body>
+<div class="progress" aria-hidden="true"></div>
 
 
 <div class="wrap">
   <nav>
     <a class="brand" href="#top"><img loading="lazy" decoding="async" src="img/app_logo.webp" alt="" width="40" height="40">Kasir Ceria</a>
-    <div class="links"><a href="#fitur">Fitur</a><a href="#faq">FAQ</a><a class="btn js-play" href="#unduh">Unduh gratis</a></div>
+    <div class="links"><a href="#fitur">Fitur</a><a href="#faq">FAQ</a><a class="by" href="https://asdev.id" rel="noopener"><i aria-hidden="true"></i>by ASDEV.id ↗</a><a class="btn js-play" href="#unduh">Unduh gratis</a></div>
   </nav>
 
 
 <header class="hero" id="top" role="banner">
     <div>
-      <span class="eyebrow">Aplikasi kasir untuk UMKM</span>
+      <a class="eyebrow typer" href="https://asdev.id" rel="noopener" aria-label="Aplikasi kasir untuk UMKM, dibuat oleh ASDEV.id"><span class="tw" aria-hidden="true">Aplikasi kasir untuk UMKM</span></a>
       <h1 style="margin-top:12px">Aplikasi kasir <em>gratis</em> untuk warung &amp; cafe</h1>
       <p class="sub">Catat penjualan, cetak struk, dan lihat untung harian. Tetap jalan tanpa internet, data aman di HP Anda.</p>
       <div class="cta">
@@ -364,6 +379,21 @@ dialog#soon::backdrop{background:rgba(42,33,27,.55);backdrop-filter:blur(3px)}
   beats.forEach(function(b,i){ b.addEventListener('click',function(){setBeat(i);}); });
 
   var reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  // Efek ketik eyebrow -> ASDEV.id.
+  var tw=document.querySelector('.tw');
+  if(tw&&!reduce){
+    var words=['Aplikasi kasir untuk UMKM','Dibuat oleh ASDEV.id','Butuh aplikasi custom? ASDEV.id'], wi=0, ci=words[0].length, del=true;
+    var tick=function(){
+      var w=words[wi], d=del?35:70;
+      ci+=del?-1:1; tw.textContent=w.slice(0,ci);
+      if(!del&&ci===w.length){del=true;d=2200;}
+      else if(del&&ci===0){del=false;wi=(wi+1)%words.length;d=300;}
+      setTimeout(tick,d);
+    };
+    setTimeout(tick,2200);
+  }
+
   if(reduce||!window.gsap||!window.ScrollTrigger) return;
   gsap.registerPlugin(ScrollTrigger);
 
@@ -386,10 +416,27 @@ dialog#soon::backdrop{background:rgba(42,33,27,.55);backdrop-filter:blur(3px)}
     gsap.to(o,{v:to,duration:1.6,ease:'power2.out',delay:.3,onUpdate:function(){el.textContent='Rp '+Math.round(o.v).toLocaleString('id-ID');}});
   });
 
-  // Reveal ringan (tetap terlihat, hanya geser naik).
-  gsap.utils.toArray('.pain .clay, .feat, .step, details, .final').forEach(function(el,i){
-    gsap.from(el,{y:28,duration:.7,ease:'power3.out',scrollTrigger:{trigger:el,start:'top 92%'}});
+  // Reveal ringan bergiliran (tetap terlihat, hanya geser naik).
+  ScrollTrigger.batch('.pain .clay, .feat, .step, details',{start:'top 92%',once:true,onEnter:function(b){
+    gsap.from(b,{y:28,duration:.7,ease:'power3.out',stagger:.1});
+  }});
+  gsap.from('.final',{y:28,duration:.7,ease:'power3.out',scrollTrigger:{trigger:'.final',start:'top 92%'}});
+
+  // Judul section muncul per kata.
+  document.querySelectorAll('.head h2').forEach(function(h){
+    var ws=h.textContent.split(' '); h.textContent='';
+    ws.forEach(function(w,i){ var s=document.createElement('span'); s.className='w'; s.textContent=w; h.appendChild(s); if(i<ws.length-1) h.appendChild(document.createTextNode(' ')); });
+    gsap.from(h.querySelectorAll('.w'),{y:'0.6em',opacity:0,duration:.6,ease:'power3.out',stagger:.06,scrollTrigger:{trigger:h,start:'top 90%'}});
   });
+
+  // Garis progres scroll.
+  gsap.to('.progress',{scaleX:1,ease:'none',scrollTrigger:{start:0,end:'max',scrub:true}});
+
+  // Garis penghubung langkah.
+  gsap.fromTo('.steps',{'--p':0},{'--p':1,ease:'none',scrollTrigger:{trigger:'.steps',start:'top 85%',end:'top 40%',scrub:true}});
+
+  // Maskot CTA memantul.
+  gsap.from('.final img',{scale:.6,rotate:-8,duration:.9,ease:'back.out(2)',scrollTrigger:{trigger:'.final',start:'top 80%'}});
 
   // Langkah transaksi ikut scroll (desktop).
   ScrollTrigger.matchMedia({'(min-width: 861px)':function(){
