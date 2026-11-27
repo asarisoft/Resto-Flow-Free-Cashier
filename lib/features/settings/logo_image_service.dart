@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:image/image.dart' as img;
+import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
@@ -11,13 +12,29 @@ class LogoImageService {
   static const logoDirName = 'logo';
   static const logoFileName = 'logo.jpg';
 
+  /// Pilih dari galeri lalu crop. Batal pilih / batal crop → null
+  /// (logo lama tidak berubah).
   Future<XFile?> pickImage() async {
-    return ImagePicker().pickImage(
-      source: ImageSource.gallery,
+    final picked = await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (picked == null) return null;
+    final cropped = await ImageCropper().cropImage(
+      sourcePath: picked.path,
       maxWidth: 384,
       maxHeight: 384,
-      imageQuality: 85,
+      compressQuality: 85,
+      uiSettings: [
+        AndroidUiSettings(
+          toolbarTitle: 'Potong Logo',
+          lockAspectRatio: false,
+          aspectRatioPresets: [
+            CropAspectRatioPreset.original,
+            CropAspectRatioPreset.square,
+            CropAspectRatioPreset.ratio16x9,
+          ],
+        ),
+      ],
     );
+    return cropped == null ? null : XFile(cropped.path);
   }
 
   /// Copies [file] to `<appDocuments>/images/logo/logo.jpg` and returns the
