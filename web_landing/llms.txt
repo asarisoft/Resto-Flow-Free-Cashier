@@ -10,8 +10,8 @@
 - Download: https://play.google.com/store/apps/details?id=id.asdev.kasirceria
 
 ## Halaman
-- [Beranda](https://kasirceria.pages.dev/): fitur, cara mulai, FAQ.
-- [Kebijakan Privasi](https://kasirceria.pages.dev/privasi)
+- [Beranda](https://kasirceria.asdev.id/): fitur, cara mulai, FAQ.
+- [Kebijakan Privasi](https://kasirceria.asdev.id/privasi)
 
 ## Kontak
 - Instagram: https://instagram.com/ngodingdarirumah

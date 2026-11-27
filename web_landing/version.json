@@ -12,7 +12,7 @@
     "latest_version_code: build di bawah ini ditawari update opsional (snackbar 'Update siap').",
     "level: 'info' (hijau) atau 'critical' (merah, untuk bug fatal).",
     "title maks 60, message maks 300, changes_title maks 40, changes maks 5 poin x 80 karakter.",
-    "Setelah ubah: upload ulang web_landing ke Pages. Cek https://kasirceria.pages.dev/version.json.",
+    "Setelah ubah: upload ulang web_landing ke Pages. Cek https://kasirceria.asdev.id/version.json.",
     "JANGAN naikkan min_version_code sebelum versi baru sudah tayang di Play Store."
   ],
   "_contoh_update_biasa": {
