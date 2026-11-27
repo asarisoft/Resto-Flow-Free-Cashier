@@ -70,10 +70,12 @@ a.typer{display:inline-block;min-height:1.3em;text-decoration:none}
 .progress{position:fixed;top:0;left:0;right:0;height:3px;background:var(--accent);transform:scaleX(0);transform-origin:left;z-index:50;pointer-events:none}
 .head h2 .w{display:inline-block}
 /* tombol melayang ASDEV */
-.fab{position:fixed;right:16px;bottom:16px;z-index:40;padding:12px 18px;border-radius:999px;background:#FF5A1F;color:#fff;font:600 .9rem var(--body);text-decoration:none;box-shadow:0 6px 20px var(--sh);opacity:0;visibility:hidden;transform:translateY(16px)}
+.fab{position:fixed;right:16px;bottom:16px;z-index:40;padding:12px 18px;border-radius:999px;background:linear-gradient(135deg,#FF5A1F,#FF9A3C);color:#fff;font:600 .9rem var(--body);text-decoration:none;box-shadow:0 10px 30px rgba(255,90,31,.4),inset 0 0 0 1px rgba(255,255,255,.25);opacity:0;visibility:hidden;transform:translateY(16px)}
 .fab.on{opacity:1;visibility:visible;transform:none}
-.fab:hover{background:#0D0D0F}
-@media (prefers-reduced-motion:no-preference){.fab{transition:opacity .3s,transform .3s cubic-bezier(.2,.8,.2,1),visibility .3s}}
+.fab.on:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(255,90,31,.35)}
+.fab:focus-visible{outline:3px solid #FF9A3C;outline-offset:3px}
+@media (prefers-reduced-motion:no-preference){.fab{transition:opacity .3s,transform .3s cubic-bezier(.2,.8,.2,1),visibility .3s,box-shadow .2s}.fab::before{content:"";position:absolute;inset:0;border-radius:inherit;animation:wapulse 2.4s ease-out infinite;pointer-events:none}}
+@keyframes wapulse{0%{box-shadow:0 0 0 0 rgba(255,90,31,.55)}70%,100%{box-shadow:0 0 0 16px rgba(255,90,31,0)}}
 @media (max-width:540px){.fab .l{display:none}}
 .steps{position:relative}
 .steps::before{content:"";position:absolute;left:0;right:0;top:-14px;height:3px;border-radius:3px;background:var(--accent);transform:scaleX(var(--p,1));transform-origin:left}
