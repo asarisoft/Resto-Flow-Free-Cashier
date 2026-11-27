@@ -131,6 +131,11 @@ dialog#soon::backdrop{background:rgba(42,33,27,.55);backdrop-filter:blur(3px)}
 .soon-in p{margin:0;color:var(--sub)}
 .soon-act{display:grid;gap:10px;width:100%;margin-top:8px}
 .soon-act .btn{justify-content:center;height:50px}
+.soon-form{display:grid;gap:8px;width:100%;margin-top:8px;text-align:left}
+.soon-form label{font:600 .85rem var(--body);color:var(--fg)}
+.soon-form input{height:50px;border:2px solid var(--inset);border-radius:14px;padding:0 14px;font:inherit;font-size:16px;background:var(--bg,#fff);color:var(--fg)}
+.soon-form input:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.soon-form .btn{justify-content:center;height:50px;border:0;cursor:pointer}
 .soon-x{position:absolute;top:10px;right:12px;width:40px;height:40px;border:0;border-radius:50%;background:var(--inset);color:var(--fg);font-size:1.4rem;cursor:pointer}
 .tldr{padding:28px;display:grid;gap:12px}
 .tldr p{margin:0;max-width:70ch}
@@ -305,10 +310,16 @@ dialog#soon::backdrop{background:rgba(42,33,27,.55);backdrop-filter:blur(3px)}
 <dialog id="soon" aria-labelledby="soonTitle">
   <div class="soon-in">
     <img src="img/app_logo.webp" alt="" width="56" height="56">
-    <h2 id="soonTitle">Sedang ditinjau Google Play</h2>
-    <p>Kasir Ceria sedang dalam proses review. Follow kami untuk kabar rilis, atau kirim DM supaya dikabari saat sudah bisa diunduh.</p>
+    <h2 id="soonTitle">Masih tahap uji coba</h2>
+    <p>Kasir Ceria sedang menunggu rilis di Google Play. Saat ini hanya email Google yang terdaftar sebagai tester yang bisa install.</p>
+    <p>Mau coba duluan? Isi email Google kamu, lalu kirim lewat WhatsApp. Setelah didaftarkan, install lewat tombol di bawah.</p>
+    <form class="soon-form" id="testerForm">
+      <label for="testerEmail">Email Google (Gmail)</label>
+      <input id="testerEmail" name="email" type="email" required maxlength="254" autocomplete="email" inputmode="email" placeholder="nama@gmail.com">
+      <button type="submit" class="btn">Kirim via WhatsApp</button>
+    </form>
     <div class="soon-act">
-      <a class="btn" href="https://ig.me/m/ngodingdarirumah" rel="noopener">DM Instagram</a>
+      <a class="btn ghost" href="https://play.google.com/apps/internaltest/4699500768443054215" rel="noopener">Sudah terdaftar? Install</a>
       <a class="btn ghost" href="https://instagram.com/ngodingdarirumah" rel="noopener">Follow @ngodingdarirumah</a>
       <a class="btn ghost" href="https://tiktok.com/@ngodingdarirumah" rel="noopener">TikTok</a>
     </div>
@@ -326,6 +337,12 @@ dialog#soon::backdrop{background:rgba(42,33,27,.55);backdrop-filter:blur(3px)}
   var dlg=document.getElementById('soon');
   if(!PLAY_LIVE&&dlg&&dlg.showModal){
     document.querySelectorAll('.js-play').forEach(function(a){ a.addEventListener('click',function(e){ e.preventDefault(); dlg.showModal(); }); });
+    document.getElementById('testerForm').addEventListener('submit',function(e){
+      e.preventDefault();
+      var email=document.getElementById('testerEmail').value.trim();
+      var msg='Halo, saya mau ikut uji coba Kasir Ceria. Email Google saya: '+email;
+      window.open('https://wa.me/6281575620346?text='+encodeURIComponent(msg),'_blank','noopener');
+    });
     document.getElementById('soonClose').addEventListener('click',function(){ dlg.close(); });
     dlg.addEventListener('click',function(e){ if(e.target===dlg) dlg.close(); });
   }
