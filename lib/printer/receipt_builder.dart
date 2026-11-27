@@ -33,11 +33,17 @@ class ReceiptBuilder {
     final logo = await _logoRasterBytes(profile);
     if (logo != null) bytes.addAll(logo);
     bytes.addAll(nameHeaderBytes(profile));
-    // `─` Unicode tidak bisa dicetak printer (jadi baris kosong) → pakai '-'.
-    bytes.addAll(
-        buildText(txn, profile, withName: false).replaceAll('─', '-').codeUnits);
+    bytes.addAll(printerBytes(buildText(txn, profile, withName: false)));
     return bytes;
   }
+
+  /// Teks → byte ASCII untuk printer thermal. Karakter Unicode tercetak
+  /// kosong/sampah: `─` jadi '-' (lebar sama), lainnya (é, emoji) jadi '?'.
+  static List<int> printerBytes(String text) => text
+      .replaceAll('─', '-')
+      .runes
+      .map((c) => c == 0x0A || (c >= 0x20 && c <= 0x7E) ? c : 0x3F)
+      .toList();
 
   /// Nama toko rata tengah, ukuran ganda (GS ! 0x11) + tebal (ESC E 1).
   /// Huruf 2x lebar → bungkus di setengah kolom kertas.
@@ -46,7 +52,7 @@ class ReceiptBuilder {
     final lines = wrap(profile.name.toUpperCase(), w).join('\n');
     return [
       0x1B, 0x61, 0x01, 0x1D, 0x21, 0x11, 0x1B, 0x45, 0x01,
-      ...'$lines\n'.codeUnits,
+      ...printerBytes('$lines\n'),
       0x1D, 0x21, 0x00, 0x1B, 0x45, 0x00, 0x1B, 0x61, 0x00,
     ];
   }
@@ -264,7 +270,7 @@ class ReceiptBuilder {
     divider();
     line('Buka', df.format(shift.openedAt));
     line('Tutup', df.format(shift.closedAt ?? DateTime.now()));
-    line('Oleh', '${shift.openedBy} → ${shift.closedBy ?? '-'}');
+    line('Oleh', '${shift.openedBy} -> ${shift.closedBy ?? '-'}');
     divider();
     line('Omzet Tunai', _fmt.format(recap.cashRevenue));
     line('Omzet QRIS', _fmt.format(recap.qrisRevenue));

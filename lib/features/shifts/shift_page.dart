@@ -67,10 +67,13 @@ class ShiftPage extends ConsumerWidget {
                   }
                   return Column(
                     children: [
-                      for (final s in closed.take(5)) _ShiftHistoryRow(shift: s),
+                      for (final s in closed.take(5))
+                        _ShiftHistoryRow(shift: s),
                       TextButton(
                         onPressed: () => Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const ShiftHistoryPage()),
+                          MaterialPageRoute(
+                            builder: (_) => const ShiftHistoryPage(),
+                          ),
                         ),
                         child: const Text('Lihat semua'),
                       ),
@@ -108,14 +111,18 @@ class _ShiftStatusCard extends ConsumerWidget {
               const SizedBox(width: 8),
               Text(
                 'Shift terbuka',
-                style: textTheme.titleMedium?.copyWith(color: AppColors.success),
+                style: textTheme.titleMedium?.copyWith(
+                  color: AppColors.success,
+                ),
               ),
             ],
           ),
           const SizedBox(height: 12),
           Text(
             'Dibuka ${DateFormat('dd/MM/yyyy HH:mm').format(open.openedAt)} oleh ${open.openedBy}',
-            style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
           ),
           const SizedBox(height: 8),
           Row(
@@ -160,7 +167,9 @@ class _ShiftHistoryRow extends StatelessWidget {
                 Text(
                   '${DateFormat('dd/MM HH:mm').format(shift.openedAt)} → '
                   '${shift.closedAt == null ? '-' : DateFormat('dd/MM HH:mm').format(shift.closedAt!)}',
-                  style: textTheme.bodyMedium?.copyWith(color: AppColors.textSecondary),
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: AppColors.textSecondary,
+                  ),
                 ),
                 const Spacer(),
                 AmountText(
@@ -173,8 +182,12 @@ class _ShiftHistoryRow extends StatelessWidget {
               ],
             ),
             const SizedBox(height: 6),
-            Text('Dibuka ${shift.openedBy}',
-                style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary)),
+            Text(
+              'Dibuka ${shift.openedBy}',
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
+            ),
             const SizedBox(height: 4),
             Text(
               'Laci ${formatRupiah(shift.countedCash ?? 0)} · '
@@ -214,24 +227,36 @@ class _CloseShiftDialogState extends ConsumerState<_CloseShiftDialog> {
     try {
       final now = DateTime.now();
       final reports = ref.read(reportsDaoProvider);
-      final revenue = await reports.sumRevenueByMethod(widget.shift.openedAt, now);
-      final expense =
-          await reports.sumExpensesCreatedBetween(widget.shift.openedAt, now);
+      final revenue = await reports.sumRevenueByMethod(
+        widget.shift.openedAt,
+        now,
+      );
+      final expense = await reports.sumExpensesCreatedBetween(
+        widget.shift.openedAt,
+        now,
+      );
       final recap = computeShiftRecap(
         openingCash: widget.shift.openingCash,
         revenueByMethod: revenue,
         totalExpense: expense,
         countedCash: counted,
       );
-      final username = ref.read(currentUserProvider).valueOrNull?.username ?? '';
-      await ref.read(shiftsDaoProvider).close(
+      final username =
+          ref.read(currentUserProvider).valueOrNull?.username ?? '';
+      await ref
+          .read(shiftsDaoProvider)
+          .close(
             id: widget.shift.id,
             closedBy: username,
             countedCash: counted,
             expectedCash: recap.expectedCash,
           );
-      await logActivity(ref, 'shift.close', 'oleh $username',
-          detail: 'selisih ${recap.difference}');
+      await logActivity(
+        ref,
+        'shift.close',
+        'oleh $username',
+        detail: 'selisih ${recap.difference}',
+      );
       if (!mounted) return;
       Navigator.of(context).pop();
       await showDialog(
@@ -253,7 +278,9 @@ class _CloseShiftDialogState extends ConsumerState<_CloseShiftDialog> {
     } catch (e) {
       if (mounted) {
         setState(() => _saving = false);
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Gagal tutup shift: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal tutup shift: $e')));
       }
     }
   }
@@ -296,21 +323,21 @@ class _ShiftRecapDialog extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final textTheme = AppTypography.textTheme;
     Widget row(String label, int value, {Color? color}) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(label, style: textTheme.bodyLarge),
-              AmountText(
-                amount: value,
-                style: (textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  color: color,
-                )),
-              ),
-            ],
+      padding: const EdgeInsets.symmetric(vertical: 4),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(label, style: textTheme.bodyLarge),
+          AmountText(
+            amount: value,
+            style: (textTheme.bodyLarge?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: color,
+            )),
           ),
-        );
+        ],
+      ),
+    );
 
     return AlertDialog(
       title: const Text('Rekap Kasir'),
@@ -327,12 +354,19 @@ class _ShiftRecapDialog extends ConsumerWidget {
             const Divider(height: 16),
             row('Kas seharusnya', recap.expectedCash),
             row('Kas di laci', shift.countedCash ?? 0),
-            row('Selisih', recap.difference,
-                color: recap.difference >= 0 ? AppColors.success : AppColors.error),
+            row(
+              'Selisih',
+              recap.difference,
+              color: recap.difference >= 0
+                  ? AppColors.success
+                  : AppColors.error,
+            ),
             const SizedBox(height: 8),
             Text(
               'Semua pengeluaran dianggap tunai.',
-              style: textTheme.bodySmall?.copyWith(color: AppColors.textSecondary),
+              style: textTheme.bodySmall?.copyWith(
+                color: AppColors.textSecondary,
+              ),
             ),
           ],
         ),
@@ -355,28 +389,33 @@ class _ShiftRecapDialog extends ConsumerWidget {
     final profile = await ref.read(profileProvider.future);
     if (profile == null) return;
     try {
-      final bytes = ReceiptBuilder.buildShiftRecapText(
-        profile: profile,
-        shift: shift,
-        recap: recap,
-      ).codeUnits;
+      final bytes = ReceiptBuilder.printerBytes(
+        ReceiptBuilder.buildShiftRecapText(
+          profile: profile,
+          shift: shift,
+          recap: recap,
+        ),
+      );
       final printer = ref.read(printerServiceProvider);
       if (printer.isConnected) {
         await printer.printBytes(bytes);
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Rekap dicetak')));
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(const SnackBar(content: Text('Rekap dicetak')));
         }
       } else {
         if (context.mounted) {
-          ScaffoldMessenger.of(context)
-              .showSnackBar(const SnackBar(content: Text('Printer tidak terhubung')));
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Printer tidak terhubung')),
+          );
         }
       }
     } catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context)
-            .showSnackBar(SnackBar(content: Text('Gagal cetak: $e')));
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Gagal cetak: $e')));
       }
     }
   }
